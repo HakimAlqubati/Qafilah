@@ -18,7 +18,7 @@ class AttributeValueResource extends Resource
 {
     protected static ?string $model = AttributeValue::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::PuzzlePiece;
 
     protected static ?string $recordTitleAttribute = 'value';
 

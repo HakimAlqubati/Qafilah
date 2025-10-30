@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Resources\Attributes\AttributeResource;
 use App\Filament\Resources\AttributeValues\AttributeValueResource;
+use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Vendors\VendorResource;
 use App\Models\Vendor;
 use Filament\Http\Middleware\Authenticate;
@@ -36,7 +37,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Green,
+                'primary' => Color::Orange,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -58,12 +59,19 @@ class AdminPanelProvider extends PanelProvider
                     // ...UserResource::getNavigationItems(),
                     // ...Settings::getNavigationItems(),
                 ])->groups([
+                    NavigationGroup::make('Vendor Management')
+                        ->items([
+                            ...VendorResource::getNavigationItems(),
+                        ]),
                     NavigationGroup::make('Management')
-                    ->items([
-                        ...AttributeResource::getNavigationItems(),
-                        ...AttributeValueResource::getNavigationItems(),
-                     ])
-                    ,
+                        ->items([
+                            ...AttributeResource::getNavigationItems(),
+                            ...AttributeValueResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Products')
+                        ->items([
+                            ...ProductResource::getNavigationItems(),
+                        ]),
                 ]);
             })
             ->middleware([
