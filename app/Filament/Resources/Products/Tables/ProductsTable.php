@@ -57,11 +57,7 @@ class ProductsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                // 4. Base Price (Essential for B2B overview)
-                TextColumn::make('base_price')
-                    ->label('Base Price')
-                    ->money('SAR') // Display as currency (adjust currency code if needed)
-                    ->sortable(),
+             
 
                 // 5. Inventory (Variants or simple stock count)
                 TextColumn::make('variants_count')
