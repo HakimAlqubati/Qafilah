@@ -40,19 +40,19 @@ class AttributesTable
 
                 // 4. Is Required (هل هو مطلوب)
                 IconColumn::make('is_required')
-                    ->label('Required?')
+                    ->label('Required?')->alignCenter()
                     ->boolean()
                     ->sortable(),
 
                 // 5. Active (الحالة - هل الخاصية نشطة)
                 IconColumn::make('active')
-                    ->label('Active')
+                    ->label('Active')->alignCenter()
                     ->boolean()
                     ->sortable(),
                 
                 // 6. Values Count (عدد القيم المتاحة - Color: 5, Size: 3)
                 TextColumn::make('values_count')
-                    ->label('Values Count')
+                    ->label('Values Count')->alignCenter()
                     ->counts('values') // يعتمد على العلاقة `values()` في النموذج
                     ->sortable(),
                 

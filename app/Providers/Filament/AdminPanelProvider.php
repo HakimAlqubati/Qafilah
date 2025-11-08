@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Resources\Attributes\AttributeResource;
 use App\Filament\Resources\AttributeSets\AttributeSetResource;
 use App\Filament\Resources\AttributeValues\AttributeValueResource;
+use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Vendors\VendorResource;
 use App\Models\Vendor;
@@ -66,12 +67,14 @@ class AdminPanelProvider extends PanelProvider
                         ]),
                     NavigationGroup::make('Management')
                         ->items([
+                            
                             ...AttributeResource::getNavigationItems(),
                             ...AttributeValueResource::getNavigationItems(),
                             ...AttributeSetResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Products')
                         ->items([
+                            ...CategoryResource::getNavigationItems(),
                             ...ProductResource::getNavigationItems(),
                         ]),
                 ]);
