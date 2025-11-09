@@ -10,7 +10,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class ProductVariant extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes,InteractsWithMedia;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
 
     protected $fillable = [
         'product_id',
@@ -34,7 +34,7 @@ class ProductVariant extends Model implements HasMedia
      |============================================================ */
     public static array $STATUSES = [
         'DRAFT'    => 'draft',
-        'ACTIVE'   => 'active',
+        'active'   => 'active',
         'INACTIVE' => 'inactive',
     ];
 
@@ -50,6 +50,15 @@ class ProductVariant extends Model implements HasMedia
     public function values()
     {
         return $this->hasMany(ProductVariantValue::class, 'variant_id');
+    }
+
+    public function variantValues()
+    {
+        // نربط المنتج بقيم السمات مباشرة عبر جدول الربط ProductVariantValue
+        return $this->belongsToMany(AttributeValue::class, 'product_variant_values', 'variant_id', 'attribute_value_id')
+            // نضيف العمود الذي يحدد السمة التي تنتمي إليها هذه القيمة (مهم جداً)
+            ->withPivot('attribute_id')
+            ->withTimestamps();
     }
 
     public function vendorOffers()
@@ -72,7 +81,7 @@ class ProductVariant extends Model implements HasMedia
      |============================================================ */
     public function scopeActive($query)
     {
-        return $query->where('status', self::$STATUSES['ACTIVE']);
+        return $query->where('status', self::$STATUSES['active']);
     }
 
     public function scopeDefault($query)
@@ -85,7 +94,7 @@ class ProductVariant extends Model implements HasMedia
      |============================================================ */
     public function isActive(): bool
     {
-        return $this->status === self::$STATUSES['ACTIVE'];
+        return $this->status === self::$STATUSES['active'];
     }
 
     public function isDraft(): bool
@@ -97,7 +106,7 @@ class ProductVariant extends Model implements HasMedia
     {
         return match ($this->status) {
             self::$STATUSES['DRAFT']    => 'Draft',
-            self::$STATUSES['ACTIVE']   => 'Active',
+            self::$STATUSES['active']   => 'Active',
             self::$STATUSES['INACTIVE'] => 'Inactive',
             default                     => 'Unknown',
         };

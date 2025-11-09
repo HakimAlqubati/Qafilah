@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use Illuminate\Support\Facades\Schema as DBSchema;
-
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
@@ -12,25 +11,19 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Hidden;
-
 use App\Models\Product;
-use App\Models\Category;
-use App\Models\Brand;
 use App\Models\AttributeSet;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Schemas\Components\Form;
+use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Illuminate\Support\Str;
 
@@ -79,18 +72,8 @@ class ProductForm
                                     ->label('Detailed Description')
                                     ->columnSpanFull()
                                     ->toolbarButtons([
-                                        'blockquote',
-                                        'bold',
-                                        'bulletList',
-                                        'codeBlock',
-                                        'h2',
-                                        'h3',
-                                        'italic',
-                                        'link',
-                                        'orderedList',
-                                        'redo',
-                                        'strike',
-                                        'undo',
+                                        'blockquote', 'bold', 'bulletList', 'codeBlock', 'h2', 'h3',
+                                        'italic', 'link', 'orderedList', 'redo', 'strike', 'undo',
                                     ]),
                             ]),
 
@@ -98,7 +81,7 @@ class ProductForm
                         // 2) Media
                         // ----------------------------------------------------
                         Tab::make('Media')
-                            ->icon(Heroicon::Photo)
+                            ->icon('heroicon-o-photo')
                             ->schema([
                                 SpatieMediaLibraryFileUpload::make('images')
                                     ->disk('public')
@@ -126,13 +109,11 @@ class ProductForm
                                     })
                                     ->imageEditor()
                                     ->imageEditorAspectRatios([
-                                        '16:9',
-                                        '4:3',
-                                        '1:1',
+                                        '16:9', '4:3', '1:1',
                                     ])->maxSize(2000)
                                     ->imageEditorMode(2)
                                     ->imageEditorEmptyFillColor('#fff000')
-                                    ->circleCropper()
+                                    ->circleCropper(),
                             ]),
 
                         // ----------------------------------------------------
@@ -166,8 +147,9 @@ class ProductForm
                                             ->preload()
                                             ->reactive()
                                             ->afterStateUpdated(function (Set $set) {
-                                                // عند تغيير الـ Attribute Set نفرّغ عناصر السمات الحالية
+                                                // عند تغيير الـ Attribute Set نفرّغ عناصر السمات والمتغيرات الحالية
                                                 $set('attributes', []);
+                                                $set('variants', []); // مهم جداً: تفريغ المتغيرات عند تغيير المجموعة
                                             })
                                             ->helperText('Determines the available variant options and custom fields.'),
                                     ]),
@@ -175,14 +157,12 @@ class ProductForm
                                 Section::make('Inventory & Pricing')
                                     ->columns(3)
                                     ->schema([
-                                        // مستقبلاً: SKU/Prices/Stock...
-                                        // TextInput::make('sku')->label('SKU')->required()->unique(ignoreRecord: true)->maxLength(50),
-                                        // TextInput::make('base_price')->label('Base Price')->numeric()->inputMode('decimal')->prefix('SAR'),
+                                        // هنا تُضاف حقول SKU/Base Price/Stock إذا كان المنتج بسيطاً (ليس له متغيرات)
                                     ]),
                             ]),
 
                         // ----------------------------------------------------
-                        // 4) Attribute Set Fields (Dynamic by input_type)
+                        // 4) Attribute Set Fields (Custom Attributes)
                         // ----------------------------------------------------
                         Tab::make('Attribute Set Fields')
                             ->icon('heroicon-o-rectangle-group')
@@ -200,12 +180,7 @@ class ProductForm
                                             ->reorderable(false)
                                             ->minItems(0)
                                             ->addActionLabel('Add Attribute')
-                                            ->table([
-                                                TableColumn::make('Attribute'),
-                                                TableColumn::make('Value'),
-                                            ])
                                             ->schema([
-                                                // اختيار السمة (محصور على الـ Attribute Set المختار)
                                                 Select::make('attribute_id')
                                                     ->label('Attribute')
                                                     ->columnSpan(4)
@@ -214,25 +189,9 @@ class ProductForm
                                                     ->searchable()
                                                     ->preload()
                                                     ->reactive()
-                                                    ->options(function (Get $get) {
-                                                        $setId = $get('../../attribute_set_id');
-                                                        if (! $setId) {
-                                                            return [];
-                                                        }
-
-                                                        $set = AttributeSet::with(['attributes' => function ($q) {
-                                                            $q->where('active', true)->orderBy('name');
-                                                        }])->find($setId);
-
-                                                        return $set
-                                                            ? $set->attributes->pluck('name', 'id')->toArray()
-                                                            : [];
-                                                    })
-                                                    ->afterStateUpdated(function (Set $set, Get $get, $state) {
-                                                        // إعادة ضبط قيمة value عند تغيير السمة
+                                                    ->options(fn(Get $get) => self::getAvailableAttributesForSet($get('../../attribute_set_id')))
+                                                    ->afterStateUpdated(function (Set $set, $state) {
                                                         $set('value', null);
-
-                                                        // إذا كانت Boolean نحضّرها كـ false افتراضيًا
                                                         if ($state) {
                                                             $attr = Attribute::with('values')->find($state);
                                                             if ($attr && $attr->isBoolean()) {
@@ -241,22 +200,163 @@ class ProductForm
                                                         }
                                                     }),
 
-                                                // الحقل الديناميكي لقيمة السمة بحسب نوع الإدخال
-                                                // نُنشئ Schema ديناميكي داخل نفس عنصر الـ Repeater Row
                                                 Grid::make()
                                                     ->columnSpan(8)
                                                     ->columns(12)
-                                                    ->schema(function (Get $get) {
-                                                        $attributeId = $get('attribute_id');
-                                                        return self::makeAttributeValueField($attributeId);
-                                                    }),
+                                                    ->schema(fn(Get $get) => self::makeAttributeValueField($get('attribute_id'))),
                                             ])
-                                            ->helperText('Values are stored in product_attributes (attribute_id, value). For boolean we store 1/0, for date we store Y-m-d, for select/radio we store the chosen label/value.'),
+                                            ->helperText('Values are stored in product_attributes (attribute_id, value).'),
                                     ]),
                             ]),
 
                         // ----------------------------------------------------
-                        // 5) Visibility & Status
+                        // 5) Variants (SKU / Barcode / Options) - الحقول المباشرة
+                        // ----------------------------------------------------
+                        Tab::make('Variants')
+                            ->icon('heroicon-o-squares-2x2')
+                            ->visible(fn(Get $get) => filled($get('attribute_set_id')))
+                            ->schema([
+                                Repeater::make('variants')
+                                    ->label('Product Variants')
+                                    ->relationship('variants')
+                                    ->minItems(1)
+                                    ->collapsed()
+                                    ->reorderable()
+                                    ->itemLabel(fn(array $state): ?string => $state['master_sku'] ?? $state['barcode'] ?? 'Variant')
+                                    ->schema(function (Get $get) {
+                                        // 1. تحديد السمات التي ستُستخدم كخيارات للمتغيرات (اللون، المقاس، إلخ)
+                                        $productSetId = $get('attribute_set_id');
+                                        $variantAttributes = self::getVariantAttributes($productSetId); // استدعاء الوظيفة الجديدة
+
+                                        // 2. إنشاء حقول التحكم الأساسية للمتغير
+                                        $variantFields = [
+                                            Grid::make(12)->schema([
+                                                TextInput::make('master_sku')
+                                                    ->label('Master SKU')
+                                                    ->required()
+                                                    ->maxLength(100)
+                                                    ->unique(ignoreRecord: true)
+                                                    ->columnSpan(4),
+
+                                                TextInput::make('barcode')
+                                                    ->label('Barcode')
+                                                    ->maxLength(100)
+                                                    ->columnSpan(4),
+
+                                                Select::make('status')
+                                                    ->label('Status')
+                                                    ->options(\App\Models\ProductVariant::$STATUSES)
+                                                    ->default(\App\Models\ProductVariant::$STATUSES['active'])
+                                                    ->required()
+                                                    ->native(false)
+                                                    ->columnSpan(2),
+
+                                                Toggle::make('is_default')
+                                                    ->label('Default Variant?')
+                                                    ->inline(false)
+                                                    ->helperText('يُنصح بتحديد متغير افتراضي واحد للعرض السريع.')
+                                                    ->columnSpan(2)
+                                                    ->dehydrated(true) // تأكد من حفظ القيمة
+                                            ]),
+
+                                            // حقول الأسعار والمخزون
+                                            Grid::make(10)->schema([
+                                           
+
+                                          
+
+                                                // حقل خاص للملفات (صور المتغير)
+                                                SpatieMediaLibraryFileUpload::make('images')
+                                                    ->disk('public')->columnSpanFull()
+                                                    ->label('Variant Images')
+                                                    ->directory('variants')
+                                                    ->collection('variant_images')
+                                                    ->image()
+                                                    ->multiple()
+                                                    ->reorderable()
+                                                     ->helperText('صور خاصة لهذا المتغير (مثال: صورة القميص باللون الأزرق).'),
+                                            ]),
+
+                                            // حقول الوزن والأبعاد
+                                            Grid::make(12)->schema([
+                                                TextInput::make('weight')
+                                                    ->label('Weight (kg)')
+                                                    ->numeric()
+                                                    ->inputMode('decimal')
+                                                    ->columnSpan(3),
+
+                                                TextInput::make('dimensions.length')
+                                                    ->label('Length (cm)')
+                                                    ->numeric()
+                                                    ->inputMode('decimal')
+                                                    ->columnSpan(3),
+
+                                                TextInput::make('dimensions.width')
+                                                    ->label('Width (cm)')
+                                                    ->numeric()
+                                                    ->inputMode('decimal')
+                                                    ->columnSpan(3),
+
+                                                TextInput::make('dimensions.height')
+                                                    ->label('Height (cm)')
+                                                    ->numeric()
+                                                    ->inputMode('decimal')
+                                                    ->columnSpan(3),
+                                            ]),
+                                        ];
+
+                                        // 3. إضافة حقول الخيارات (Options Fields)
+                                        $optionFields = [];
+                                        foreach ($variantAttributes as $attribute) {
+                                            $options = self::buildChoiceOptionsFromValues($attribute);
+                                            
+                                            // ⬅️ هنا التعديل الجوهري: ننشئ حقل Select لكل خاصية متغير
+                                            $optionFields[] = Select::make("attribute_values.{$attribute->id}")
+                                                ->label($attribute->name)
+                                                ->options($options)
+                                                ->required()
+                                                ->searchable()
+                                                ->preload()
+                                                ->native(false)
+                                                ->columnSpan(4)
+                                                ->helperText("Select the {$attribute->name} value for this variant.");
+                                        }
+
+                                        // 4. تجميع حقول الخيارات في Grid منفصل
+                                        $optionsSection = Section::make('Variant Options')
+                                            ->description('Select the specific attribute values (Options) that define this unique variant.')
+                                            ->columns(12)->columnSpanFull()
+                                            ->schema([
+                                                Grid::make(12)
+                                                ->columnSpanFull()
+                                                ->schema($optionFields)
+                                            ]);
+
+
+                                        // 5. دمج جميع الحقول وإعادتها
+                                        return array_merge($variantFields, [$optionsSection]);
+
+                                    })
+                                    ->afterStateUpdated(function (Get $get, Set $set, ?array $state) {
+                                        // اجعل متغيرًا افتراضيًا واحدًا فقط إن وُجد أكثر من واحد محدد
+                                        if (!is_array($state)) return;
+                                        $defaultIndexes = [];
+                                        foreach ($state as $idx => $row) {
+                                            if (!empty($row['is_default'])) {
+                                                $defaultIndexes[] = $idx;
+                                            }
+                                        }
+                                        if (count($defaultIndexes) > 1) {
+                                            foreach (array_slice($defaultIndexes, 1) as $idx) {
+                                                $state[$idx]['is_default'] = false;
+                                            }
+                                            $set('variants', $state);
+                                        }
+                                    }),
+                            ]),
+
+                        // ----------------------------------------------------
+                        // 6) Visibility & Status (تم تغيير الترقيم)
                         // ----------------------------------------------------
                         Tab::make('Visibility & Status')
                             ->icon('heroicon-o-eye')
@@ -277,201 +377,54 @@ class ProductForm
                                             ->helperText('If enabled, the product will be highlighted in featured sections.'),
                                     ]),
                             ]),
-
-                        // ----------------------------------------------------
-                        // 5) Variants (SKU / Barcode / Options)
-                        // ----------------------------------------------------
-                        Tab::make('Variants')
-                            ->icon('heroicon-o-squares-2x2')
-                            ->visible(fn(Get $get) => filled($get('attribute_set_id')))
-                            ->schema([
-                                Section::make('Product Variants')
-                                    ->description('أضف المتغيرات (SKU/Barcode) مع قيم السمات المكوّنة للمتغير (مثل اللون/المقاس).')
-                                    ->columns(1)
-                                    ->schema([
-                                        Repeater::make('variants')
-                                            ->label('Variants')
-                                            ->relationship('variants') // ← هذا يربط المتغيرات بالمنتج الحالي
-                                            ->minItems(1)
-                                            ->collapsed()            // اجعل كل صف مطوي افتراضياً
-                                            ->reorderable()
-                                            ->itemLabel(
-                                                fn(array $state): ?string =>
-                                                $state['master_sku'] ?? $state['barcode'] ?? 'Variant'
-                                            )
-                                            ->schema([
-                                                Grid::make(12)->schema([
-                                                    TextInput::make('master_sku')
-                                                        ->label('Master SKU')
-                                                        ->required()
-                                                        ->maxLength(100)
-                                                        ->unique(ignoreRecord: true)
-                                                        ->columnSpan(4),
-
-                                                    TextInput::make('barcode')
-                                                        ->label('Barcode')
-                                                        ->maxLength(100)
-                                                        ->columnSpan(4),
-
-                                                    Select::make('status')
-                                                        ->label('Status')
-                                                        ->options(\App\Models\ProductVariant::$STATUSES)
-                                                        ->default(\App\Models\ProductVariant::$STATUSES['ACTIVE'])
-                                                        ->required()
-                                                        ->native(false)
-                                                        ->columnSpan(2),
-
-                                                    Toggle::make('is_default')
-                                                        ->label('Default Variant?')
-                                                        ->inline(false)
-                                                        ->helperText('يُنصح بتحديد متغير افتراضي واحد للعرض السريع.')
-                                                        ->columnSpan(2),
-
-                                                    TextInput::make('weight')
-                                                        ->label('Weight (kg)')
-                                                        ->numeric()
-                                                        ->inputMode('decimal')
-                                                        ->columnSpan(3),
-
-                                                    TextInput::make('dimensions.length')
-                                                        ->label('Length (cm)')
-                                                        ->numeric()
-                                                        ->inputMode('decimal')
-                                                        ->dehydrated(true)
-                                                        ->columnSpan(3),
-
-                                                    TextInput::make('dimensions.width')
-                                                        ->label('Width (cm)')
-                                                        ->numeric()
-                                                        ->inputMode('decimal')
-                                                        ->dehydrated(true)
-                                                        ->columnSpan(3),
-
-                                                    TextInput::make('dimensions.height')
-                                                        ->label('Height (cm)')
-                                                        ->numeric()
-                                                        ->inputMode('decimal')
-                                                        ->dehydrated(true)
-                                                        ->columnSpan(3),
-                                                ]),
-
-                                                // القيم المُكوِّنة للمتغير (لون/مقاس/…)
-                                                Repeater::make('values')
-                                                    ->label('Variant Options')
-                                                    ->relationship('values') // ← هذا يربط ProductVariantValue بالـVariant الحالي
-                                                    ->minItems(0)
-                                                    ->reorderable(false)
-                                                    ->columns(12)
-                                                    ->addActionLabel('Add Option')
-                                                    ->schema([
-                                                        SpatieMediaLibraryFileUpload::make('images')
-                                                            ->disk('public')
-                                                            ->label('')
-                                                            ->directory('products')
-                                                            ->columnSpanFull()
-                                                            ->image()
-                                                            ->multiple()
-                                                            ->downloadable()
-                                                            ->moveFiles()
-                                                            ->previewable()
-                                                            ->imagePreviewHeight('250')
-                                                            ->loadingIndicatorPosition('right')
-                                                            ->panelLayout('integrated')
-                                                            ->removeUploadedFileButtonPosition('right')
-                                                            ->uploadButtonPosition('right')
-                                                            ->uploadProgressIndicatorPosition('right')
-                                                            ->panelLayout('grid')
-                                                            ->reorderable()
-                                                            ->openable()
-                                                            ->downloadable(true)
-                                                            ->previewable(true)
-                                                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
-                                                                return (string) str($file->getClientOriginalName())->prepend('product-');
-                                                            })
-                                                            ->imageEditor()
-                                                            ->imageEditorAspectRatios([
-                                                                '16:9',
-                                                                '4:3',
-                                                                '1:1',
-                                                            ])->maxSize(2000)
-                                                            ->imageEditorMode(2)
-                                                            ->imageEditorEmptyFillColor('#fff000')
-                                                            ->circleCropper(),
-                                                        // اختيار السمة من الـ Attribute Set المختار بالمنتج
-                                                        Select::make('attribute_id')
-                                                            ->label('Attribute')
-                                                            ->required()
-                                                            ->columnSpan(6)
-                                                            ->searchable()
-                                                            ->preload()
-                                                            ->options(function (Get $get) {
-                                                                $productSetId = $get('../../../../attribute_set_id'); // اصعد لأعلى حتى تبويب المنتج
-                                                                if (! $productSetId) {
-                                                                    return [];
-                                                                }
-                                                                /** @var \App\Models\AttributeSet|null $set */
-                                                                $set = \App\Models\AttributeSet::with(['attributes' => function ($q) {
-                                                                    $q->where('active', true)->orderBy('name');
-                                                                }])->find($productSetId);
-
-                                                                return $set
-                                                                    ? $set->attributes->pluck('name', 'id')->toArray()
-                                                                    : [];
-                                                            })
-                                                            ->reactive()
-                                                            ->afterStateUpdated(fn(Set $set) => $set('attribute_value_id', null)),
-
-                                                        // اختيار قيمة السمة من AttributeValue
-                                                        Select::make('attribute_value_id')
-                                                            ->label('Value')
-                                                            ->required()
-                                                            ->columnSpan(6)
-                                                            ->searchable()
-                                                            ->preload()
-                                                            ->options(function (Get $get) {
-                                                                $attrId = $get('attribute_id');
-                                                                if (! $attrId) return [];
-                                                                return \App\Models\AttributeValue::query()
-                                                                    ->where('attribute_id', $attrId)
-                                                                    ->when(
-                                                                        \Illuminate\Support\Facades\Schema::hasColumn('attribute_values', 'is_active'),
-                                                                        fn($q) => $q->where('is_active', true)
-                                                                    )
-                                                                    ->orderByRaw('COALESCE(sort_order, 999999), value asc')
-                                                                    ->pluck('value', 'id')
-                                                                    ->toArray();
-                                                            }),
-                                                    ])
-                                                    ->helperText('مثال: اللون = أسود، المقاس = L. هذه القيم تُحدد هوية المتغير.'),
-                                            ])
-                                            ->afterStateUpdated(function (Get $get, Set $set, ?array $state) {
-                                                // اجعل متغيرًا افتراضيًا واحدًا فقط إن وُجد أكثر من واحد محدد
-                                                if (!is_array($state)) return;
-                                                $defaultIndexes = [];
-                                                foreach ($state as $idx => $row) {
-                                                    if (!empty($row['is_default'])) {
-                                                        $defaultIndexes[] = $idx;
-                                                    }
-                                                }
-                                                if (count($defaultIndexes) > 1) {
-                                                    // اترك الأول وألغِ البقية
-                                                    foreach (array_slice($defaultIndexes, 1) as $idx) {
-                                                        $state[$idx]['is_default'] = false;
-                                                    }
-                                                    $set('variants', $state);
-                                                }
-                                            }),
-                                    ]),
-                            ]),
-
-
                     ])
             ]);
     }
 
     /**
+     * يسترجع جميع السمات المتاحة للاختيار داخل Attribute Set (للتخصيص اليدوي).
+     */
+    protected static function getAvailableAttributesForSet(?int $setId): array
+    {
+        if (! $setId) {
+            return [];
+        }
+
+        $set = AttributeSet::with(['attributes' => function ($q) {
+            $q->where('active', true)->orderBy('name');
+        }])->find($setId);
+
+        return $set
+            ? $set->attributes->pluck('name', 'id')->toArray()
+            : [];
+    }
+    
+    /**
+     * يسترجع جميع سمات المتغيرات (Choice Type) المحددة لـ Attribute Set.
+     * هذه هي الخيارات التي ستُستخدم لإنشاء المتغيرات.
+     */
+    protected static function getVariantAttributes(?int $setId): \Illuminate\Support\Collection
+    {
+        if (! $setId) {
+            return collect();
+        }
+        
+        /** @var \App\Models\AttributeSet|null $set */
+        $set = AttributeSet::with('attributes.values')->find($setId);
+
+        if (!$set) {
+            return collect();
+        }
+        
+        // نختار فقط السمات التي تصلح كخيارات للمتغيرات (مثل Select أو Radio)
+        return $set->attributes
+            ->filter(fn (Attribute $attribute) => $attribute->isChoiceType() && $attribute->active)
+            ->sortBy('name');
+    }
+
+
+    /**
      * يبني حقول "value" داخل عنصر الـ Repeater بناءً على نوع إدخال السمة المختارة.
-     * نُعيد مصفوفة من عناصر Filament (داخل Grid بسطر واحد).
      */
     protected static function makeAttributeValueField(?int $attributeId): array
     {
@@ -498,8 +451,6 @@ class ProductForm
         }
 
         $type = $attribute->input_type;
-
-        // إن كانت الخاصية اختيارية (select/radio) نجهّز الخيارات من AttributeValue
         $choiceOptions = null;
         if ($attribute->isChoiceType()) {
             $choiceOptions = self::buildChoiceOptionsFromValues($attribute);
@@ -516,7 +467,6 @@ class ProductForm
                         ->columnSpan(12),
                 ];
 
-                // ✅ إذا كان النوع SELECT نستخدم Select::make بشكل صريح
             case Attribute::$INPUT_TYPES['SELECT']:
                 return [
                     Select::make('value')
@@ -560,9 +510,7 @@ class ProductForm
                         ->native(false)
                         ->required($attribute->is_required)
                         ->dehydrateStateUsing(function ($state) {
-                            if (empty($state)) {
-                                return null;
-                            }
+                            if (empty($state)) { return null; }
                             try {
                                 return \Carbon\Carbon::parse($state)->format('Y-m-d');
                             } catch (\Throwable) {
@@ -584,6 +532,9 @@ class ProductForm
         }
     }
 
+    /**
+     * يبني خيارات الاختيار (Select/Radio) من AttributeValue
+     */
     protected static function buildChoiceOptionsFromValues(Attribute $attribute): array
     {
         return AttributeValue::query()
@@ -592,21 +543,8 @@ class ProductForm
                 DBSchema::hasColumn('attribute_values', 'is_active'),
                 fn($q) => $q->where('is_active', true)
             )
-            // ترتيب: sort_order أولاً ثم value كبديل
             ->orderByRaw('COALESCE(sort_order, 999999), value asc')
-            ->pluck('value', 'id')   // key = id, label = value
+            ->pluck('value', 'id') // key = id, label = value
             ->toArray();
-    }
-
-    protected static function buildChoiceOptions(Attribute $attribute): array
-    {
-        // خذ الأسماء، احذف الفارغ منها، أزل التكرار، وحوّلها إلى مصفوفة key=value = name
-        return $attribute->values
-            ->map(fn($v) => $v->name)
-            ->filter(fn($name) => filled($name))
-            ->unique()
-            ->values()
-            ->mapWithKeys(fn($name) => [(string) $name => (string) $name])
-            ->all();
     }
 }

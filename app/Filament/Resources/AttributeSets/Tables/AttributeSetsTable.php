@@ -28,18 +28,18 @@ class AttributeSetsTable
                     ->label('Status')
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
+                    ->falseIcon('heroicon-o-x-circle')->alignCenter()
                     ->trueColor('success')
                     ->falseColor('danger'),
 
                 \Filament\Tables\Columns\TextColumn::make('categories_count')
                     ->counts('categories')
                     ->label('Categories')
-                    ->sortable(),
+                    ->sortable()->alignCenter(),
 
                 \Filament\Tables\Columns\TextColumn::make('attributes_count')
                     ->counts('attributes')
-                    ->label('Attributes')
+                    ->label('Attributes')->alignCenter()
                     ->sortable(),
 
                 \Filament\Tables\Columns\TextColumn::make('created_at')

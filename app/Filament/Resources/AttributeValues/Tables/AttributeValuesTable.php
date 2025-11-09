@@ -19,7 +19,7 @@ class AttributeValuesTable
 {
     public static function configure(Table $table): Table
     {
-        return $table
+        return $table->striped()
             ->columns([
 
                 // 🔹 الخاصية المرتبطة
@@ -28,7 +28,8 @@ class AttributeValuesTable
                     ->searchable()
                     ->sortable()
                     ->icon('heroicon-o-sparkles')
-                    ->description(fn ($record) => $record->attribute?->code),
+                    ->description(fn ($record) => $record->attribute?->code)
+                    ,
 
                 // 🔹 القيمة
                 TextColumn::make('value')

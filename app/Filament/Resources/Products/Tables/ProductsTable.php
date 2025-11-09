@@ -15,6 +15,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use App\Models\Product; // Ensure the Product model is imported
 use Filament\Actions\DeleteAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class ProductsTable
@@ -33,6 +34,16 @@ class ProductsTable
                     ->circular()->alignCenter(true)->getStateUsing(function () {
                         return null;
                     })->limit(3),
+                TextColumn::make('slug')
+                    ->label('Slug')
+                    // ->icon(Heroicon::)
+                    ->searchable()
+                    ->sortable()
+                    ->copyable()
+                    ->copyMessage('Slug copied to clipboard!')
+                    ->copyMessageDuration(1500)
+                    ->limit(40),
+
                 // 2. Status (Visibility and workflow)
                 TextColumn::make('status')
                     ->label('Status')
@@ -57,7 +68,7 @@ class ProductsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-             
+
 
                 // 5. Inventory (Variants or simple stock count)
                 TextColumn::make('variants_count')
