@@ -11,7 +11,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Product extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes,InteractsWithMedia;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
 
     /* ============================================================
      | 🔹 الحقول القابلة للتعبئة
@@ -93,12 +93,20 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ProductAttribute::class);
     }
 
+    
+    public function attributesDirect()
+    {
+        return $this->belongsToMany(Attribute::class, 'product_set_attributes')
+            ->withPivot(['is_variant_option', 'sort_order'])
+            ->withTimestamps();
+    }
+
     // البائعون الذين يقدمون عروضًا لهذا المنتج (عبر variants)
     public function vendors()
     {
         return $this->hasManyThrough(Vendor::class, ProductVariant::class);
     }
- 
+
     // المستخدم الذي أنشأ المنتج
     public function creator()
     {

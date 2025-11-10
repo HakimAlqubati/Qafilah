@@ -103,4 +103,11 @@ class Attribute extends Model
     {
         return $this->hasMany(AttributeValue::class);
     }
+
+    public function productsDirect()
+    {
+        return $this->belongsToMany(Product::class, 'product_set_attributes')
+            ->withPivot(['is_variant_option', 'sort_order'])
+            ->withTimestamps();
+    }
 }

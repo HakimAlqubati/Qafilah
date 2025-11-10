@@ -13,12 +13,13 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use App\Models\Vendor;
+use Filament\Tables\Enums\FiltersLayout;
 
 class VendorsTable
 {
     public static function configure(Table $table): Table
     {
-        return $table
+        return $table->striped()
             ->columns([
                 // 1. ID Column (Primary Key)
                 TextColumn::make('id')
@@ -39,7 +40,7 @@ class VendorsTable
                         'inactive' => 'danger',
                         'pending' => 'warning',
                         default => 'gray',
-                    })
+                    })->alignCenter()
                     ->sortable()
                     ->icon(fn (string $state): string => match ($state) {
                         'active' => 'heroicon-o-check-circle',
@@ -72,7 +73,7 @@ class VendorsTable
                     ->label('Creation Date')
                     ->dateTime()
                     ->sortable(),
-            ])
+            ])->filtersFormColumns(4)
             ->filters([
                 // Filter 1: Status Filter
                 SelectFilter::make('status')
@@ -85,7 +86,7 @@ class VendorsTable
                     
                 // Filter 2: Soft Deletes Filter
                 TrashedFilter::make(),
-            ])
+                    ],FiltersLayout::Modal)
             ->actions([
                 EditAction::make(),
             ])

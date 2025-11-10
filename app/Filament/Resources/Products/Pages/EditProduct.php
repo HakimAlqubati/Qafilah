@@ -22,4 +22,9 @@ class EditProduct extends EditRecord
             RestoreAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        return $data;
+    }
 }

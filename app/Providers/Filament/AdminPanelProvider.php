@@ -67,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
                         ]),
                     NavigationGroup::make('Management')
                         ->items([
-                            
+
                             ...AttributeResource::getNavigationItems(),
                             ...AttributeValueResource::getNavigationItems(),
                             ...AttributeSetResource::getNavigationItems(),
@@ -79,6 +79,7 @@ class AdminPanelProvider extends PanelProvider
                         ]),
                 ]);
             })
+            ->sidebarCollapsibleOnDesktop()
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

@@ -54,10 +54,11 @@ class ProductShowController extends Controller
                 'is_default' => (bool) $v->is_default,
                 'weight'     => $v->weight,
                 'dimensions' => $v->dimensions,  // [length, width, height]
-                'images'     => $v->getMedia()->map(fn($m) => $m->getUrl())->all(),
+                'images'     => $v->getMedia('variant_images')->map(fn($m) => $m->getUrl())->all(),
                 'options'    => $optionPairs,
             ];
         });
+        // dd($variants);
 
         // ----- Group variant options by attribute (for quick filter/legend)
         $optionMatrix = [];

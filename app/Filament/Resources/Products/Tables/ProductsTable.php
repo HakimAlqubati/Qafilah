@@ -25,6 +25,10 @@ class ProductsTable
         return $table
             ->columns([
                 // 1. Name & SKU (Primary identifiers)
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('name')
                     ->label('Product Name')
                     ->searchable()
@@ -72,9 +76,9 @@ class ProductsTable
 
                 // 5. Inventory (Variants or simple stock count)
                 TextColumn::make('variants_count')
-                    ->label('Variants')
+                    ->label('Variants')->alignCenter()
                     ->counts('variants') // Count the number of associated variants
-                    ->sortable(),
+                    ->sortable()->toggleable(),
 
                 // 6. Featured Status
                 IconColumn::make('is_featured')

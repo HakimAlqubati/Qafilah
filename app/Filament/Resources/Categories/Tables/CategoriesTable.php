@@ -26,6 +26,9 @@ class CategoriesTable
                 Tables\Columns\TextColumn::make('parent.name')
                     ->label('Parent')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('attributeSet.name')
+                    ->label('Attribute Set')
+,
 
              
 
