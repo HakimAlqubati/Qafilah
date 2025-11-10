@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Dashboard;
 use App\Filament\Resources\Attributes\AttributeResource;
 use App\Filament\Resources\AttributeSets\AttributeSetResource;
 use App\Filament\Resources\AttributeValues\AttributeValueResource;
@@ -16,7 +17,6 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -38,6 +38,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->favicon(asset('/imgs/logo.png'))
+            ->brandLogo(asset('/imgs/logo.png'))
+            ->brandLogoHeight('3.0rem')
             ->colors([
                 'primary' => Color::Orange,
             ])

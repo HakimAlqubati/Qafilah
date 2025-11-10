@@ -300,35 +300,14 @@ class ProductForm
                     // ----------------------------------------------------
                     Step::make('Variants')
                         ->icon('heroicon-o-squares-2x2')
-                        ->visible(function (Get $get) {
-                            // يمكن تغيير الحد الأدنى هنا (مثلاً 2 إن أردت عدم إظهار المتغيرات إلا بوجود سِمتين)
-                            $minVariantAttributes = 1;
-
-                            // عند تعديل منتج محفوظ: احسب من قاعدة البيانات
-                            $productId = (int) $get('id');
-                            if ($productId) {
-                                $count = count(self::getVariantAttributesForProductOrSet($productId) ?? []);
-                                return $count >= $minVariantAttributes;
-                            }
-
-                            // وضع الإنشاء (لا يوجد id بعد):
-                            // نعتمد على الريبيتر attributes_direct_pivot ونحسب الصفوف التي تم تفعيل is_variant_option فيها
-                            $pivotRows = $get('attributes_direct_pivot') ?? [];
-                            $selectedVariantAttrs = 0;
-
-                            foreach ($pivotRows as $row) {
-                                if (!empty($row['is_variant_option'])) {
-                                    $selectedVariantAttrs++;
-                                }
-                            }
-
-                            return $selectedVariantAttrs >= $minVariantAttributes;
-                        })->schema([
+ 
+                        ->schema([
                             Repeater::make('variants')
                                 ->label('Product Variants')
                                 ->relationship('variants')
                                 ->minItems(0)
                                 ->collapsed()
+                                ->defaultItems(0)
                                 ->reorderable()
                                 ->itemLabel(fn(array $state): ?string => $state['master_sku'] ?? $state['barcode'] ?? 'Variant')
                                 ->schema(function (Get $get) {
@@ -688,4 +667,6 @@ class ProductForm
         }
         return [];
     }
+
+  
 }
