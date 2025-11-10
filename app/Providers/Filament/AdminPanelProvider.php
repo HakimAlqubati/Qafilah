@@ -8,6 +8,7 @@ use App\Filament\Resources\AttributeSets\AttributeSetResource;
 use App\Filament\Resources\AttributeValues\AttributeValueResource;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\Products\ProductResource;
+use App\Filament\Resources\Units\UnitResource;
 use App\Filament\Resources\Vendors\VendorResource;
 use App\Models\Vendor;
 use Filament\Http\Middleware\Authenticate;
@@ -74,6 +75,8 @@ class AdminPanelProvider extends PanelProvider
                             ...AttributeResource::getNavigationItems(),
                             ...AttributeValueResource::getNavigationItems(),
                             ...AttributeSetResource::getNavigationItems(),
+                            ...UnitResource::getNavigationItems(),
+
                         ]),
                     NavigationGroup::make('Products')
                         ->items([
