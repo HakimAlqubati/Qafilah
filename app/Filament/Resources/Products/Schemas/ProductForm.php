@@ -145,93 +145,93 @@ class ProductForm
                                             ->columns(4)
                                             ->bulkToggleable()
                                             ->helperText('اختَر السمات التي تنطبق على هذا المنتج مباشرةً (بدون Set).'),
-                                            Section::make('')
-                                                ->collapsed(false)
-                                                ->visible(fn(Get $get) => filled($get('attributes_direct')) && count($get('attributes_direct') ?? []) > 0)
-                                                ->schema([
-                                                    Repeater::make('attributes_direct_pivot')
-                                                        ->label('Pivot Settings')
-                                                        ->dehydrated(false) // لن نرفعها مباشرة؛ سنحدّث الـ pivot يدويًا
-                                                        ->columns(12)
-                                                        ->table([
-                                                            TableColumn::make('Attribute'),
-        
-                                                            TableColumn::make('Is Variant Option'),
-                                                            TableColumn::make('Sort Order')
-        
-                                                        ])
-                                                        ->schema([
-                                                            Select::make('attribute_id')
-                                                                ->label('Attribute')
-                                                                ->required()
-                                                                ->columnSpan(6)
-                                                                ->options(function (Get $get, ?Product $record) {
-                                                                    // اعرض فقط السمات المختارة في CheckboxList
-                                                                    $chosen = $get('../../attributes_direct') ?? [];
-                                                                    return \App\Models\Attribute::query()
-                                                                        ->whereIn('id', $chosen)
-                                                                        ->orderBy('name')
-                                                                        ->pluck('name', 'id')
-                                                                        ->toArray();
-                                                                })
-                                                                ->reactive()
-                                                                ->distinct(),
-        
-                                                            Toggle::make('is_variant_option')
-                                                                ->label('Use as Variant Option?')
-                                                                ->default(true)
-                                                                ->columnSpan(3),
-        
-                                                            TextInput::make('sort_order')
-                                                                ->label('Sort')
-                                                                ->numeric()
-                                                                ->minValue(0)
-                                                                ->columnSpan(3),
-                                                        ])
-        
-                                                        // عند تحميل نموذج التعديل: املأ الريبيتر بالقيم من الـ pivot الحالي
-                                                        ->afterStateHydrated(function (Component $component, $state) {
-                                                            /** @var \App\Models\Product|null $product */
-                                                            $product = $component->getRecord();
-                                                            if (! $product) return;
-        
-                                                            $rows = $product->attributesDirect()
-                                                                ->withPivot(['is_variant_option', 'sort_order'])
-                                                                ->get()
-                                                                ->map(fn($attr) => [
-                                                                    'attribute_id'      => $attr->id,
-                                                                    'is_variant_option' => (bool) ($attr->pivot->is_variant_option ?? true),
-                                                                    'sort_order'        => $attr->pivot->sort_order,
-                                                                ])->values()->toArray();
-        
-                                                            $component->state($rows);
-                                                        })
-        
-                                                        // مزامنة الإعدادات مع جدول الـ pivot عند الحفظ
-                                                        ->saveRelationshipsUsing(function ($state, Product $record, Get $get) {
-                                                            $selectedIds = collect($get('attributes_direct') ?? [])->map(fn($v) => (int) $v)->all();
-        
-                                                            // بنينا خريطة من attribute_id => [pivot fields...]
-                                                            $byAttr = collect($state ?? [])->keyBy(fn($row) => (int) ($row['attribute_id'] ?? 0));
-                                                            foreach ($selectedIds as $attrId) {
-                                                                $pivotData = [
-                                                                    'is_variant_option' => (bool) data_get($byAttr->get($attrId), 'is_variant_option', true),
-                                                                    'sort_order'        => data_get($byAttr->get($attrId), 'sort_order'),
-                                                                ];
-                                                                // موجودة مسبقًا (لأن CheckboxList يقوم بالربط/الفصل)، هنا مجرد تحديث للحقول
-                                                                $record->attributesDirect()->updateExistingPivot($attrId, $pivotData, true);
-                                                            }
-                                                        }),
-                                                ]),
+                                        Section::make('')
+                                            ->collapsed(false)
+                                            ->visible(fn(Get $get) => filled($get('attributes_direct')) && count($get('attributes_direct') ?? []) > 0)
+                                            ->schema([
+                                                Repeater::make('attributes_direct_pivot')
+                                                    ->label('Pivot Settings')
+                                                    ->dehydrated(false) // لن نرفعها مباشرة؛ سنحدّث الـ pivot يدويًا
+                                                    ->columns(12)
+                                                    ->table([
+                                                        TableColumn::make('Attribute'),
+
+                                                        TableColumn::make('Is Variant Option'),
+                                                        TableColumn::make('Sort Order')
+
+                                                    ])
+                                                    ->schema([
+                                                        Select::make('attribute_id')
+                                                            ->label('Attribute')
+                                                            ->required()
+                                                            ->columnSpan(6)
+                                                            ->options(function (Get $get, ?Product $record) {
+                                                                // اعرض فقط السمات المختارة في CheckboxList
+                                                                $chosen = $get('../../attributes_direct') ?? [];
+                                                                return \App\Models\Attribute::query()
+                                                                    ->whereIn('id', $chosen)
+                                                                    ->orderBy('name')
+                                                                    ->pluck('name', 'id')
+                                                                    ->toArray();
+                                                            })
+                                                            ->reactive()
+                                                            ->distinct(),
+
+                                                        Toggle::make('is_variant_option')
+                                                            ->label('Use as Variant Option?')
+                                                            ->default(true)
+                                                            ->columnSpan(3),
+
+                                                        TextInput::make('sort_order')
+                                                            ->label('Sort')
+                                                            ->numeric()
+                                                            ->minValue(0)
+                                                            ->columnSpan(3),
+                                                    ])
+
+                                                    // عند تحميل نموذج التعديل: املأ الريبيتر بالقيم من الـ pivot الحالي
+                                                    ->afterStateHydrated(function (Component $component, $state) {
+                                                        /** @var \App\Models\Product|null $product */
+                                                        $product = $component->getRecord();
+                                                        if (! $product) return;
+
+                                                        $rows = $product->attributesDirect()
+                                                            ->withPivot(['is_variant_option', 'sort_order'])
+                                                            ->get()
+                                                            ->map(fn($attr) => [
+                                                                'attribute_id'      => $attr->id,
+                                                                'is_variant_option' => (bool) ($attr->pivot->is_variant_option ?? true),
+                                                                'sort_order'        => $attr->pivot->sort_order,
+                                                            ])->values()->toArray();
+
+                                                        $component->state($rows);
+                                                    })
+
+                                                    // مزامنة الإعدادات مع جدول الـ pivot عند الحفظ
+                                                    ->saveRelationshipsUsing(function ($state, Product $record, Get $get) {
+                                                        $selectedIds = collect($get('attributes_direct') ?? [])->map(fn($v) => (int) $v)->all();
+
+                                                        // بنينا خريطة من attribute_id => [pivot fields...]
+                                                        $byAttr = collect($state ?? [])->keyBy(fn($row) => (int) ($row['attribute_id'] ?? 0));
+                                                        foreach ($selectedIds as $attrId) {
+                                                            $pivotData = [
+                                                                'is_variant_option' => (bool) data_get($byAttr->get($attrId), 'is_variant_option', true),
+                                                                'sort_order'        => data_get($byAttr->get($attrId), 'sort_order'),
+                                                            ];
+                                                            // موجودة مسبقًا (لأن CheckboxList يقوم بالربط/الفصل)، هنا مجرد تحديث للحقول
+                                                            $record->attributesDirect()->updateExistingPivot($attrId, $pivotData, true);
+                                                        }
+                                                    }),
+                                            ]),
                                     ]),
 
                                 ]),
                         ]),
 
                     // ----------------------------------------------------
-                    // Step 3) Catalog & Pricing
+                    // Step 3) Catalog
                     // ----------------------------------------------------
-                    Step::make('Catalog & Pricing')
+                    Step::make('Catalog')
                         ->icon('heroicon-o-tag')
                         ->schema([
                             Section::make('Categorization')
@@ -245,7 +245,7 @@ class ProductForm
                                         ->preload(),
 
                                     Select::make('brand_id')
-                                        ->label('Brand / Manufacturer')
+                                        ->label('Brand')
                                         ->relationship('brand', 'name')
                                         ->nullable()
                                         ->searchable()
@@ -253,11 +253,7 @@ class ProductForm
 
                                 ]),
 
-                            Section::make('Inventory & Pricing')
-                                ->columns(3)
-                                ->schema([
-                                    // أضف هنا حقول المنتج البسيط (SKU/Price/Stock) إن رغبت
-                                ]),
+
                         ]),
 
                     // ----------------------------------------------------
@@ -303,7 +299,20 @@ class ProductForm
                                         ->columns(12)
                                         ->schema(fn(Get $get) => self::makeAttributeValueField($get('attribute_id'))),
                                 ]),
-                        ]),
+                        ])
+                        ->visible(function (Get $get, Component $component) {
+                            $productId = $get('id') ?? ($component->getRecord()?->id);
+                            if (! $productId) {
+                                return false;
+                            }
+
+                            // نفس منطقك: نعتمد على product_set_attributes
+                            return \App\Models\Attribute::query()
+                                ->join('product_set_attributes as psa', 'psa.attribute_id', '=', 'attributes.id')
+                                ->where('psa.product_id', $productId)
+                                ->where('attributes.active', true)
+                                ->exists();
+                        })->hiddenOn('create'),
 
                     // ----------------------------------------------------
                     // Step 5) Variants
@@ -470,7 +479,21 @@ class ProductForm
                                         $set('variants', $state);
                                     }
                                 }),
-                        ]),
+                        ])
+                        ->visible(function (Get $get, Component $component) {
+                            $productId = $get('id') ?? ($component->getRecord()?->id);
+                            if (! $productId) {
+                                return false;
+                            }
+
+                            // نفس منطقك: نعتمد على product_set_attributes
+                            return \App\Models\Attribute::query()
+                                ->join('product_set_attributes as psa', 'psa.attribute_id', '=', 'attributes.id')
+                                ->where('psa.product_id', $productId)
+                                ->where('attributes.active', true)
+                                ->exists();
+                        })
+                        ->hiddenOn('create'),
 
                     // ----------------------------------------------------
                     // Step 6) Visibility & Status
