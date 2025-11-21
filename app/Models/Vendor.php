@@ -111,4 +111,9 @@ class Vendor extends Model
             }
         });
     }
+
+    public function offers()
+    {
+        return $this->hasMany(ProductVendorSku::class);
+    }
 }

@@ -31,6 +31,13 @@ class VendorsTable
                     ->label('Vendor Name')
                     ->searchable() // Enables text search
                     ->sortable(),
+                TextColumn::make('offers')
+                    ->label('Products')
+                    ->counts('offers')
+                    ->default(0)
+                    ->alignCenter()
+                    ->searchable() // Enables text search
+                    ->sortable(),
 
                 // 3. Status Column (Visual filtering/status check)
                 IconColumn::make('status')

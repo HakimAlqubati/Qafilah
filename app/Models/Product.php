@@ -93,7 +93,7 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ProductAttribute::class);
     }
 
-    
+
     public function attributesDirect()
     {
         return $this->belongsToMany(Attribute::class, 'product_set_attributes')
@@ -105,6 +105,13 @@ class Product extends Model implements HasMedia
     public function vendors()
     {
         return $this->hasManyThrough(Vendor::class, ProductVariant::class);
+    }
+
+
+    public function vendorOffers()
+    {
+        // المنتج -> له متغيرات -> لها عروض تجار
+        return $this->hasManyThrough(ProductVendorSku::class, ProductVariant::class, 'product_id', 'variant_id', 'id', 'id');
     }
 
     // المستخدم الذي أنشأ المنتج

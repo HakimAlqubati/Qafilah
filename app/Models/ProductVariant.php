@@ -66,6 +66,7 @@ class ProductVariant extends Model implements HasMedia
         return $this->hasMany(ProductVendorSku::class, 'variant_id');
     }
 
+   
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
