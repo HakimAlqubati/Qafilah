@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Vendor extends Model
 {
-    use SoftDeletes,HasFactory;
+    use SoftDeletes, HasFactory;
 
     // Fillable fields (essential for mass assignment)
     protected $fillable = [
@@ -24,8 +24,21 @@ class Vendor extends Model
         'status',
         'description',
         'logo_path',
+        'latitude',
+        'longitude',
+        'delivery_rate_per_km',
+        'min_delivery_charge',
+        'max_delivery_distance',
+        'default_currency_id',
         // 'created_by' and 'updated_by' are typically handled automatically by Observers/Events 
         // or by manually assigning Auth::id() before saving.
+    ];
+
+    protected $casts = [
+        'delivery_rate_per_km' => 'decimal:2',
+        'min_delivery_charge' => 'decimal:2',
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8',
     ];
 
     // --- 🔑 Audit Relations ---
@@ -55,6 +68,29 @@ class Vendor extends Model
     // {
     //     return $this->hasMany(Product::class);
     // }
+
+    public function defaultCurrency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'default_currency_id');
+    }
+
+    /**
+     * Calculate delivery cost based on distance in KM.
+     * 
+     * @param float $distanceInKm
+     * @return float
+     */
+    public function calculateDeliveryCost(float $distanceInKm): float
+    {
+        if ($this->max_delivery_distance && $distanceInKm > $this->max_delivery_distance) {
+            // Option: return -1 or throw exception to indicate out of range
+            return -1.0;
+        }
+
+        $cost = $distanceInKm * $this->delivery_rate_per_km;
+
+        return max($cost, $this->min_delivery_charge);
+    }
 
     protected static function boot()
     {

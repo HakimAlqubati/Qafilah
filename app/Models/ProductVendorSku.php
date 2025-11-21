@@ -14,6 +14,11 @@ class ProductVendorSku extends Model
         'variant_id',
         'vendor_id',
         'vendor_sku',
+        'cost_price',
+        'selling_price',
+        'currency_id',
+        'stock',
+        'moq',
         'is_default_offer',
         'status',
         'created_by',
@@ -22,6 +27,8 @@ class ProductVendorSku extends Model
 
     protected $casts = [
         'is_default_offer' => 'boolean',
+        'cost_price' => 'decimal:2',
+        'selling_price' => 'decimal:2',
     ];
 
     /* ============================================================
@@ -47,6 +54,12 @@ class ProductVendorSku extends Model
     public function vendor()
     {
         return $this->belongsTo(Vendor::class, 'vendor_id');
+    }
+
+    // العملة
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
     }
 
     // وحدات البيع (ProductUnits)

@@ -77,7 +77,51 @@ class VendorForm
                                     ->columnSpanFull(),
                             ]),
 
-                        // Tab 2: Settings & Media
+                        // Tab 2: Location & Delivery
+                        Tab::make('Location & Delivery')
+                            ->icon('heroicon-o-map-pin')
+                            ->schema([
+                                ComponentsGrid::make(2)
+                                    ->schema([
+                                        // Location
+                                        TextInput::make('latitude')
+                                            ->numeric()
+                                            ->label('Latitude'),
+                                        TextInput::make('longitude')
+                                            ->numeric()
+                                            ->label('Longitude'),
+                                    ]),
+
+                                ComponentsGrid::make(3)
+                                    ->schema([
+                                        // Delivery Settings
+                                        TextInput::make('delivery_rate_per_km')
+                                            ->label('Delivery Rate / KM')
+                                            ->numeric()
+                                             // Assuming SAR, or dynamic based on currency
+                                            ->default(0),
+
+                                        TextInput::make('min_delivery_charge')
+                                            ->label('Min Delivery Charge')
+                                            ->numeric()
+                                            
+                                            ->default(0),
+
+                                        TextInput::make('max_delivery_distance')
+                                            ->label('Max Distance (KM)')
+                                            ->numeric()
+                                            ->suffix('KM'),
+                                    ]),
+
+                                // Default Currency
+                                Select::make('default_currency_id')
+                                    ->label('Default Currency')
+                                    ->relationship('defaultCurrency', 'name')
+                                    ->searchable()
+                                    ->preload(),
+                            ]),
+
+                        // Tab 3: Settings & Media
                         Tab::make('Settings & Media')
                             ->icon('heroicon-o-cog-6-tooth')
                             ->schema([
@@ -102,14 +146,13 @@ class VendorForm
                                             ->maxLength(255),
                                     ]),
 
-                                // 7. Logo Upload (using standard FileUpload for simplicity)
-                                // *Note: Spatie Media Library is better for production, but using default for direct field `logo_path`*
+                                // 7. Logo Upload
                                 FileUpload::make('logo_path')
                                     ->label('Vendor Logo')
-                                    ->disk('public') // Store in public disk
+                                    ->disk('public')
                                     ->directory('vendors/logos')
-                                    ->image() // Restrict to image files
-                                    ->maxSize(500), // Max file size 500 KB
+                                    ->image()
+                                    ->maxSize(500),
                             ]),
                     ])->columnSpanFull(),
             ]);

@@ -35,26 +35,39 @@ class VendorsTable
                 // 3. Status Column (Visual filtering/status check)
                 IconColumn::make('status')
                     ->label('Status')
-                     ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'active' => 'success',
                         'inactive' => 'danger',
                         'pending' => 'warning',
                         default => 'gray',
                     })->alignCenter()
                     ->sortable()
-                    ->icon(fn (string $state): string => match ($state) {
+                    ->icon(fn(string $state): string => match ($state) {
                         'active' => 'heroicon-o-check-circle',
                         'inactive' => 'heroicon-o-x-circle',
                         'pending' => 'heroicon-o-clock',
                         default => 'heroicon-o-question-mark-circle',
                     }),
-                
+
                 // 4. Email Column
                 TextColumn::make('email')
                     ->label('Email')
                     ->copyable() // Allows quick copy on click
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true), // Hidden by default to keep table clean
+
+                // 5. Default Currency
+                TextColumn::make('defaultCurrency.name')
+                    ->label('Currency')
+                    ->sortable()
+                    ->toggleable(),
+
+                // 6. Delivery Rate
+                TextColumn::make('delivery_rate_per_km')
+                    ->label('Delivery Rate')
+                    ->money(fn($record) => $record->defaultCurrency?->code ?? 'SAR')
+                    ->sortable()
+                    ->toggleable(),
 
                 // 5. Products Count (Performance improved with withCount in query)
                 // TextColumn::make('products_count')
@@ -83,10 +96,10 @@ class VendorsTable
                         'pending' => 'Pending Review',
                     ])
                     ->label('Filter by Status'),
-                    
+
                 // Filter 2: Soft Deletes Filter
                 TrashedFilter::make(),
-                    ],FiltersLayout::Modal)
+            ], FiltersLayout::Modal)
             ->actions([
                 EditAction::make(),
             ])
