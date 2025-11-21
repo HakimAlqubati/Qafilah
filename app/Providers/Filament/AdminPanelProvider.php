@@ -7,6 +7,10 @@ use App\Filament\Resources\Attributes\AttributeResource;
 use App\Filament\Resources\AttributeSets\AttributeSetResource;
 use App\Filament\Resources\AttributeValues\AttributeValueResource;
 use App\Filament\Resources\Categories\CategoryResource;
+use App\Filament\Resources\Cities\CityResource;
+use App\Filament\Resources\Countries\CountryResource;
+use App\Filament\Resources\Currencies\CurrencyResource;
+use App\Filament\Resources\Districts\DistrictResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Units\UnitResource;
 use App\Filament\Resources\Vendors\VendorResource;
@@ -69,6 +73,12 @@ class AdminPanelProvider extends PanelProvider
                         ->items([
                             ...VendorResource::getNavigationItems(),
                         ]),
+                    NavigationGroup::make('Location Management')
+                        ->items([
+                            ...CountryResource::getNavigationItems(),
+                            ...CityResource::getNavigationItems(),
+                            ...DistrictResource::getNavigationItems(),
+                        ]),
                     NavigationGroup::make('Management')
                         ->items([
 
@@ -76,6 +86,7 @@ class AdminPanelProvider extends PanelProvider
                             ...AttributeValueResource::getNavigationItems(),
                             ...AttributeSetResource::getNavigationItems(),
                             ...UnitResource::getNavigationItems(),
+                            ...CurrencyResource::getNavigationItems(),
 
                         ]),
                     NavigationGroup::make('Products')

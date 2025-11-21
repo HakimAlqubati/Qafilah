@@ -20,6 +20,7 @@ class Dashboard extends \Filament\Pages\Dashboard
     {
         return [
             WelcomeHero::class,
+            \App\Filament\Widgets\StatsOverview::class,
         ];
     }
 }

@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            
+
             // العلاقات الرئيسية
             $table->foreignId('brand_id')->nullable()->constrained('brands')->nullOnDelete();
 
