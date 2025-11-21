@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -18,7 +19,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon; 
+use Filament\Support\Icons\Heroicon;
 
 class VendorOffersRelationManager extends RelationManager
 {
@@ -39,7 +40,7 @@ class VendorOffersRelationManager extends RelationManager
                     ->required()
                     ->label('Vendor'),
 
-               Select::make('variant_id')
+                Select::make('variant_id')
                     ->label('Variant')
                     ->options(function (RelationManager $livewire) {
                         return ProductVariant::where('product_id', $livewire->getOwnerRecord()->id)
@@ -54,36 +55,36 @@ class VendorOffersRelationManager extends RelationManager
                     ->required()
                     ->searchable(),
 
-               TextInput::make('cost_price')
+                TextInput::make('cost_price')
                     ->label('Cost Price')
                     ->numeric()
                     ->prefix('SAR'),
 
-               TextInput::make('selling_price')
+                TextInput::make('selling_price')
                     ->label('Selling Price')
                     ->numeric()
                     ->required()
                     ->prefix('SAR'),
 
-               Select::make('currency_id')
+                Select::make('currency_id')
                     ->relationship('currency', 'name')
                     ->label('Currency')
                     ->searchable()
                     ->preload(),
 
-               TextInput::make('stock')
+                TextInput::make('stock')
                     ->label('Stock Quantity')
                     ->numeric()
                     ->default(0)
                     ->required(),
 
-               TextInput::make('moq')
+                TextInput::make('moq')
                     ->label('Minimum Order Qty')
                     ->numeric()
                     ->default(1)
                     ->required(),
 
-               Toggle::make('is_default_offer')
+                Toggle::make('is_default_offer')
                     ->label('Default Offer'),
             ]);
     }
@@ -91,6 +92,7 @@ class VendorOffersRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+        
             ->recordTitleAttribute('vendor_sku')
             ->columns([
                 Tables\Columns\TextColumn::make('vendor.name')
@@ -119,18 +121,17 @@ class VendorOffersRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-              CreateAction::make()
-                    ->using(function (array $data, string $model) {
-                        return $model::create($data);
-                    }),
+              
+                CreateAction::make()
+                 
             ])
             ->recordActions([
-              EditAction::make(),
-              DeleteAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
-              BulkActionGroup::make([
-                  DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
