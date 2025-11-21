@@ -9,6 +9,7 @@ class CustomersChart extends ChartWidget
     protected ?string $heading = 'New Customers';
 
     protected static ?int $sort = 4;
+     protected ?string $maxHeight = '400px';
 
     protected function getData(): array
     {

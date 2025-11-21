@@ -9,7 +9,7 @@ class ProductsChart extends ChartWidget
     protected ?string $heading = 'Product Distribution';
 
     protected static ?int $sort = 5;
-
+ 
     protected function getData(): array
     {
         return [

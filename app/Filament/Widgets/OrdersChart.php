@@ -9,6 +9,7 @@ class OrdersChart extends ChartWidget
     protected ?string $heading = 'Orders per Month';
 
     protected static ?int $sort = 2;
+    protected ?string $maxHeight = '400px';
 
     protected function getData(): array
     {

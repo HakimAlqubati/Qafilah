@@ -25,10 +25,10 @@ class Dashboard extends \Filament\Pages\Dashboard
         return [
             // WelcomeHero::class,
             \App\Filament\Widgets\StatsOverview::class,
-            ProductsChart::class,
             CustomersChart::class,
-            RevenueChart::class,
             OrdersChart::class,
+            RevenueChart::class,
+            ProductsChart::class,
         ];
     }
 }
