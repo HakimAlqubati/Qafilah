@@ -27,6 +27,11 @@ class ProductResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
     protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function form(Schema $schema): Schema
@@ -69,7 +74,7 @@ class ProductResource extends Resource
             CreateProduct::class,
             EditProduct::class,
             ViewProduct::class,
-         ]);
+        ]);
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder

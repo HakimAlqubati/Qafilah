@@ -86,7 +86,7 @@ class AdminPanelProvider extends PanelProvider
 
                             ...AttributeResource::getNavigationItems(),
                             ...AttributeValueResource::getNavigationItems(),
-                            ...AttributeSetResource::getNavigationItems(),
+                            // ...AttributeSetResource::getNavigationItems(),
                             ...UnitResource::getNavigationItems(),
                             ...CurrencyResource::getNavigationItems(),
 

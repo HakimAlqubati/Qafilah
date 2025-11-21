@@ -19,6 +19,7 @@ class AttributeSetResource extends Resource
     protected static ?string $model = AttributeSet::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::RectangleGroup;
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static ?string $recordTitleAttribute = 'name';
 
