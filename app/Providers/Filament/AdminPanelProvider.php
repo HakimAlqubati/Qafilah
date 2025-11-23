@@ -82,6 +82,7 @@ class AdminPanelProvider extends PanelProvider
                             ...DistrictResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Management')
+                        ->label(__('lang.management'))
                         ->items([
 
                             ...AttributeResource::getNavigationItems(),
@@ -113,13 +114,14 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::TOPBAR_LOGO_AFTER,
                 fn(): string =>
-                view('filament.partials.current-time')->render() 
+                view('filament.partials.current-time')->render()
             )
             ->renderHook(
                 PanelsRenderHook::TOPBAR_LOGO_AFTER,
                 fn(): string =>
-                view('filament.partials.welcome')->render() 
+                view('filament.partials.welcome')->render()
             )
+          
             ->authMiddleware([
                 Authenticate::class,
             ]);
