@@ -27,10 +27,10 @@ class DistrictResource extends Resource
         return static::getModel()::count();
     }
 
-    // public static function form(Schema $schema): Schema
-    // {
-    //     return DistrictForm::configure($schema);
-    // }
+    public static function form(Schema $schema): Schema
+    {
+        return DistrictForm::configure($schema);
+    }
 
     public static function table(Table $table): Table
     {

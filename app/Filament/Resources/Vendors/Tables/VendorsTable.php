@@ -31,12 +31,11 @@ class VendorsTable
                     ->label('Vendor Name')
                     ->searchable() // Enables text search
                     ->sortable(),
-                TextColumn::make('offers')
+                TextColumn::make('offers_count')
                     ->label('Products')
                     ->counts('offers')
                     ->default(0)
                     ->alignCenter()
-                    ->searchable() // Enables text search
                     ->sortable(),
 
                 // 3. Status Column (Visual filtering/status check)

@@ -11,6 +11,7 @@ use App\Models\City;
 use BackedEnum;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
@@ -27,10 +28,10 @@ class CityResource extends Resource
         return static::getModel()::count();
     }
 
-    // public static function form(Form $form): Form
-    // {
-    //     return CityForm::configure($form);
-    // }
+    public static function form(Schema $schema): Schema
+    {
+        return CityForm::configure($schema);
+    }
 
     public static function table(Table $table): Table
     {
