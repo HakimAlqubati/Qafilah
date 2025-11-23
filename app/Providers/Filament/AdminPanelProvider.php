@@ -63,7 +63,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder->items([
-                    NavigationItem::make('Dashboard')
+                    NavigationItem::make(__('lang.dashboard'))
                         ->icon('heroicon-o-home')
                         // ->isActiveWhen(fn(): bool => original_request()->routeIs('filament.admin.pages.dashboard'))
                         ->url(fn(): string => Dashboard::getUrl()),
@@ -71,11 +71,11 @@ class AdminPanelProvider extends PanelProvider
                     // ...UserResource::getNavigationItems(),
                     // ...Settings::getNavigationItems(),
                 ])->groups([
-                    NavigationGroup::make('Vendor Management')
+                    NavigationGroup::make(__('lang.vendor_management'))
                         ->items([
                             ...VendorResource::getNavigationItems(),
                         ]),
-                    NavigationGroup::make('Location Management')
+                    NavigationGroup::make(__('lang.location_management'))
                         ->items([
                             ...CountryResource::getNavigationItems(),
                             ...CityResource::getNavigationItems(),
@@ -92,7 +92,7 @@ class AdminPanelProvider extends PanelProvider
                             ...CurrencyResource::getNavigationItems(),
 
                         ]),
-                    NavigationGroup::make('Products')
+                    NavigationGroup::make(__('lang.products'))
                         ->items([
                             ...CategoryResource::getNavigationItems(),
                             ...ProductResource::getNavigationItems(),
@@ -121,7 +121,7 @@ class AdminPanelProvider extends PanelProvider
                 fn(): string =>
                 view('filament.partials.welcome')->render()
             )
-          
+
             ->authMiddleware([
                 Authenticate::class,
             ]);

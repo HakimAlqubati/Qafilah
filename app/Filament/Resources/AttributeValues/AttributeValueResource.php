@@ -22,6 +22,23 @@ class AttributeValueResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'value';
 
+    protected static ?string $navigationLabel = null;
+
+    public static function getModelLabel(): string
+    {
+        return __('lang.attribute_value');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __('lang.attribute_values');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('lang.attribute_values');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return AttributeValueForm::configure($schema);

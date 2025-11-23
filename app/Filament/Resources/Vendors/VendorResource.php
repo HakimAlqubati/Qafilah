@@ -24,6 +24,21 @@ class VendorResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $navigationLabel = null;
+
+    public static function getModelLabel(): string
+    {
+        return __('lang.vendor');
+    }
+    public static function getPluralLabel(): ?string
+    {
+        return __('lang.vendors');
+    }
+    public static function getNavigationLabel(): string
+    {
+        return __('lang.vendors');
+    }
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();

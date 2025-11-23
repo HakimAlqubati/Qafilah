@@ -26,20 +26,20 @@ class ProductsTable
             ->columns([
                 // 1. Name & SKU (Primary identifiers)
                 TextColumn::make('id')
-                    ->label('ID')
+                    ->label(__('lang.id'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
-                    ->label('Product Name')
+                    ->label(__('lang.product_name'))
                     ->searchable()
                     ->sortable()
-                    ->description(fn(Product $record): string => "SKU: {$record->sku}"), // Display SKU beneath the name
-                SpatieMediaLibraryImageColumn::make('default')->label('')->size(50)
+                    ->description(fn(Product $record): string => __('lang.sku') . ": {$record->sku}"), // Display SKU beneath the name
+                SpatieMediaLibraryImageColumn::make('default')->label(__('lang.image'))->size(50)
                     ->circular()->alignCenter(true)->getStateUsing(function () {
                         return null;
                     })->limit(3),
                 TextColumn::make('slug')
-                    ->label('Slug')
+                    ->label(__('lang.slug'))
                     // ->icon(Heroicon::)
                     ->searchable()
                     ->sortable()
@@ -50,7 +50,7 @@ class ProductsTable
 
                 // 2. Status (Visibility and workflow)
                 TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('lang.status'))
                     ->badge()
                     ->sortable()
                     ->formatStateUsing(fn(string $state): string => ucfirst($state))
@@ -63,12 +63,12 @@ class ProductsTable
 
                 // 3. Categorization
                 TextColumn::make('category.name')
-                    ->label('Category')
+                    ->label(__('lang.category'))
                     ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('brand.name')
-                    ->label('Brand')
+                    ->label(__('lang.brand'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
@@ -76,19 +76,19 @@ class ProductsTable
 
                 // 5. Inventory (Variants or simple stock count)
                 TextColumn::make('variants_count')
-                    ->label('Variants')->alignCenter()
+                    ->label(__('lang.variants'))->alignCenter()
                     ->counts('variants') // Count the number of associated variants
                     ->sortable()->toggleable(),
 
                 // 6. Featured Status
                 IconColumn::make('is_featured')
-                    ->label('Featured')
+                    ->label(__('lang.featured'))
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 // 7. Audit: Soft Deletes
                 TextColumn::make('deleted_at')
-                    ->label('Deleted At')
+                    ->label(__('lang.deleted_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -100,7 +100,7 @@ class ProductsTable
 
                 // Filter by Category
                 SelectFilter::make('category_id')
-                    ->label('Category')
+                    ->label(__('lang.category'))
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload(),

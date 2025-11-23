@@ -20,45 +20,45 @@ class AttributesTable
             ->columns([
                 // 1. Name (الاسم الظاهر)
                 TextColumn::make('name')
-                    ->label('Attribute Name')
+                    ->label(__('lang.name'))
                     ->searchable()
                     ->sortable(),
 
                 // 2. Code (الكود التقني)
                 TextColumn::make('code')
-                    ->label('Code')
+                    ->label(__('lang.code'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true), // يمكن إخفاؤه افتراضياً
 
                 // 3. Input Type (نوع الإدخال)
                 TextColumn::make('input_type')
-                    ->label('Input Type')
+                    ->label(__('lang.type'))
                     ->badge() // لعرضها كشارة ملونة
                     ->sortable()
-                    ->formatStateUsing(fn (string $state): string => Attribute::inputTypeOptions()[$state] ?? $state), // ترجمة الكود إلى اسم مفهوم
+                    ->formatStateUsing(fn(string $state): string => Attribute::inputTypeOptions()[$state] ?? $state), // ترجمة الكود إلى اسم مفهوم
 
                 // 4. Is Required (هل هو مطلوب)
                 IconColumn::make('is_required')
-                    ->label('Required?')->alignCenter()
+                    ->label(__('lang.type'))->alignCenter()
                     ->boolean()
                     ->sortable(),
 
                 // 5. Active (الحالة - هل الخاصية نشطة)
                 IconColumn::make('active')
-                    ->label('Active')->alignCenter()
+                    ->label(__('lang.active'))->alignCenter()
                     ->boolean()
                     ->sortable(),
-                
+
                 // 6. Values Count (عدد القيم المتاحة - Color: 5, Size: 3)
                 TextColumn::make('values_count')
-                    ->label('Values Count')->alignCenter()
+                    ->label(__('lang.value'))->alignCenter()
                     ->counts('values') // يعتمد على العلاقة `values()` في النموذج
                     ->sortable(),
-                
+
                 // 7. Timestamps
                 TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label(__('lang.created_at'))
                     ->dateTime()
                     ->toggleable(isToggledHiddenByDefault: true),
 
@@ -66,20 +66,20 @@ class AttributesTable
             ->filters([
                 // 1. فلتر حسب نوع الإدخال
                 SelectFilter::make('input_type')
-                    ->label('Filter by Input Type')
+                    ->label(__('lang.type'))
                     ->options(Attribute::inputTypeOptions()),
 
                 // 2. فلتر للخصائص المطلوبة/غير المطلوبة
                 TernaryFilter::make('is_required')
-                    ->label('Required Status')
-                    ->trueLabel('Required')
-                    ->falseLabel('Not Required'),
+                    ->label(__('lang.type'))
+                    ->trueLabel(__('lang.type'))
+                    ->falseLabel(__('lang.type')),
 
                 // 3. فلتر للحالة (نشط/غير نشط)
                 TernaryFilter::make('active')
-                    ->label('Activity Status')
-                    ->trueLabel('Active')
-                    ->falseLabel('Inactive'),
+                    ->label(__('lang.status'))
+                    ->trueLabel(__('lang.active'))
+                    ->falseLabel(__('lang.inactive')),
             ])
             ->actions([
                 EditAction::make(),
