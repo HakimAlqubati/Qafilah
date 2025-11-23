@@ -25,17 +25,17 @@ class VendorForm
     {
         return $form
             ->schema([
-                Tabs::make('Vendor Details')
+                Tabs::make(__('lang.vendor_details'))
                     ->tabs([
                         // Tab 1: Basic Information
-                        Tab::make('Basic Info')
+                        Tab::make(__('lang.basic_info'))
                             ->icon('heroicon-o-building-storefront')
                             ->schema([
                                 ComponentsGrid::make(3)
                                     ->schema([
                                         // 1. Name & Slug (Required)
                                         TextInput::make('name')
-                                            ->label('Vendor Name')
+                                            ->label(__('lang.vendor_name'))
                                             ->required()
                                             ->maxLength(255)
                                             ->live(onBlur: true) // Update slug on blur
@@ -45,7 +45,7 @@ class VendorForm
                                             ->columnSpan(2),
 
                                         TextInput::make('slug')
-                                            ->label('Slug (URL Identifier)')
+                                            ->label(__('lang.url_slug'))
                                             ->required()
                                             ->unique(ignoreRecord: true) // Ensure unique slug
                                             ->maxLength(255),
@@ -55,30 +55,30 @@ class VendorForm
                                     ->schema([
                                         // 2. Contact Information
                                         TextInput::make('contact_person')
-                                            ->label('Contact Person Name')
+                                            ->label(__('lang.contact_person'))
                                             ->maxLength(255),
 
                                         TextInput::make('phone')
-                                            ->label('Phone Number')
+                                            ->label(__('lang.phone_number'))
                                             ->tel()
                                             ->maxLength(50),
                                     ]),
 
                                 // 3. VAT ID (Unique)
                                 TextInput::make('vat_id')
-                                    ->label('VAT / Commercial ID')
+                                    ->label(__('lang.vat_id'))
                                     ->unique(ignoreRecord: true)
                                     ->maxLength(100),
 
                                 // 4. Description
                                 RichEditor::make('description')
-                                    ->label('Detailed Description')
+                                    ->label(__('lang.detailed_description'))
                                     ->maxLength(65535) // Max TEXT length
                                     ->columnSpanFull(),
                             ]),
 
                         // Tab 2: Location & Delivery
-                        Tab::make('Location & Delivery')
+                        Tab::make(__('lang.location_delivery'))
                             ->icon('heroicon-o-map-pin')
                             ->schema([
                                 ComponentsGrid::make(2)
@@ -86,50 +86,50 @@ class VendorForm
                                         // Location
                                         TextInput::make('latitude')
                                             ->numeric()
-                                            ->label('Latitude'),
+                                            ->label(__('lang.latitude')),
                                         TextInput::make('longitude')
                                             ->numeric()
-                                            ->label('Longitude'),
+                                            ->label(__('lang.longitude')),
                                     ]),
 
                                 ComponentsGrid::make(3)
                                     ->schema([
                                         // Delivery Settings
                                         TextInput::make('delivery_rate_per_km')
-                                            ->label('Delivery Rate / KM')
+                                            ->label(__('lang.delivery_rate_km'))
                                             ->numeric()
-                                             // Assuming SAR, or dynamic based on currency
+                                            // Assuming SAR, or dynamic based on currency
                                             ->default(0),
 
                                         TextInput::make('min_delivery_charge')
-                                            ->label('Min Delivery Charge')
+                                            ->label(__('lang.min_delivery_charge'))
                                             ->numeric()
-                                            
+
                                             ->default(0),
 
                                         TextInput::make('max_delivery_distance')
-                                            ->label('Max Distance (KM)')
+                                            ->label(__('lang.max_distance_km'))
                                             ->numeric()
                                             ->suffix('KM'),
                                     ]),
 
                                 // Default Currency
                                 Select::make('default_currency_id')
-                                    ->label('Default Currency')
+                                    ->label(__('lang.default_currency'))
                                     ->relationship('defaultCurrency', 'name')
                                     ->searchable()
                                     ->preload(),
                             ]),
 
                         // Tab 3: Settings & Media
-                        Tab::make('Settings & Media')
+                        Tab::make(__('lang.settings_media'))
                             ->icon('heroicon-o-cog-6-tooth')
                             ->schema([
                                 ComponentsGrid::make(2)
                                     ->schema([
                                         // 5. Status
                                         Select::make('status')
-                                            ->label('Status')
+                                            ->label(__('lang.status'))
                                             ->required()
                                             ->default('active')
                                             ->options([
@@ -140,7 +140,7 @@ class VendorForm
 
                                         // 6. Email (Unique)
                                         TextInput::make('email')
-                                            ->label('Email Address')
+                                            ->label(__('lang.email_address'))
                                             ->email()
                                             ->unique(ignoreRecord: true)
                                             ->maxLength(255),
@@ -148,7 +148,7 @@ class VendorForm
 
                                 // 7. Logo Upload
                                 FileUpload::make('logo_path')
-                                    ->label('Vendor Logo')
+                                    ->label(__('lang.vendor_logo'))
                                     ->disk('public')
                                     ->directory('vendors/logos')
                                     ->image()

@@ -17,21 +17,21 @@ class CategoryForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Fieldset::make('Category Details')->columnSpanFull()
+            Fieldset::make(__('lang.category_details'))->columnSpanFull()
                 ->schema([
 
                     // Row 1: Name & Slug
                     Grid::make(3)->columnSpanFull()
                         ->schema([
                             TextInput::make('name')
-                                ->label('Name')
-                                ->placeholder('e.g. Electronics')
+                                ->label(__('lang.name'))
+                                ->placeholder(__('lang.example_category'))
                                 ->required()
                                 ->maxLength(150)
                                 ->live(onBlur: true)
                                 ->columnSpan(1),
                             Select::make('parent_id')
-                                ->label('Parent Category')
+                                ->label(__('lang.parent_category'))
                                 ->relationship('parent', 'name')
                                 ->searchable()
                                 ->preload()
@@ -39,16 +39,16 @@ class CategoryForm
                                 ->columnSpan(1),
                             // Active toggle (full width)
                             Toggle::make('active')
-                                ->label('Is Active?')
+                                ->label(__('lang.is_active'))
                                 ->default(true)
-                                ->inline(false) ,
+                                ->inline(false),
                         ]),
 
 
 
                     // Description (full width)
                     Textarea::make('description')
-                        ->label('Description')
+                        ->label(__('lang.description'))
                         ->rows(4)
                         ->columnSpanFull(),
 

@@ -42,13 +42,13 @@ class ProductForm
                     // ----------------------------------------------------
                     // Step 1) General Information
                     // ----------------------------------------------------
-                    Step::make('General Information')
+                    Step::make(__('lang.general_information'))
                         ->icon('heroicon-o-information-circle')
                         ->schema([
                             Grid::make(2)
                                 ->schema([
                                     TextInput::make('name')
-                                        ->label('Product Name')
+                                        ->label(__('lang.product_name'))
                                         ->required()
                                         ->maxLength(255)
                                         ->reactive()
@@ -60,20 +60,20 @@ class ProductForm
                                         }),
 
                                     TextInput::make('slug')
-                                        ->label('URL Slug')
+                                        ->label(__('lang.url_slug'))
                                         ->maxLength(255)
                                         ->unique(ignoreRecord: true)
-                                        ->helperText('Automatically generated from the name.'),
+                                        ->helperText(__('lang.auto_generated')),
                                 ]),
 
                             Textarea::make('short_description')
-                                ->label('Short Description')
+                                ->label(__('lang.short_description'))
                                 ->maxLength(500)
                                 ->rows(3)
                                 ->columnSpanFull(),
 
                             RichEditor::make('description')
-                                ->label('Detailed Description')
+                                ->label(__('lang.detailed_description'))
                                 ->columnSpanFull()
                                 ->toolbarButtons([
                                     'blockquote',
@@ -94,7 +94,7 @@ class ProductForm
                     // ----------------------------------------------------
                     // Step 2) Media
                     // ----------------------------------------------------
-                    Step::make('Media')
+                    Step::make(__('lang.media'))
                         ->icon('heroicon-o-photo')
                         ->schema([
                             SpatieMediaLibraryFileUpload::make('images')
@@ -132,15 +132,15 @@ class ProductForm
                     // ----------------------------------------------------
                     // Step 3.5) Direct Attributes (بدون Set)
                     // ----------------------------------------------------
-                    Step::make('Attributes')
+                    Step::make(__('lang.attributes'))
                         ->icon('heroicon-o-adjustments-horizontal')
                         ->schema([
-                            Section::make('Attach Attributes to Product (Direct)')
+                            Section::make(__('lang.attach_attributes'))
                                 ->columns(1)
                                 ->schema([
                                     Fieldset::make()->columnSpanFull()->columns(1)->schema([
                                         CheckboxList::make('attributes_direct')
-                                            ->label('Attributes')
+                                            ->label(__('lang.attributes'))
                                             ->relationship('attributesDirect', 'name') // M2M: products <-> attributes عبر product_set_attributes
                                             ->columns(4)
                                             ->bulkToggleable()
@@ -150,19 +150,19 @@ class ProductForm
                                             ->visible(fn(Get $get) => filled($get('attributes_direct')) && count($get('attributes_direct') ?? []) > 0)
                                             ->schema([
                                                 Repeater::make('attributes_direct_pivot')
-                                                    ->label('Pivot Settings')
+                                                    ->label(__('lang.pivot_settings'))
                                                     ->dehydrated(false) // لن نرفعها مباشرة؛ سنحدّث الـ pivot يدويًا
                                                     ->columns(12)
                                                     ->table([
-                                                        TableColumn::make('Attribute'),
+                                                        TableColumn::make(__('lang.attribute')),
 
-                                                        TableColumn::make('Is Variant Option'),
-                                                        TableColumn::make('Sort Order')
+                                                        TableColumn::make(__('lang.use_as_variant_option')),
+                                                        TableColumn::make(__('lang.sort_order'))
 
                                                     ])
                                                     ->schema([
                                                         Select::make('attribute_id')
-                                                            ->label('Attribute')
+                                                            ->label(__('lang.attribute'))
                                                             ->required()
                                                             ->columnSpan(6)
                                                             ->options(function (Get $get, ?Product $record) {
@@ -178,12 +178,12 @@ class ProductForm
                                                             ->distinct(),
 
                                                         Toggle::make('is_variant_option')
-                                                            ->label('Use as Variant Option?')
+                                                            ->label(__('lang.use_as_variant_option'))
                                                             ->default(true)
                                                             ->columnSpan(3),
 
                                                         TextInput::make('sort_order')
-                                                            ->label('Sort')
+                                                            ->label(__('lang.sort_order'))
                                                             ->numeric()
                                                             ->minValue(0)
                                                             ->columnSpan(3),
@@ -231,21 +231,21 @@ class ProductForm
                     // ----------------------------------------------------
                     // Step 3) Catalog
                     // ----------------------------------------------------
-                    Step::make('Catalog')
+                    Step::make(__('lang.catalog'))
                         ->icon('heroicon-o-tag')
                         ->schema([
-                            Section::make('Categorization')
+                            Section::make(__('lang.categorization'))
                                 ->columns(3)
                                 ->schema([
                                     Select::make('category_id')
-                                        ->label('Category')
+                                        ->label(__('lang.category'))
                                         ->relationship('category', 'name')
                                         ->required()
                                         ->searchable()
                                         ->preload(),
 
                                     Select::make('brand_id')
-                                        ->label('Brand')
+                                        ->label(__('lang.brand'))
                                         ->relationship('brand', 'name')
                                         ->nullable()
                                         ->searchable()
@@ -259,7 +259,7 @@ class ProductForm
                     // ----------------------------------------------------
                     // Step 4) Attribute Values (Custom Attributes)
                     // ----------------------------------------------------
-                    Step::make('Attribute Values')
+                    Step::make(__('lang.attribute_values'))
                         ->icon('heroicon-o-rectangle-group')
                         ->schema([
                             Repeater::make('attributes')
@@ -268,15 +268,15 @@ class ProductForm
                                 ->columns(12)
                                 ->collapsed(false)
                                 ->table([
-                                    TableColumn::make('Attribute')->width(4),
-                                    TableColumn::make('value')->width(8),
+                                    TableColumn::make(__('lang.attribute'))->width(4),
+                                    TableColumn::make(__('lang.value'))->width(8),
                                 ])
                                 ->reorderable(false)
                                 ->minItems(0)->defaultItems(0)
-                                ->addActionLabel('Add Attribute')
+                                ->addActionLabel(__('lang.add_attribute'))
                                 ->schema([
                                     Select::make('attribute_id')
-                                        ->label('Attribute')
+                                        ->label(__('lang.attribute'))
                                         ->columnSpan(4)
                                         ->required()
                                         ->distinct()
@@ -317,12 +317,12 @@ class ProductForm
                     // ----------------------------------------------------
                     // Step 5) Variants
                     // ----------------------------------------------------
-                    Step::make('Variants')
+                    Step::make(__('lang.variants'))
                         ->icon('heroicon-o-squares-2x2')
 
                         ->schema([
                             Repeater::make('variants')
-                                ->label('Product Variants')
+                                ->label(__('lang.product_variants'))
                                 ->relationship('variants')
                                 ->minItems(0)
                                 ->collapsed()
@@ -338,19 +338,19 @@ class ProductForm
                                     $variantFields = [
                                         Grid::make(12)->schema([
                                             TextInput::make('master_sku')
-                                                ->label('Master SKU')
+                                                ->label(__('lang.master_sku'))
                                                 ->required()
                                                 ->maxLength(100)
                                                 ->unique(ignoreRecord: true)
                                                 ->columnSpan(4),
 
                                             TextInput::make('barcode')
-                                                ->label('Barcode')
+                                                ->label(__('lang.barcode'))
                                                 ->maxLength(100)
                                                 ->columnSpan(4),
 
                                             Select::make('status')
-                                                ->label('Status')
+                                                ->label(__('lang.status'))
                                                 ->options(\App\Models\ProductVariant::$STATUSES)
                                                 ->default(\App\Models\ProductVariant::$STATUSES['active'])
                                                 ->required()
@@ -358,7 +358,7 @@ class ProductForm
                                                 ->columnSpan(2),
 
                                             Toggle::make('is_default')
-                                                ->label('Default Variant?')
+                                                ->label(__('lang.default_variant'))
                                                 ->inline(false)
                                                 ->helperText('يُنصح بتحديد متغير افتراضي واحد للعرض السريع.')
                                                 ->columnSpan(2)
@@ -369,7 +369,7 @@ class ProductForm
                                         Grid::make(10)->schema([
                                             SpatieMediaLibraryFileUpload::make('images')
                                                 ->disk('public')->columnSpanFull()
-                                                ->label('Variant Images')
+                                                ->label(__('lang.variant_images'))
                                                 ->directory('variants')
                                                 ->collection('variant_images')
                                                 ->multiple()
@@ -454,8 +454,8 @@ class ProductForm
                                     }
 
                                     // 4) قسم منظم لخيارات المتغير
-                                    $optionsSection = Section::make('Variant Options')
-                                        ->description('Select the specific attribute values (Options) that define this unique variant.')
+                                    $optionsSection = Section::make(__('lang.variant_options'))
+                                        ->description(__('lang.variant_options_desc'))
                                         ->columns(12)->columnSpanFull()
                                         ->schema([
                                             Grid::make(12)->columnSpanFull()->schema($optionFields),
@@ -498,23 +498,23 @@ class ProductForm
                     // ----------------------------------------------------
                     // Step 6) Visibility & Status
                     // ----------------------------------------------------
-                    Step::make('Visibility & Status')
+                    Step::make(__('lang.visibility_status'))
                         ->icon('heroicon-o-eye')
                         ->schema([
                             Grid::make(2)
                                 ->schema([
                                     Select::make('status')
-                                        ->label('Product Status')
+                                        ->label(__('lang.product_status'))
                                         ->options(Product::statusOptions())
                                         ->default(Product::$STATUSES['DRAFT'])
                                         ->required()
                                         ->native(false),
 
                                     Toggle::make('is_featured')
-                                        ->label('Feature on Homepage?')
+                                        ->label(__('lang.feature_on_homepage'))
                                         ->default(false)
                                         ->inline(false)
-                                        ->helperText('If enabled, the product will be highlighted in featured sections.'),
+                                        ->helperText(__('lang.feature_on_homepage_desc')),
                                 ]),
                         ]),
                 ])->skippable(),
@@ -561,8 +561,8 @@ class ProductForm
         if (! $attributeId) {
             return [
                 TextInput::make('value')
-                    ->label('Value')
-                    ->placeholder('Select an attribute first...')
+                    ->label(__('lang.value'))
+                    ->placeholder(__('lang.select_attribute_first'))
                     ->disabled()
                     ->columnSpan(12),
             ];
@@ -573,8 +573,8 @@ class ProductForm
         if (! $attribute) {
             return [
                 TextInput::make('value')
-                    ->label('Value')
-                    ->placeholder('Attribute not found.')
+                    ->label(__('lang.value'))
+                    ->placeholder(__('lang.attribute_not_found'))
                     ->disabled()
                     ->columnSpan(12),
             ];
@@ -590,7 +590,7 @@ class ProductForm
             case Attribute::$INPUT_TYPES['NUMBER']:
                 return [
                     TextInput::make('value')
-                        ->label('Value')
+                        ->label(__('lang.value'))
                         ->numeric()
                         ->inputMode('decimal')
                         ->required($attribute->is_required)
@@ -600,12 +600,12 @@ class ProductForm
             case Attribute::$INPUT_TYPES['SELECT']:
                 return [
                     Select::make('value')
-                        ->label('Value')
+                        ->label(__('lang.value'))
                         ->options($choiceOptions ?? [])
                         ->searchable()
                         ->preload()
                         ->native(false)
-                        ->placeholder('Choose a value')
+                        ->placeholder(__('lang.choose_value'))
                         ->required($attribute->is_required)
                         ->columnSpan(12),
                 ];
@@ -613,7 +613,7 @@ class ProductForm
             case Attribute::$INPUT_TYPES['RADIO']:
                 return [
                     Radio::make('value')
-                        ->label('Value')
+                        ->label(__('lang.value'))
                         ->options($choiceOptions ?? [])
                         ->required($attribute->is_required)
                         ->inline()
@@ -623,7 +623,7 @@ class ProductForm
             case Attribute::$INPUT_TYPES['BOOLEAN']:
                 return [
                     Toggle::make('value')
-                        ->label('Value')
+                        ->label(__('lang.value'))
                         ->inline(false)
                         ->required($attribute->is_required)
                         ->dehydrateStateUsing(fn($state) => $state ? '1' : '0')
@@ -636,7 +636,7 @@ class ProductForm
             case Attribute::$INPUT_TYPES['DATE']:
                 return [
                     DatePicker::make('value')
-                        ->label('Value')
+                        ->label(__('lang.value'))
                         ->native(false)
                         ->required($attribute->is_required)
                         ->dehydrateStateUsing(function ($state) {
@@ -656,7 +656,7 @@ class ProductForm
             default:
                 return [
                     TextInput::make('value')
-                        ->label('Value')
+                        ->label(__('lang.value'))
                         ->required($attribute->is_required)
                         ->maxLength(255)
                         ->columnSpan(12),

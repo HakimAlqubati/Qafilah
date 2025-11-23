@@ -14,21 +14,21 @@ class UnitForm
     {
         return $schema
             ->components([
-                Fieldset::make('Unit Information')
+                Fieldset::make(__('lang.unit_information'))
                     ->schema([
                         TextInput::make('name')
-                            ->label('Name')
+                            ->label(__('lang.name'))
                             ->required()
                             ->maxLength(100)
                             ->columnSpanFull(),
 
                         Textarea::make('description')
-                            ->label('Description')
+                            ->label(__('lang.description'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Toggle::make('active')
-                            ->label('Active')
+                            ->label(__('lang.active'))
                             ->default(true)
                             ->columnSpanFull(),
                     ])
