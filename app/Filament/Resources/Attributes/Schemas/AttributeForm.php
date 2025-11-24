@@ -19,21 +19,21 @@ class AttributeForm
         return $schema
             ->schema([
                 // 1. قسم التعريف الأساسي (الاسم، الكود، ونوع الإدخال)
-                Section::make('Basic Definition')
-                    ->description('Define the core identity and input type of this attribute.')
+                Section::make(__('lang.basic_information'))
+                    ->description(__('lang.attribute_details'))
                     ->schema([
                         Grid::make(3)
                             ->schema([
                                 // 1.1 Name (الاسم الظاهر)
                                 TextInput::make('name')
-                                    ->label('Attribute Name (e.g., Color)')
+                                    ->label(__('lang.attribute_name_placeholder'))
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(2),
 
                                 // 1.2 Code (الكود التقني)
                                 TextInput::make('code')
-                                    ->label('Code (Slug)')
+                                    ->label(__('lang.code_slug'))
                                     ->required()
                                     ->unique(ignoreRecord: true) // فريد في قاعدة البيانات
                                     ->maxLength(50)
@@ -43,7 +43,7 @@ class AttributeForm
 
                         // 1.3 Input Type (نوع الإدخال)
                         Select::make('input_type')
-                            ->label('Input Type')
+                            ->label(__('lang.input_type'))
                             ->required()
                             ->options(Attribute::inputTypeOptions()) // استخدام الدالة المساعدة من النموذج
                             ->native(false) // لتحسين شكل الـ Select
@@ -51,21 +51,21 @@ class AttributeForm
                     ]),
 
                 // 2. قسم الإعدادات الوظيفية (هل هو مطلوب ونشط)
-                Fieldset::make('Functional Settings')
+                Fieldset::make(__('lang.functional_settings'))
                     ->columns(2)
                     ->schema([
                         // 2.1 Is Required (هل هو مطلوب لإكمال المنتج)
                         Toggle::make('is_required')
-                            ->label('Required for Product Completion?')
+                            ->label(__('lang.required_for_completion'))
                             ->inline(false) // يجعل التبديل أسفل النص
-                            ->helperText('If enabled, this attribute must be specified for every product using its Attribute Set.'),
+                            ->helperText(__('lang.required_desc')),
 
                         // 2.2 Active (هل هو متاح للاستخدام)
                         Toggle::make('active')
-                            ->label('Is Attribute Active?')
+                            ->label(__('lang.is_active'))
                             ->inline(false)
                             ->default(true)
-                            ->helperText('If disabled, the attribute cannot be assigned to any Attribute Set.'),
+                            ->helperText(__('lang.active_desc')),
                     ]),
             ]);
     }

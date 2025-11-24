@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        return;
+        Schema::dropIfExists('product_vendor_skus');
+
         Schema::create('product_vendor_skus', function (Blueprint $table) {
             $table->id();
 
@@ -57,6 +58,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_vendor_skus_table_v2');
+        Schema::dropIfExists('product_vendor_skus');
     }
 };

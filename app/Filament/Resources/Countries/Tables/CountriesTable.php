@@ -16,20 +16,25 @@ class CountriesTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label(__('lang.name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('code')
+                    ->label(__('lang.code'))
                     ->searchable(),
                 TextColumn::make('phone_code')
+                    ->label(__('lang.phone_code'))
                     ->searchable(),
                 IconColumn::make('status')
+                    ->label(__('lang.status'))
                     ->boolean(),
             ])
             ->filters([
                 \Filament\Tables\Filters\SelectFilter::make('status')
+                    ->label(__('lang.status'))
                     ->options([
-                        true => 'Active',
-                        false => 'Inactive',
+                        true => __('lang.active'),
+                        false => __('lang.inactive'),
                     ]),
             ])
             ->recordActions([

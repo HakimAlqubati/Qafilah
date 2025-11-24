@@ -20,15 +20,15 @@ class AttributeSetForm
         return $schema
             ->components([
                 // ========== الأساسيات ==========
-                Fieldset::make()->label('Basic Information')
+                Fieldset::make()->label(__('lang.basic_information'))
                     ->columnSpanFull()
                     ->schema([
                         Grid::make()->columns(12)
                             ->columnSpanFull()
                             ->schema([
                                 TextInput::make('name')
-                                    ->label('Name')
-                                    ->placeholder('e.g., Electronics, Apparel, Printers')
+                                    ->label(__('lang.name'))
+                                    ->placeholder(__('lang.example_electronics'))
                                     ->required()
                                     ->unique(ignoreRecord: true)
                                     ->minLength(2)
@@ -36,14 +36,14 @@ class AttributeSetForm
                                     ->columnSpan(8),
 
                                 Toggle::make('active')
-                                    ->label('Active')
+                                    ->label(__('lang.active'))
                                     ->default(true)
                                     ->inline(false)
                                     ->columnSpan(4),
 
                                 Textarea::make('description')
-                                    ->label('Description')
-                                    ->placeholder('Short description of this attribute set...')
+                                    ->label(__('lang.description'))
+                                    ->placeholder(__('lang.short_desc_placeholder'))
                                     ->rows(3)
                                     ->maxLength(500)
                                     ->columnSpan(12),
@@ -51,14 +51,14 @@ class AttributeSetForm
                     ]),
 
                 // ========== السمات المرتبطة بالقالب ==========
-                Fieldset::make()->label('Attributes in this Set')
+                Fieldset::make()->label(__('lang.attributes_in_set'))
                     ->columnSpanFull()
                     ->schema([
                         Grid::make()->columns(12)
                             ->columnSpanFull()
                             ->schema([
                                 Select::make('attributes')->columnSpanFull()
-                                    ->label('Attributes')
+                                    ->label(__('lang.attributes'))
                                     ->relationship('attributes', 'name')   // Many-to-Many
                                     ->multiple()
                                     ->preload()

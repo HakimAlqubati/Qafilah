@@ -23,25 +23,24 @@ class VendorsTable
             ->columns([
                 // 1. ID Column (Primary Key)
                 TextColumn::make('id')
-                    ->label('ID')
+                    ->label(__('lang.id'))
                     ->sortable(),
 
                 // 2. Name Column (Most important for search/identification)
                 TextColumn::make('name')
-                    ->label('Vendor Name')
+                    ->label(__('lang.vendor_name'))
                     ->searchable() // Enables text search
                     ->sortable(),
-                TextColumn::make('offers')
-                    ->label('Products')
+                TextColumn::make('offers_count')
+                    ->label(__('lang.products_count'))
                     ->counts('offers')
                     ->default(0)
                     ->alignCenter()
-                    ->searchable() // Enables text search
                     ->sortable(),
 
                 // 3. Status Column (Visual filtering/status check)
                 IconColumn::make('status')
-                    ->label('Status')
+                    ->label(__('lang.status'))
                     ->color(fn(string $state): string => match ($state) {
                         'active' => 'success',
                         'inactive' => 'danger',
@@ -58,20 +57,20 @@ class VendorsTable
 
                 // 4. Email Column
                 TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('lang.email'))
                     ->copyable() // Allows quick copy on click
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true), // Hidden by default to keep table clean
 
                 // 5. Default Currency
                 TextColumn::make('defaultCurrency.name')
-                    ->label('Currency')
+                    ->label(__('lang.currency'))
                     ->sortable()
                     ->toggleable(),
 
                 // 6. Delivery Rate
                 TextColumn::make('delivery_rate_per_km')
-                    ->label('Delivery Rate')
+                    ->label(__('lang.delivery_rate'))
                     ->money(fn($record) => $record->defaultCurrency?->code ?? 'SAR')
                     ->sortable()
                     ->toggleable(),
@@ -84,13 +83,13 @@ class VendorsTable
 
                 // 6. Creator (Auditing - Requires Eager Loading 'creator')
                 TextColumn::make('creator.name')
-                    ->label('Created By')
+                    ->label(__('lang.created_by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 // 7. Created At (Audit)
                 TextColumn::make('created_at')
-                    ->label('Creation Date')
+                    ->label(__('lang.creation_date'))
                     ->dateTime()
                     ->sortable(),
             ])->filtersFormColumns(4)
@@ -98,11 +97,11 @@ class VendorsTable
                 // Filter 1: Status Filter
                 SelectFilter::make('status')
                     ->options([
-                        'active' => 'Active',
-                        'inactive' => 'Inactive',
-                        'pending' => 'Pending Review',
+                        'active' => __('lang.active'),
+                        'inactive' => __('lang.inactive'),
+                        'pending' => __('lang.pending_review'),
                     ])
-                    ->label('Filter by Status'),
+                    ->label(__('lang.filter_by_status')),
 
                 // Filter 2: Soft Deletes Filter
                 TrashedFilter::make(),

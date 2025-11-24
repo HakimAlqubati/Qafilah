@@ -17,16 +17,22 @@ class CurrenciesTable
             ->columns([
 
                 TextColumn::make('name')
+                    ->label(__('lang.name'))
                     ->searchable(),
                 TextColumn::make('code')
+                    ->label(__('lang.code'))
                     ->searchable()->alignCenter(),
                 TextColumn::make('symbol')->alignCenter()
+                    ->label(__('lang.symbol'))
                     ->searchable(),
                 TextColumn::make('rate')->alignCenter()
-                    ->numeric() ,
+                    ->label(__('lang.exchange_rate'))
+                    ->numeric(),
                 IconColumn::make('is_default')
+                    ->label(__('lang.type'))
                     ->boolean()->alignCenter(),
                 IconColumn::make('is_active')
+                    ->label(__('lang.active'))
                     ->boolean()->alignCenter(),
             ])
             ->filters([

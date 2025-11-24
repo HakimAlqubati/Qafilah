@@ -16,7 +16,7 @@ class ProductVariant extends Model implements HasMedia
         'product_id',
         'master_sku',
         'barcode',
-        'weight',
+        'weight',   
         'dimensions',
         'status',
         'is_default',

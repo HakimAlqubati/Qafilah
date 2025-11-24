@@ -24,6 +24,11 @@ class AttributeValue extends Model
         return $this->belongsTo(Attribute::class);
     }
 
+    public function variants()
+    {
+        return $this->belongsToMany(ProductVariant::class, 'product_variant_values', 'attribute_value_id', 'variant_id');
+    }
+
     /* ============================================================
      | ⚙️ Constants (أنواع القيمة)
      |============================================================ */
@@ -52,7 +57,7 @@ class AttributeValue extends Model
      * 🔹 هل القيمة رقمية؟
      */
     public function isNumeric(): bool
-     {
+    {
         return $this->getInputType() === self::$VALUE_TYPES['NUMBER'];
     }
 

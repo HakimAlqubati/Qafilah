@@ -21,8 +21,8 @@ class AttributeValueForm
         return $schema
             ->columns(1)
             ->components([
-                Section::make('🔹 Attribute Value Details')
-                    ->description('Define a value that belongs to a specific attribute (e.g., Red, M, 128GB).')
+                Section::make(__('lang.attribute_value_details'))
+                    ->description(__('lang.attribute_value_def'))
                     ->icon('heroicon-o-adjustments-horizontal')
                     ->collapsible()
                     ->schema([
@@ -30,37 +30,37 @@ class AttributeValueForm
                             ->schema([
 
                                 Select::make('attribute_id')
-                                    ->label('Attribute')
+                                    ->label(__('lang.attribute'))
                                     ->options(Attribute::orderBy('name')->pluck('name', 'id'))
                                     ->required()
                                     ->searchable()
                                     ->preload()
-                                    ->hint('Select which attribute this value belongs to.'),
+                                    ->hint(__('lang.select_attribute_belong')),
 
                                 TextInput::make('value')
-                                    ->label('Value')
-                                    ->placeholder('Example: Red, 128GB, Leather')
+                                    ->label(__('lang.value'))
+                                    ->placeholder(__('lang.example_values'))
                                     ->required()
                                     ->autocapitalize('words')
                                     ->maxLength(100)
-                                    ->hint('The actual display value for this option.'),
+                                    ->hint(__('lang.display_value')),
                             ]),
 
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('sort_order')
                                     ->numeric()
-                                    ->label('Sort Order')
+                                    ->label(__('lang.sort_order'))
                                     ->default(0)
-                                    ->hint('Used to order values in dropdowns.')
+                                    ->hint(__('lang.sort_order_desc'))
                                     ->suffixIcon('heroicon-o-bars-3'),
 
                                 Toggle::make('is_active')
-                                    ->label('Active')
+                                    ->label(__('lang.active'))
                                     ->default(true)
                                     ->onIcon('heroicon-o-check-circle')
                                     ->offIcon('heroicon-o-x-circle')
-                                    ->hint('Deactivate to hide this value without deleting.'),
+                                    ->hint(__('lang.deactivate_desc')),
                             ]),
                     ]),
 

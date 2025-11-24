@@ -14,45 +14,44 @@ class CategoriesTable
     {
         return $table
             ->columns([
-           
+
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('lang.name'))
                     ->searchable()
                     ->sortable(),
 
-             
+
 
                 Tables\Columns\TextColumn::make('parent.name')
-                    ->label('Parent')
+                    ->label(__('lang.parent'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('attributeSet.name')
-                    ->label('Attribute Set')
-,
+                    ->label(__('lang.attribute_set')),
 
-             
+
 
                 Tables\Columns\IconColumn::make('active')
-                    ->label('Active')
+                    ->label(__('lang.active'))
                     ->boolean()->alignCenter()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('lang.created'))
                     ->dateTime('Y-m-d H:i')
                     ->sortable()->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Updated')
+                    ->label(__('lang.updated'))
                     ->dateTime('Y-m-d H:i')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('active')
-                    ->label('Active')
+                    ->label(__('lang.active'))
                     ->options([
-                        1 => 'Active',
-                        0 => 'Inactive',
+                        1 => __('lang.active'),
+                        0 => __('lang.inactive'),
                     ]),
             ])
             ->recordActions([

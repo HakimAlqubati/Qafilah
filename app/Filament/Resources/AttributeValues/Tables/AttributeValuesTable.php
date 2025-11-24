@@ -24,16 +24,15 @@ class AttributeValuesTable
 
                 // 🔹 الخاصية المرتبطة
                 TextColumn::make('attribute.name')
-                    ->label('Attribute')
+                    ->label(__('lang.attribute'))
                     ->searchable()
                     ->sortable()
                     ->icon('heroicon-o-sparkles')
-                    ->description(fn ($record) => $record->attribute?->code)
-                    ,
+                    ->description(fn($record) => $record->attribute?->code),
 
                 // 🔹 القيمة
                 TextColumn::make('value')
-                    ->label('Value')
+                    ->label(__('lang.value'))
                     ->searchable()
                     ->sortable()
                     ->icon('heroicon-o-tag')
@@ -43,7 +42,7 @@ class AttributeValuesTable
 
                 // 🔹 نوع الإدخال من الخاصية
                 BadgeColumn::make('attribute.input_type')
-                    ->label('Type')
+                    ->label(__('lang.type'))
                     ->colors([
                         'primary' => 'select',
                         'warning' => 'radio',
@@ -53,10 +52,10 @@ class AttributeValuesTable
                         'gray'    => 'date',
                     ])
                     ->formatStateUsing(fn($state) => ucfirst($state ?? '')),
-                    
+
                 // 🔹 ترتيب العرض
                 TextColumn::make('sort_order')
-                    ->label('Order')
+                    ->label(__('lang.type'))
                     ->sortable()
                     ->alignCenter()
                     ->icon('heroicon-o-bars-3')
@@ -65,7 +64,7 @@ class AttributeValuesTable
 
                 // 🔹 الحالة (اختياري لو عندك حقل active)
                 IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(__('lang.active'))
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
@@ -74,13 +73,13 @@ class AttributeValuesTable
 
                 // 🔹 التاريخ
                 TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('lang.created'))
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
-                    ->label('Updated')
+                    ->label(__('lang.updated'))
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -91,7 +90,7 @@ class AttributeValuesTable
              |============================================================ */
             ->filters([
                 Tables\Filters\SelectFilter::make('attribute_id')
-                    ->label('Attribute')
+                    ->label(__('lang.attribute'))
                     ->relationship('attribute', 'name')
                     ->searchable(),
             ])
