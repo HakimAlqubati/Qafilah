@@ -13,20 +13,32 @@ return new class extends Migration
     {
         Schema::table('vendors', function (Blueprint $table) {
             // 📍 الموقع الجغرافي
-            $table->decimal('latitude', 10, 8)->nullable()->after('logo_path');
-            $table->decimal('longitude', 11, 8)->nullable()->after('latitude');
+            if (!Schema::hasColumn('vendors', 'latitude')) {
+                $table->decimal('latitude', 10, 8)->nullable()->after('logo_path');
+            }
+            if (!Schema::hasColumn('vendors', 'longitude')) {
+                $table->decimal('longitude', 11, 8)->nullable()->after('latitude');
+            }
 
             // 🚚 إعدادات التوصيل
-            $table->decimal('delivery_rate_per_km', 8, 2)->default(0)->after('longitude'); // سعر التوصيل لكل كم
-            $table->decimal('min_delivery_charge', 8, 2)->default(0)->after('delivery_rate_per_km'); // الحد الأدنى لرسوم التوصيل
-            $table->integer('max_delivery_distance')->nullable()->after('min_delivery_charge'); // أقصى مسافة للتوصيل (كم)
+            if (!Schema::hasColumn('vendors', 'delivery_rate_per_km')) {
+                $table->decimal('delivery_rate_per_km', 8, 2)->default(0)->after('longitude'); // سعر التوصيل لكل كم
+            }
+            if (!Schema::hasColumn('vendors', 'min_delivery_charge')) {
+                $table->decimal('min_delivery_charge', 8, 2)->default(0)->after('delivery_rate_per_km'); // الحد الأدنى لرسوم التوصيل
+            }
+            if (!Schema::hasColumn('vendors', 'max_delivery_distance')) {
+                $table->integer('max_delivery_distance')->nullable()->after('min_delivery_charge'); // أقصى مسافة للتوصيل (كم)
+            }
 
             // 💰 العملة الافتراضية
-            $table->foreignId('default_currency_id')
-                ->nullable()
-                ->after('max_delivery_distance')
-                ->constrained('currencies')
-                ->nullOnDelete();
+            if (!Schema::hasColumn('vendors', 'default_currency_id')) {
+                $table->foreignId('default_currency_id')
+                    ->nullable()
+                    ->after('max_delivery_distance')
+                    ->constrained('currencies')
+                    ->nullOnDelete();
+            }
         });
     }
 
