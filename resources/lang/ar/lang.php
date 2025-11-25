@@ -161,4 +161,5 @@ return [
     'code_slug' => 'الكود (الرابط)',
     'example_category' => 'مثال: إلكترونيات',
     'unique_combination_error' => 'بيانات المورد، وخيار المنتج، والعملة مسجلة مسبقاً.',
+    'users_management' => 'ادارة المستخدمين',
 ];

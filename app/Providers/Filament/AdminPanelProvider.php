@@ -13,6 +13,7 @@ use App\Filament\Resources\Currencies\CurrencyResource;
 use App\Filament\Resources\Districts\DistrictResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Units\UnitResource;
+use App\Filament\Resources\Users\UserResource;
 use App\Filament\Resources\Vendors\VendorResource;
 use App\Models\Vendor;
 use Filament\Http\Middleware\Authenticate;
@@ -66,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
                     NavigationItem::make(__('lang.dashboard'))
                         ->icon('heroicon-o-home')
                         // ->isActiveWhen(fn(): bool => original_request()->routeIs('filament.admin.pages.dashboard'))
-                        ->url(fn(): string => Dashboard::getUrl()),
+                        // ->url(fn(): string => Dashboard::getUrl()),
 
                     // ...UserResource::getNavigationItems(),
                     // ...Settings::getNavigationItems(),
@@ -96,6 +97,10 @@ class AdminPanelProvider extends PanelProvider
                         ->items([
                             ...CategoryResource::getNavigationItems(),
                             ...ProductResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make(__('lang.users_management'))
+                        ->items([
+                            ...UserResource::getNavigationItems(),
                         ]),
                 ]);
             })
