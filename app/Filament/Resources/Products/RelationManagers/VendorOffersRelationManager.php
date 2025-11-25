@@ -25,6 +25,9 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Illuminate\Validation\Rules\Unique;
+
+use Filament\Schemas\Components\Utilities\Get;
 
 class VendorOffersRelationManager extends RelationManager
 {
@@ -73,6 +76,19 @@ class VendorOffersRelationManager extends RelationManager
                                     ->required()
                                     ->label('Vendor')
                                     ->live()
+                                    ->unique(
+                                        table: 'product_vendor_skus',
+                                        column: 'vendor_id',
+                                        modifyRuleUsing: function (Unique $rule, Get $get) {
+                                            return $rule
+                                                ->where('variant_id', $get('variant_id'))
+                                                ->where('currency_id', $get('currency_id'));
+                                        },
+                                        ignoreRecord: true,
+                                    )
+                                    ->validationMessages([
+                                        'unique' => __('lang.unique_combination_error'),
+                                    ])
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                         // عند اختيار التاجر، نضع عملته الافتراضية
                                         if ($state) {

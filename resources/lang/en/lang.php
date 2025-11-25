@@ -160,4 +160,5 @@ return [
     'attribute_name_placeholder' => 'Attribute Name (e.g., Color)',
     'code_slug' => 'Code (Slug)',
     'example_category' => 'e.g. Electronics',
+    'unique_combination_error' => 'The combination of vendor, product variant, and currency already exists.',
 ];
