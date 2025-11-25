@@ -16,10 +16,15 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Wizard;
+use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class VendorOffersRelationManager extends RelationManager
 {
@@ -56,109 +61,149 @@ class VendorOffersRelationManager extends RelationManager
     public function form(Schema $form): Schema
     {
         return $form
-            ->schema([
-                Select::make('vendor_id')
-                    ->relationship('vendor', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->required()
-                    ->label('Vendor')
-                    ->live()
-                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                        // عند اختيار التاجر، نضع عملته الافتراضية
-                        if ($state) {
-                            $vendor = \App\Models\Vendor::find($state);
-                            if ($vendor && $vendor->default_currency_id) {
-                                $set('currency_id', $vendor->default_currency_id);
-                            }
-                        }
+            ->schema(
+                [
+                    Wizard::make()->columnSpanFull()->skippable()->schema([
+                        Step::make('info')->columnSpanFull()
+                            ->columns(3)->schema([
+                                Select::make('vendor_id')
+                                    ->relationship('vendor', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->label('Vendor')
+                                    ->live()
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        // عند اختيار التاجر، نضع عملته الافتراضية
+                                        if ($state) {
+                                            $vendor = \App\Models\Vendor::find($state);
+                                            if ($vendor && $vendor->default_currency_id) {
+                                                $set('currency_id', $vendor->default_currency_id);
+                                            }
+                                        }
 
-                        // توليد vendor_sku إذا كان المتغير محدداً
-                        $variantId = $get('variant_id');
-                        if ($state && $variantId) {
-                            $generatedSku = self::generateVendorSku($state, $variantId);
-                            if ($generatedSku) {
-                                $set('vendor_sku', $generatedSku);
-                            }
-                        }
-                    }),
+                                        // توليد vendor_sku إذا كان المتغير محدداً
+                                        $variantId = $get('variant_id');
+                                        if ($state && $variantId) {
+                                            $generatedSku = self::generateVendorSku($state, $variantId);
+                                            if ($generatedSku) {
+                                                $set('vendor_sku', $generatedSku);
+                                            }
+                                        }
+                                    }),
 
-                Select::make('variant_id')
-                    ->label('Variant')
-                    ->options(function (RelationManager $livewire) {
-                        return ProductVariant::where('product_id', $livewire->getOwnerRecord()->id)
-                            ->with('variantValues.attribute') // Eager load attributes
-                            ->get()
-                            ->mapWithKeys(function ($variant) {
-                                // بناء اسم المتغير مع الخصائص
-                                $sku = "";
+                                Select::make('variant_id')
+                                    ->label('Variant')
+                                    ->options(function (RelationManager $livewire) {
+                                        return ProductVariant::where('product_id', $livewire->getOwnerRecord()->id)
+                                            ->with('variantValues.attribute') // Eager load attributes
+                                            ->get()
+                                            ->mapWithKeys(function ($variant) {
+                                                // بناء اسم المتغير مع الخصائص
+                                                $sku = "";
 
-                                // جلب الخصائص
-                                $attributes = $variant->variantValues
-                                    ->map(function ($attributeValue) {
-                                        return $attributeValue->attribute->name . ': ' . $attributeValue->value;
+                                                // جلب الخصائص
+                                                $attributes = $variant->variantValues
+                                                    ->map(function ($attributeValue) {
+                                                        return $attributeValue->attribute->name . ': ' . $attributeValue->value;
+                                                    })
+                                                    ->implode(', ');
+
+                                                // دمج SKU مع الخصائص
+                                                $label = $sku;
+                                                if ($attributes) {
+                                                    $label .= ' (' . $attributes . ')';
+                                                }
+
+                                                return [$variant->id => $label];
+                                            });
                                     })
-                                    ->implode(', ');
+                                    ->required()
+                                    ->searchable()
+                                    ->live()
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        // توليد vendor_sku تلقائياً
+                                        $vendorId = $get('vendor_id');
+                                        if ($state && $vendorId) {
+                                            $generatedSku = self::generateVendorSku($vendorId, $state);
+                                            if ($generatedSku) {
+                                                $set('vendor_sku', $generatedSku);
+                                            }
+                                        }
+                                    }),
 
-                                // دمج SKU مع الخصائص
-                                $label = $sku;
-                                if ($attributes) {
-                                    $label .= ' (' . $attributes . ')';
-                                }
+                                TextInput::make('vendor_sku')
+                                    ->label('Vendor SKU')
+                                    ->maxLength(255)->required()
+                                    ->helperText('Auto-generated, but you can modify it'),
 
-                                return [$variant->id => $label];
-                            });
-                    })
-                    ->required()
-                    ->searchable()
-                    ->live()
-                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                        // توليد vendor_sku تلقائياً
-                        $vendorId = $get('vendor_id');
-                        if ($state && $vendorId) {
-                            $generatedSku = self::generateVendorSku($vendorId, $state);
-                            if ($generatedSku) {
-                                $set('vendor_sku', $generatedSku);
-                            }
-                        }
-                    }),
+                                TextInput::make('cost_price')
+                                    ->label('Cost Price')
+                                    ->numeric()->required(),
 
-                TextInput::make('vendor_sku')
-                    ->label('Vendor SKU')
-                    ->maxLength(255)->required()
-                    ->helperText('Auto-generated, but you can modify it'),
+                                TextInput::make('selling_price')
+                                    ->label('Selling Price')
+                                    ->numeric()
+                                    ->required(),
 
-                TextInput::make('cost_price')
-                    ->label('Cost Price')
-                    ->numeric()->required(),
+                                Select::make('currency_id')
+                                    ->relationship('currency', 'name')
+                                    ->label('Currency')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
 
-                TextInput::make('selling_price')
-                    ->label('Selling Price')
-                    ->numeric()
-                    ->required(),
+                                TextInput::make('stock')
+                                    ->label('Stock Quantity')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->required(),
 
-                Select::make('currency_id')
-                    ->relationship('currency', 'name')
-                    ->label('Currency')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
+                                TextInput::make('moq')
+                                    ->label('Minimum Order Qty')
+                                    ->numeric()
+                                    ->default(1)
+                                    ->required(),
 
-                TextInput::make('stock')
-                    ->label('Stock Quantity')
-                    ->numeric()
-                    ->default(0)
-                    ->required(),
+                                Toggle::make('is_default_offer')
+                                    ->label('Default Offer'),
+                            ]),
 
-                TextInput::make('moq')
-                    ->label('Minimum Order Qty')
-                    ->numeric()
-                    ->default(1)
-                    ->required(),
-
-                Toggle::make('is_default_offer')
-                    ->label('Default Offer'),
-            ]);
+                        Step::make('images')->columnSpanFull()->schema([
+                            SpatieMediaLibraryFileUpload::make('images')
+                                ->disk('public')
+                                ->label('')
+                                ->directory('products')
+                                ->columnSpanFull()
+                                ->image()
+                                ->multiple()
+                                ->downloadable()
+                                ->moveFiles()
+                                ->previewable()
+                                ->imagePreviewHeight('250')
+                                ->loadingIndicatorPosition('right')
+                                ->panelLayout('integrated')
+                                ->removeUploadedFileButtonPosition('right')
+                                ->uploadButtonPosition('right')
+                                ->uploadProgressIndicatorPosition('right')
+                                ->panelLayout('grid')
+                                ->reorderable()
+                                ->openable()
+                                ->downloadable(true)
+                                ->previewable(true)
+                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                    return (string) str($file->getClientOriginalName())->prepend('product-');
+                                })
+                                ->imageEditor()
+                                ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
+                                ->maxSize(2000)
+                                ->imageEditorMode(2)
+                                ->imageEditorEmptyFillColor('#fff000')
+                                ->circleCropper(),
+                        ])
+                    ])
+                ]
+            );
     }
 
     public function table(Table $table): Table
@@ -167,6 +212,7 @@ class VendorOffersRelationManager extends RelationManager
             ->striped()
             ->recordTitleAttribute('vendor_sku')
             ->columns([
+
                 Tables\Columns\TextColumn::make('vendor.name')
                     ->label('Vendor')
                     ->sortable()
@@ -192,6 +238,10 @@ class VendorOffersRelationManager extends RelationManager
                 Tables\Columns\IconColumn::make('is_default_offer')
                     ->boolean()->alignCenter()
                     ->label('Default'),
+                SpatieMediaLibraryImageColumn::make('default')->label('')->size(50)
+                    ->circular()->alignCenter(true)->getStateUsing(function () {
+                        return null;
+                    })->limit(2),
             ])
             ->filters([
                 //

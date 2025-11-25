@@ -24,6 +24,10 @@ class ProductShowController extends Controller
                     ])->orderBy('is_default', 'desc');
                 },
                 'media', // product images
+                // eager load vendor offers and related data
+                'vendorOffers.vendor',
+                'vendorOffers.currency',
+                'vendorOffers.media',
             ])
             ->where('slug', $slug)
             ->firstOrFail();
@@ -88,6 +92,8 @@ class ProductShowController extends Controller
             'variants'       => $variants,
             'optionMatrix'   => $optionMatrix,
             'defaultVariant' => $defaultVariant,
+            // group vendor offers by vendor for tabs
+            'vendorTabs' => $product->vendorOffers->groupBy('vendor_id'),
         ]);
     }
 }
