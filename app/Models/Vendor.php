@@ -116,4 +116,8 @@ class Vendor extends Model
     {
         return $this->hasMany(ProductVendorSku::class);
     }
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
 }
