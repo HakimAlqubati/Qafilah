@@ -7,7 +7,7 @@ use Illuminate\Support\Arr;
 
 class ProductShowController extends Controller
 {
-    public function show(string $slug)
+    public function show(string $idOrSlug)
     {
         $product = Product::query()
             ->with([
@@ -29,8 +29,15 @@ class ProductShowController extends Controller
                 'vendorOffers.currency',
                 'vendorOffers.media',
             ])
-            ->where('slug', $slug)
-            ->firstOrFail();
+            ->where(function ($query) use ($idOrSlug) {
+                // الافتراضي البحث بالـ slug
+                $query->where('slug', $idOrSlug);
+
+                // إذا كان المدخل رقمياً، نضيف شرط البحث بالـ id (orWhere)
+                if (is_numeric($idOrSlug)) {
+                    $query->orWhere('id', $idOrSlug);
+                }
+            })->firstOrFail();
 
         // ----- Product attributes (descriptive) as flat rows
         $specs = $product->attributes->map(function ($pa) {
