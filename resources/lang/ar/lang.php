@@ -160,4 +160,5 @@ return [
     'attribute_name_placeholder' => 'اسم الخاصية (مثال: اللون)',
     'code_slug' => 'الكود (الرابط)',
     'example_category' => 'مثال: إلكترونيات',
+    'unique_combination_error' => 'بيانات المورد، وخيار المنتج، والعملة مسجلة مسبقاً.',
 ];
