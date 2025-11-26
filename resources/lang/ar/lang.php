@@ -161,4 +161,18 @@ return [
     'code_slug' => 'الكود (الرابط)',
     'example_category' => 'مثال: إلكترونيات',
     'unique_combination_error' => 'بيانات المورد، وخيار المنتج، والعملة مسجلة مسبقاً.',
+    'users_management' => 'ادارة المستخدمين',
+    'create' => 'إنشاء',
+
+    // Wizard Form
+    'product_information' => 'معلومات المنتج',
+    'vendor_sku' => 'رمز المنتج الخاص',
+    'vendor_sku_helper' => 'رمز المنتج الفريد الخاص بك',
+    'cost_price' => 'سعر التكلفة',
+    'selling_price' => 'سعر البيع',
+    'stock' => 'الكمية المتوفرة',
+    'moq' => 'الحد الأدنى للطلب',
+    'moq_helper' => 'الحد الأدنى للكمية في الطلب الواحد',
+    'product_images' => 'صور المنتج',
+    'upload_images_helper' => 'رفع صور المنتج (الحد الأقصى 2 ميجابايت لكل صورة)',
 ];

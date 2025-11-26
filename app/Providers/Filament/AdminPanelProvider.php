@@ -13,8 +13,10 @@ use App\Filament\Resources\Currencies\CurrencyResource;
 use App\Filament\Resources\Districts\DistrictResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Units\UnitResource;
+use App\Filament\Resources\Users\UserResource;
 use App\Filament\Resources\Vendors\VendorResource;
 use App\Models\Vendor;
+use App\Http\Middleware\CustomAdminFilamentAuthenticate;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -97,6 +99,10 @@ class AdminPanelProvider extends PanelProvider
                             ...CategoryResource::getNavigationItems(),
                             ...ProductResource::getNavigationItems(),
                         ]),
+                    NavigationGroup::make(__('lang.users_management'))
+                        ->items([
+                            ...UserResource::getNavigationItems(),
+                        ]),
                 ]);
             })
             ->sidebarCollapsibleOnDesktop()
@@ -124,6 +130,7 @@ class AdminPanelProvider extends PanelProvider
 
             ->authMiddleware([
                 Authenticate::class,
+                CustomAdminFilamentAuthenticate::class,
             ]);
     }
 }

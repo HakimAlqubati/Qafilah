@@ -161,4 +161,18 @@ return [
     'code_slug' => 'Code (Slug)',
     'example_category' => 'e.g. Electronics',
     'unique_combination_error' => 'The combination of vendor, product variant, and currency already exists.',
+    'users_management' => 'Users Management',
+    'create' => 'Create',
+
+    // Wizard Form
+    'product_information' => 'Product Information',
+    'vendor_sku' => 'Vendor SKU',
+    'vendor_sku_helper' => 'Your unique product code',
+    'cost_price' => 'Cost Price',
+    'selling_price' => 'Selling Price',
+    'stock' => 'Stock Quantity',
+    'moq' => 'Minimum Order Quantity',
+    'moq_helper' => 'Minimum quantity per order',
+    'product_images' => 'Product Images',
+    'upload_images_helper' => 'Upload product images (Max 2MB per image)',
 ];
