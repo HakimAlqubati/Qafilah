@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('vendors', function (Blueprint $table) {
+        Schema::table('vendors', function (Blueprint $table) { 
             // 📍 الموقع الجغرافي
             if (!Schema::hasColumn('vendors', 'latitude')) {
                 $table->decimal('latitude', 10, 8)->nullable()->after('logo_path');
