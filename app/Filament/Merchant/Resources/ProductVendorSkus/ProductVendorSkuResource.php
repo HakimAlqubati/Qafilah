@@ -24,6 +24,17 @@ class ProductVendorSkuResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'vendor_id';
 
+    public static function getLabel(): ?string
+    {
+        return __('lang.product');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('lang.product');
+    }
+
+
     public static function form(Schema $schema): Schema
     {
         return ProductVendorSkuForm::configure($schema);
@@ -57,8 +68,12 @@ class ProductVendorSkuResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getEloquentQuery()->count();
+    }
     public static function getEloquentQuery(): Builder
     {
-        return static::getModel()::query()->where('vendor_id',auth()->user()->vendor_id);
+        return static::getModel()::query()->where('vendor_id', auth()->user()->vendor_id);
     }
 }

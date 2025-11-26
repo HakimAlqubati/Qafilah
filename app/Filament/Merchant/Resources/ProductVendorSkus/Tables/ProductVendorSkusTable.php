@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -15,12 +16,23 @@ class ProductVendorSkusTable
 {
     public static function configure(Table $table): Table
     {
-        return $table
+        return $table->striped()->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('variant.product.name')
                     ->label('Product')
                     ->searchable()
                     ->sortable(),
+
+                SpatieMediaLibraryImageColumn::make('images')
+                    ->label(__('lang.images'))
+                    ->collection('default')
+                    ->circular()
+                    ->stacked()
+                    ->limit(2)
+                    ->limitedRemainingText()
+                    ->size(40)
+                    ->alignCenter(),
+
                 TextColumn::make('vendor_sku')
                     ->label('SKU')
                     ->searchable(),

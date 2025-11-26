@@ -28,6 +28,10 @@ class MerchantPanelProvider extends PanelProvider
             ->id('merchant')
             ->path('merchant')
             ->login()
+            ->brandName('Qafilah')
+            ->favicon(asset('/imgs/logo.png'))
+            ->brandLogo(asset('/imgs/logo.png'))
+            ->brandLogoHeight('3.0rem')
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -38,8 +42,9 @@ class MerchantPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Merchant/Widgets'), for: 'App\Filament\Merchant\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                // AccountWidget::class,
+                \App\Filament\Merchant\Widgets\MerchantProductsChart::class, // يدوي
+
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -55,6 +60,8 @@ class MerchantPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 CustomFilamentAuthenticate::class
-            ]);
+            ])
+            ->topNavigation()
+        ;
     }
 }

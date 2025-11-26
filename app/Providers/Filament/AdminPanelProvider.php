@@ -67,8 +67,8 @@ class AdminPanelProvider extends PanelProvider
                 return $builder->items([
                     NavigationItem::make(__('lang.dashboard'))
                         ->icon('heroicon-o-home')
-                    // ->isActiveWhen(fn(): bool => original_request()->routeIs('filament.admin.pages.dashboard'))
-                    ->url(fn(): string => Dashboard::getUrl()),
+                        // ->isActiveWhen(fn(): bool => original_request()->routeIs('filament.admin.pages.dashboard'))
+                        ->url(fn(): string => Dashboard::getUrl()),
 
                     // ...UserResource::getNavigationItems(),
                     // ...Settings::getNavigationItems(),
