@@ -27,9 +27,9 @@ class CustomFilamentAuthenticate extends BaseAuthenticate
 
         $panel = Filament::getCurrentOrDefaultPanel();
 
-        if(!$user->vendor_id){
-            
-            abort(403,'You are not a vendor');
+        if (!$user->vendor_id) {
+
+            abort(403, 'You are not a vendor');
         }
         // --- هنا يمكنك وضع التعديلات الخاصة بك ---
 

@@ -16,6 +16,7 @@ use App\Filament\Resources\Units\UnitResource;
 use App\Filament\Resources\Users\UserResource;
 use App\Filament\Resources\Vendors\VendorResource;
 use App\Models\Vendor;
+use App\Http\Middleware\CustomAdminFilamentAuthenticate;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -66,8 +67,8 @@ class AdminPanelProvider extends PanelProvider
                 return $builder->items([
                     NavigationItem::make(__('lang.dashboard'))
                         ->icon('heroicon-o-home')
-                        // ->isActiveWhen(fn(): bool => original_request()->routeIs('filament.admin.pages.dashboard'))
-                        // ->url(fn(): string => Dashboard::getUrl()),
+                    // ->isActiveWhen(fn(): bool => original_request()->routeIs('filament.admin.pages.dashboard'))
+                    // ->url(fn(): string => Dashboard::getUrl()),
 
                     // ...UserResource::getNavigationItems(),
                     // ...Settings::getNavigationItems(),
@@ -129,6 +130,7 @@ class AdminPanelProvider extends PanelProvider
 
             ->authMiddleware([
                 Authenticate::class,
+                CustomAdminFilamentAuthenticate::class,
             ]);
     }
 }
