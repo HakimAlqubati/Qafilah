@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 class Attribute extends Model
 {
@@ -15,6 +16,7 @@ class Attribute extends Model
         'input_type',
         'is_required',
         'active',
+        'sort_order',
     ];
 
     protected $casts = [
@@ -22,9 +24,10 @@ class Attribute extends Model
         'active'      => 'boolean',
     ];
 
-    /* ============================================================
-     | 🧩 ثابتات لأنواع الإدخال المتاحة
-     |============================================================ */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('active', 1);
+    }
     public static array $INPUT_TYPES = [
         'TEXT'     => 'text',
         'NUMBER'   => 'number',

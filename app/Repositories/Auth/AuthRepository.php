@@ -20,7 +20,6 @@ class AuthRepository implements AuthRepositoryInterface
 
     public function logout(User $user, ?string $tokenId = null): void
     {
-        // Sanctum: حذف كل التوكنات أو واحد فقط
         if ($tokenId) {
             $user->tokens()->where('id', $tokenId)->delete();
         } else {

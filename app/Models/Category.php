@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,7 +14,16 @@ class Category extends Model
         'parent_id',
         'attribute_set_id',
         'active',
+        'sort_order',
     ];
+    protected $casts = [
+        'active' => 'bool',
+    ];
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('active', 1);
+    }
 
     public function parent()
     {

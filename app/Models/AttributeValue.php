@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 class AttributeValue extends Model
 {
@@ -16,9 +17,10 @@ class AttributeValue extends Model
         'is_active',
     ];
 
-    /* ============================================================
-     | 🔗 العلاقات
-     |============================================================ */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', 1);
+    }
     public function attribute()
     {
         return $this->belongsTo(Attribute::class);
