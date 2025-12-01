@@ -70,6 +70,8 @@ return [
     'attribute_set' => 'مجموعة الخصائص',
     'created' => 'تاريخ الإنشاء',
     'updated' => 'تاريخ التحديث',
+    'main_category' => 'تصنيف رئيسي',
+    'sub_category' => 'تصنيف فرعي',
 
     // Location Table Columns
     'phone_code' => 'رمز الهاتف',
@@ -175,4 +177,5 @@ return [
     'moq_helper' => 'الحد الأدنى للكمية في الطلب الواحد',
     'product_images' => 'صور المنتج',
     'upload_images_helper' => 'رفع صور المنتج (الحد الأقصى 2 ميجابايت لكل صورة)',
+    'variant' => 'المتغير', 
 ];

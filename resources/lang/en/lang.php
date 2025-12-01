@@ -70,6 +70,8 @@ return [
     'attribute_set' => 'Attribute Set',
     'created' => 'Created',
     'updated' => 'Updated',
+    'main_category' => 'Main Category',
+    'sub_category' => 'Sub Category',
 
     // Location Table Columns
     'phone_code' => 'Phone Code',
@@ -175,4 +177,5 @@ return [
     'moq_helper' => 'Minimum quantity per order',
     'product_images' => 'Product Images',
     'upload_images_helper' => 'Upload product images (Max 2MB per image)',
+    'variant' => 'Variant',
 ];
