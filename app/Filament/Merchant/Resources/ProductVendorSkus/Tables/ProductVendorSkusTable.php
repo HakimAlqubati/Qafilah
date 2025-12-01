@@ -23,6 +23,12 @@ class ProductVendorSkusTable
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('variant_details')
+                    ->label(__('lang.variant'))
+                    ->state(function ($record) {
+                        return $record->variant?->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(', ');
+                    }),
+
                 SpatieMediaLibraryImageColumn::make('images')
                     ->label(__('lang.images'))
                     ->collection('default')
