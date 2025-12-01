@@ -10,6 +10,6 @@ class CreateProductVendorSku extends CreateRecord
     protected static string $resource = ProductVendorSkuResource::class;
     protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
+        return $this->getResource()::getUrl('index');
     }
 }
