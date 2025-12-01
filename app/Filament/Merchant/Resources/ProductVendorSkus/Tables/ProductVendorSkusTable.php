@@ -7,6 +7,9 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Support\Colors\Color;
+use Filament\Support\Enums\FontFamily;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
@@ -21,13 +24,21 @@ class ProductVendorSkusTable
                 TextColumn::make('variant.product.name')
                     ->label('Product')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+
+
+                    ->color('primary')
+                    ->fontFamily(FontFamily::Mono)
+                    ->weight(FontWeight::Bold),
 
                 TextColumn::make('variant_details')
-                    ->label(__('lang.variant'))
+                    ->label('')
                     ->state(function ($record) {
                         return $record->variant?->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(', ');
-                    }),
+                    })
+                    ->color('primary')
+                    ->fontFamily(FontFamily::Mono)
+                    ->weight(FontWeight::Bold),
 
                 SpatieMediaLibraryImageColumn::make('images')
                     ->label(__('lang.images'))
@@ -45,7 +56,10 @@ class ProductVendorSkusTable
                 TextColumn::make('selling_price')
                     ->label('Price')
                     ->money(fn($record) => $record->currency->code ?? 'USD')
-                    ->sortable(),
+                    ->sortable()
+                    ->color(Color::Green)
+                    ->fontFamily(FontFamily::Mono)
+                    ->weight(FontWeight::Bold),
                 TextColumn::make('stock')
                     ->label('Stock')
                     ->numeric()

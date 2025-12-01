@@ -9,6 +9,8 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Illuminate\Database\Eloquent\Builder;
@@ -87,15 +89,31 @@ class ProductVendorSkuForm
                                             ->pluck('name', 'id');
                                     })
                                     ->live()
-                                    ->afterStateUpdated(function ($set) {
+                                    ->afterStateUpdated(function ($set, $get) {
                                         $set('variant_id', null);
                                         $set('attributes', []);
+
+                                        // Auto-select variant if product has no variant attributes
+                                        $productId = $get('product_id');
+                                        if ($productId) {
+                                            $product = \App\Models\Product::with(['attributesDirect'])->find($productId);
+                                            $hasVariantAttributes = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
+
+                                            if (!$hasVariantAttributes) {
+                                                // Find the default/single variant
+                                                $variant = \App\Models\ProductVariant::where('product_id', $productId)->active()->first();
+                                                if ($variant) {
+                                                    $set('variant_id', $variant->id);
+                                                    $set('vendor_sku', $variant->master_sku);
+                                                }
+                                            }
+                                        }
                                     })
                                     ->required(),
 
                                 // 4. Dynamic Attributes
                                 Grid::make(2)
-                                    ->schema(function ($get) {
+                                    ->schema(function ($get, $set) {
                                         $productId = $get('product_id');
                                         if (!$productId) {
                                             return [];
@@ -108,41 +126,33 @@ class ProductVendorSkuForm
 
                                         $sortedAttributes = $product->attributesDirect->sortBy('pivot.sort_order')->values();
                                         $components = [];
-                                        $previousAttributeId = null;
 
-                                        foreach ($sortedAttributes as $index => $attribute) {
-                                            // Only show attributes that are used for variants
-                                            if (!$attribute->pivot->is_variant_option) {
-                                                continue;
-                                            }
+                                        // Filter only variant option attributes
+                                        $variantAttributes = $sortedAttributes->filter(fn($attr) => $attr->pivot->is_variant_option)->values();
 
+                                        foreach ($variantAttributes as $index => $attribute) {
                                             // Determine if this attribute should be visible (disabled or hidden if previous not selected)
-                                            $isDisabled = false;
                                             if ($index > 0) {
-                                                $prevAttrId = $sortedAttributes[$index - 1]->id;
+                                                $prevAttrId = $variantAttributes[$index - 1]->id;
                                                 $prevValue = $get("attributes.{$prevAttrId}");
                                                 if (empty($prevValue)) {
-                                                    $isDisabled = true;
-                                                    // Or we can just not add the component to hide it, 
-                                                    // but user asked for "appears", so maybe hiding is better.
-                                                    // Let's hide it by not adding it to components if previous is missing.
                                                     break;
                                                 }
                                             }
 
                                             $components[] = Select::make("attributes.{$attribute->id}")
                                                 ->label($attribute->name)
-                                                ->options(function ($get) use ($productId, $attribute, $sortedAttributes, $index) {
+                                                ->options(function ($get) use ($productId, $attribute, $variantAttributes, $index) {
                                                     // Filter options based on previous selections
-                                                    $query = \App\Models\ProductVariant::where('product_id', $productId);
+                                                    $query = \App\Models\ProductVariant::where('product_id', $productId)->active();
 
                                                     // Apply filters from previous attributes
                                                     for ($i = 0; $i < $index; $i++) {
-                                                        $prevAttr = $sortedAttributes[$i];
+                                                        $prevAttr = $variantAttributes[$i];
                                                         $prevVal = $get("attributes.{$prevAttr->id}");
                                                         if ($prevVal) {
                                                             $query->whereHas('variantValues', function ($q) use ($prevVal) {
-                                                                // $q->where('attribute_value_id', $prevVal);
+                                                                $q->where('attribute_value_id', $prevVal);
                                                             });
                                                         }
                                                     }
@@ -152,63 +162,65 @@ class ProductVendorSkuForm
 
                                                     return \App\Models\AttributeValue::where('attribute_id', $attribute->id)
                                                         ->whereHas('variants', function ($q) use ($validVariantIds) {
-                                                            // $q->whereIn('product_variants.id', $validVariantIds);
+                                                            $q->whereIn('product_variants.id', $validVariantIds);
                                                         })
                                                         ->pluck('value', 'id');
                                                 })
                                                 ->required()
                                                 ->live()
-                                                ->afterStateUpdated(function ($set, $get) use ($sortedAttributes, $index) {
+                                                ->afterStateUpdated(function ($set, $get) use ($variantAttributes, $index, $productId) {
                                                     // Reset subsequent attributes
-                                                    for ($i = $index + 1; $i < $sortedAttributes->count(); $i++) {
-                                                        $nextAttr = $sortedAttributes[$i];
+                                                    for ($i = $index + 1; $i < $variantAttributes->count(); $i++) {
+                                                        $nextAttr = $variantAttributes[$i];
                                                         $set("attributes.{$nextAttr->id}", null);
                                                     }
                                                     $set('variant_id', null);
+
+                                                    // Check if all attributes are selected
+                                                    $allSelected = true;
+                                                    $selectedAttributes = $get('attributes') ?? [];
+
+                                                    foreach ($variantAttributes as $attr) {
+                                                        if (empty($selectedAttributes[$attr->id])) {
+                                                            $allSelected = false;
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    if ($allSelected) {
+                                                        // Find the matching variant
+                                                        $query = \App\Models\ProductVariant::where('product_id', $productId)->active();
+
+                                                        foreach ($selectedAttributes as $attrId => $valId) {
+                                                            if ($valId) {
+                                                                $query->whereHas('variantValues', function ($q) use ($valId) {
+                                                                    $q->where('attribute_value_id', $valId);
+                                                                });
+                                                            }
+                                                        }
+
+                                                        $variant = $query->first();
+                                                        if ($variant) {
+                                                            $set('variant_id', $variant->id);
+                                                            $set('vendor_sku', $variant->master_sku);
+                                                        }
+                                                    }
                                                 });
                                         }
                                         return $components;
                                     }),
 
-                                // Variant Selection (Visible)
-                                Select::make('variant_id')
-                                    ->label(__('lang.variant'))
-                                    ->options(function ($get) {
-                                        $productId = $get('product_id');
-                                        $attributes = $get('attributes') ?? [];
-
-                                        if (!$productId || empty($attributes)) {
-                                            return [];
-                                        }
-
-                                        $query = \App\Models\ProductVariant::where('product_id', $productId)
-                                            ->active()
-                                            ->with(['values.attribute', 'values.attributeValue']);
-
-                                        foreach ($attributes as $attrId => $valId) {
-                                            if ($valId) {
-                                                $query->whereHas('variantValues', function ($q) use ($valId) {
-                                                    $q->where('attribute_value_id', $valId);
-                                                });
-                                            }
-                                        }
-
-                                        return $query->get()->mapWithKeys(function ($variant) {
-                                            $name = $variant->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(', ');
-                                            return [$variant->id => $name ?: $variant->master_sku];
-                                        });
-                                    })
+                                // Variant Selection (Hidden)
+                                Hidden::make('variant_id')
                                     ->required()
-                                    ->live()
-                                    ->preload()
-                                    ->searchable()
                                     ->dehydrated(),
 
                                 TextInput::make('vendor_sku')
                                     ->label(__('lang.vendor_sku'))
                                     ->helperText(__('lang.vendor_sku_helper'))
                                     ->maxLength(255)
-                                    ->required(),
+                                    ->required()
+                                    ->visible(fn($get) => filled($get('variant_id'))),
 
                                 Select::make('currency_id')
                                     ->label(__('lang.currency'))
@@ -216,30 +228,68 @@ class ProductVendorSkuForm
                                     ->default(fn() => Currency::default()->first()?->id)
                                     ->searchable()
                                     ->preload()
-                                    ->required(),
+                                    ->required()
+                                    ->visible(fn($get) => filled($get('variant_id')))
+                                    ->validationMessages([
+                                        'unique' => __('This product variant is already added with this currency.'),
+                                    ])
+                                    ->rules([
+                                        function (Get $get, Component $component) {
+                                            return function (string $attribute, $value, \Closure $fail) use ($get, $component) {
+                                                $variantId = $get('variant_id');
+                                                $vendorId = $get('vendor_id');
 
-                                TextInput::make('cost_price')
-                                    ->label(__('lang.cost_price'))
-                                    ->numeric()
-                                    ->required(),
+                                                if (!$variantId || !$vendorId) {
+                                                    return;
+                                                }
 
-                                TextInput::make('selling_price')
-                                    ->label(__('lang.selling_price'))
-                                    ->numeric()
-                                    ->required(),
+                                                $query = \App\Models\ProductVendorSku::where('variant_id', $variantId)
+                                                    ->where('vendor_id', $vendorId)
+                                                    ->where('currency_id', $value);
 
-                                TextInput::make('stock')
-                                    ->label(__('lang.stock'))
-                                    ->numeric()
-                                    ->default(0)
-                                    ->required(),
+                                                // Ignore current record if editing
+                                                $record = $component->getRecord();
+                                                if ($record) {
+                                                    $query->where('id', '!=', $record->id);
+                                                }
 
-                                TextInput::make('moq')
-                                    ->label(__('lang.moq'))
-                                    ->helperText(__('lang.moq_helper'))
-                                    ->numeric()
-                                    ->default(1)
-                                    ->required(),
+                                                if ($query->exists()) {
+                                                    $fail(__('This product variant is already added with this currency.'));
+                                                }
+                                            };
+                                        },
+                                    ]),
+
+                                Grid::make()->columnSpanFull()
+                                    ->visible(fn($get) => filled($get('variant_id')))->columns(4)->schema([
+
+                                        TextInput::make('cost_price')
+                                            ->label(__('lang.cost_price'))
+                                            ->numeric()
+                                            ->required()
+                                            ->visible(fn($get) => filled($get('variant_id'))),
+
+                                        TextInput::make('selling_price')
+                                            ->label(__('lang.selling_price'))
+                                            ->numeric()
+                                            ->required()
+                                            ->visible(fn($get) => filled($get('variant_id'))),
+
+                                        TextInput::make('stock')
+                                            ->label(__('lang.stock'))
+                                            ->numeric()
+                                            ->default(0)
+                                            ->required()
+                                            ->visible(fn($get) => filled($get('variant_id'))),
+
+                                        TextInput::make('moq')
+                                            ->label(__('lang.moq'))
+                                            ->helperText(__('lang.moq_helper'))
+                                            ->numeric()
+                                            ->default(1)
+                                            ->required()
+                                            ->visible(fn($get) => filled($get('variant_id'))),
+                                    ]),
 
                                 Hidden::make('vendor_id')
                                     ->default(fn() => auth()->user()->vendor_id),

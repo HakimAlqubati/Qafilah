@@ -20,4 +20,8 @@ class EditProductVendorSku extends EditRecord
             RestoreAction::make(),
         ];
     }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
+    }
 }
