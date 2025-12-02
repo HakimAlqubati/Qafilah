@@ -16,7 +16,6 @@ class UserResource extends JsonResource
             'id'    => $this->id,
             'name'  => $this->name,
             'email' => $this->email,
-            // أضف هنا أي حقول تريدها في الـ API
         ];
     }
 }

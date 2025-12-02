@@ -30,4 +30,5 @@ Route::prefix('v1/ecommerce')->group(function () {
         Route::post('units',            [BasicDataController::class, 'units']);
     });
     Route::post('/products', [ProductController::class, 'index']);
+    Route::get('/products/{id}', [ProductController::class, 'show']);
 });
