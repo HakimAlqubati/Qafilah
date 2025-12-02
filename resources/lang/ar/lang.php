@@ -214,4 +214,7 @@ return [
     'billing' => 'فواتير',
     'general' => 'عام',
     'customer_management' => 'إدارة العملاء',
-];
+    'add_new_value' => 'إضافة قيمة جديدة',
+    'manage_options' => 'ادارة الاختيارات',
+    'defined_values' => 'القيم المعرفة',
+ ];

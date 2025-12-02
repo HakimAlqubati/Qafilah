@@ -214,4 +214,7 @@ return [
     'billing' => 'Billing',
     'general' => 'General',
     'customer_management' => 'Customer Management',
+    'add_new_value' => 'Add New Value',
+    'manage_options' => 'Manage Options',
+    'defined_values' => 'Defined Values',
 ];
