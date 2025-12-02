@@ -217,4 +217,8 @@ return [
     'add_new_value' => 'Add New Value',
     'manage_options' => 'Manage Options',
     'defined_values' => 'Defined Values',
+    'good_morning'   => 'Good Morning',
+    'good_afternoon' => 'Good Afternoon',
+    'good_evening'   => 'Good Evening',
+    'welcome'        => 'Welcome',
 ];

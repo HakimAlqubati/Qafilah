@@ -217,4 +217,8 @@ return [
     'add_new_value' => 'إضافة قيمة جديدة',
     'manage_options' => 'ادارة الاختيارات',
     'defined_values' => 'القيم المعرفة',
- ];
+     'good_morning'   => 'صباح الخير',
+    'good_afternoon' => 'طاب يومك', // أو "نهارك سعيد"
+    'good_evening'   => 'مساء الخير',
+    'welcome'        => 'أهلاً بك',
+];
