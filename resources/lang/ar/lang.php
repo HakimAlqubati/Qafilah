@@ -195,4 +195,22 @@ return [
     'is_default_unit' => 'وحدة افتراضية؟',
     'is_default_unit_helper' => 'هل هذه الوحدة الافتراضية للعرض؟',
     'sort_order_helper' => 'ترتيب العرض (الأصغر يظهر أولاً)',
+
+    // Customers
+    'customers' => 'العملاء',
+    'customer' => 'عميل',
+    'customer_name' => 'اسم العميل',
+    'company_info' => 'معلومات الشركة',
+    'contact_info' => 'معلومات الاتصال',
+    'financial_info' => 'المعلومات المالية',
+    'addresses' => 'العناوين',
+    'address_type' => 'نوع العنوان',
+    'vat_number' => 'الرقم الضريبي',
+    'commercial_register' => 'السجل التجاري',
+    'credit_limit' => 'الحد الائتماني',
+    'payment_terms' => 'شروط الدفع',
+    'is_default' => 'عنوان افتراضي',
+    'shipping' => 'شحن',
+    'billing' => 'فواتير',
+    'general' => 'عام',
 ];

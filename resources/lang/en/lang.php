@@ -195,4 +195,22 @@ return [
     'is_default_unit' => 'Default Unit?',
     'is_default_unit_helper' => 'Is this the default unit for display?',
     'sort_order_helper' => 'Display order (smaller appears first)',
+
+    // Customers
+    'customers' => 'Customers',
+    'customer' => 'Customer',
+    'customer_name' => 'Customer Name',
+    'company_info' => 'Company Info',
+    'contact_info' => 'Contact Info',
+    'financial_info' => 'Financial Info',
+    'addresses' => 'Addresses',
+    'address_type' => 'Address Type',
+    'vat_number' => 'VAT Number',
+    'commercial_register' => 'Commercial Register',
+    'credit_limit' => 'Credit Limit',
+    'payment_terms' => 'Payment Terms',
+    'is_default' => 'Default Address',
+    'shipping' => 'Shipping',
+    'billing' => 'Billing',
+    'general' => 'General',
 ];
