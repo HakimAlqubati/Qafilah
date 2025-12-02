@@ -213,4 +213,5 @@ return [
     'shipping' => 'شحن',
     'billing' => 'فواتير',
     'general' => 'عام',
+    'customer_management' => 'إدارة العملاء',
 ];

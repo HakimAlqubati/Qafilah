@@ -10,6 +10,7 @@ use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\Cities\CityResource;
 use App\Filament\Resources\Countries\CountryResource;
 use App\Filament\Resources\Currencies\CurrencyResource;
+use App\Filament\Resources\Customers\CustomerResource;
 use App\Filament\Resources\Districts\DistrictResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Units\UnitResource;
@@ -76,6 +77,10 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make(__('lang.vendor_management'))
                         ->items([
                             ...VendorResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make(__('lang.customer_management'))
+                        ->items([
+                            ...CustomerResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make(__('lang.location_management'))
                         ->items([

@@ -213,4 +213,5 @@ return [
     'shipping' => 'Shipping',
     'billing' => 'Billing',
     'general' => 'General',
+    'customer_management' => 'Customer Management',
 ];
