@@ -260,42 +260,110 @@ class ProductVendorSkuForm
                                         },
                                     ]),
 
-                                Grid::make()->columnSpanFull()
-                                    ->visible(fn($get) => filled($get('variant_id')))->columns(4)->schema([
-
-                                        TextInput::make('cost_price')
-                                            ->label(__('lang.cost_price'))
-                                            ->numeric()
-                                            ->required()
-                                            ->visible(fn($get) => filled($get('variant_id'))),
-
-                                        TextInput::make('selling_price')
-                                            ->label(__('lang.selling_price'))
-                                            ->numeric()
-                                            ->required()
-                                            ->visible(fn($get) => filled($get('variant_id'))),
-
-                                        TextInput::make('stock')
-                                            ->label(__('lang.stock'))
-                                            ->numeric()
-                                            ->default(0)
-                                            ->required()
-                                            ->visible(fn($get) => filled($get('variant_id'))),
-
-                                        TextInput::make('moq')
-                                            ->label(__('lang.moq'))
-                                            ->helperText(__('lang.moq_helper'))
-                                            ->numeric()
-                                            ->default(1)
-                                            ->required()
-                                            ->visible(fn($get) => filled($get('variant_id'))),
-                                    ]),
-
                                 Hidden::make('vendor_id')
                                     ->default(fn() => auth()->user()->vendor_id),
                             ]),
 
-                        // Step 2: Images Upload
+                        // Step 2: Units & Pricing
+                        Step::make('units')
+                            ->label(__('lang.units_pricing'))
+                            ->icon('heroicon-o-cube')
+                            ->columnSpanFull()
+                            ->schema([
+                                \Filament\Forms\Components\Repeater::make('units')
+                                    ->relationship('units')
+                                    ->label(__('lang.unit_prices'))
+                                    ->columnSpanFull()
+                                    ->collapsible()
+                                    ->collapsed(false)
+                                    ->itemLabel(
+                                        fn(array $state): ?string =>
+                                        \App\Models\Unit::find($state['unit_id'])?->name ?? 'New Unit'
+                                    )
+                                    ->defaultItems(0)
+                                    ->addActionLabel(__('lang.add_unit'))
+                                    ->reorderable(true)
+                                    ->reorderableWithButtons()
+                                    ->columns(3)
+                                    ->schema([
+                                        Select::make('unit_id')
+                                            ->label(__('lang.unit'))
+                                            ->options(\App\Models\Unit::active()->pluck('name', 'id'))
+                                            ->required()
+                                            ->searchable()
+                                            ->preload()
+                                            ->live()
+                                            ->distinct()
+                                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                            ->columnSpan(1),
+
+                                        TextInput::make('package_size')
+                                            ->label(__('lang.package_size'))
+                                            ->helperText(__('lang.package_size_helper'))
+                                            ->numeric()
+                                            ->required()
+                                            ->minValue(1)
+                                            ->default(1)
+                                            ->columnSpan(1),
+
+                                        TextInput::make('moq')
+                                            ->label(__('lang.moq'))
+                                            ->helperText(__('lang.moq_unit_helper'))
+                                            ->numeric()
+                                            ->required()
+                                            ->minValue(1)
+                                            ->default(1)
+                                            ->columnSpan(1),
+
+                                        TextInput::make('cost_price')
+                                            ->label(__('lang.unit_cost_price'))
+                                            ->helperText(__('lang.unit_cost_price_helper'))
+                                            ->numeric()
+                                            ->nullable()
+                                            ->columnSpan(1),
+
+                                        TextInput::make('selling_price')
+                                            ->label(__('lang.unit_selling_price'))
+                                            ->helperText(__('lang.unit_selling_price_helper'))
+                                            ->numeric()
+                                            ->required()
+                                            ->columnSpan(1),
+
+                                        TextInput::make('stock')
+                                            ->label(__('lang.unit_stock'))
+                                            ->helperText(__('lang.unit_stock_helper'))
+                                            ->numeric()
+                                            ->required()
+                                            ->default(0)
+                                            ->minValue(0)
+                                            ->columnSpan(1),
+
+                                        \Filament\Forms\Components\Toggle::make('is_default')
+                                            ->label(__('lang.is_default_unit'))
+                                            ->helperText(__('lang.is_default_unit_helper'))
+                                            ->inline(false)
+                                            ->columnSpan(1),
+
+                                        Select::make('status')
+                                            ->label(__('lang.status'))
+                                            ->options([
+                                                'active' => __('lang.active'),
+                                                'inactive' => __('lang.inactive'),
+                                            ])
+                                            ->default('active')
+                                            ->required()
+                                            ->columnSpan(1),
+
+                                        TextInput::make('sort_order')
+                                            ->label(__('lang.sort_order'))
+                                            ->helperText(__('lang.sort_order_helper'))
+                                            ->numeric()
+                                            ->default(0)
+                                            ->columnSpan(1),
+                                    ])
+                            ]),
+
+                        // Step 3: Images Upload
                         Step::make('images')
                             ->label(__('lang.images'))
                             ->icon('heroicon-o-photo')
