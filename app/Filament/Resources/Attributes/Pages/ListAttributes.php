@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Attributes\Pages;
 use App\Filament\Resources\Attributes\AttributeResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Icons\Heroicon;
 
 class ListAttributes extends ListRecords
 {
@@ -13,7 +14,7 @@ class ListAttributes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()->icon(Heroicon::OutlinedPlusCircle),
         ];
     }
 }

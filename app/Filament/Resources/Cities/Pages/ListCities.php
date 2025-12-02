@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Cities\Pages;
 use App\Filament\Resources\Cities\CityResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Icons\Heroicon;
 
 class ListCities extends ListRecords
 {
@@ -13,7 +14,7 @@ class ListCities extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()->icon(Heroicon::OutlinedPlusCircle),
         ];
     }
 }
