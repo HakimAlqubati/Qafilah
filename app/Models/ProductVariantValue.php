@@ -9,7 +9,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class ProductVariantValue extends Model implements HasMedia
 {
-    use HasFactory,InteractsWithMedia;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'variant_id',
@@ -31,7 +31,7 @@ class ProductVariantValue extends Model implements HasMedia
         return $this->belongsTo(Attribute::class);
     }
 
-    public function value()
+    public function attributeValue()
     {
         return $this->belongsTo(AttributeValue::class, 'attribute_value_id');
     }
@@ -42,7 +42,7 @@ class ProductVariantValue extends Model implements HasMedia
 
     public function displayValue(): string
     {
-        return $this->value?->value ?? '';
+        return $this->attributeValue?->value ?? '';
     }
 
     public function attributeLabel(): string

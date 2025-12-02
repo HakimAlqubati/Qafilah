@@ -8,4 +8,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateProductVendorSku extends CreateRecord
 {
     protected static string $resource = ProductVendorSkuResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

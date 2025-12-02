@@ -12,22 +12,31 @@ class CategoriesTable
 {
     public static function configure(Table $table): Table
     {
-        return $table
+        return $table->striped()->defaultSort('id', 'desc')
             ->columns([
 
 
+                Tables\Columns\TextColumn::make('id')
+                    ->label(__('lang.id'))
+                    ->searchable()->toggleable()->alignCenter()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->label(__('lang.name'))
+                    ->label(__('lang.name'))->toggleable()
                     ->searchable()
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('products_count')
+                    ->counts('products')
+                    ->label(__('lang.products_count'))
+                    ->sortable()->alignCenter(),
 
 
 
                 Tables\Columns\TextColumn::make('parent.name')
                     ->label(__('lang.parent'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('attributeSet.name')
-                    ->label(__('lang.attribute_set')),
+                // Tables\Columns\TextColumn::make('attributeSet.name')
+                //     ->label(__('lang.attribute_set')),
 
 
 
