@@ -16,11 +16,7 @@ class ProductVendorSku extends Model implements HasMedia
         'variant_id',
         'vendor_id',
         'vendor_sku',
-        'cost_price',
-        'selling_price',
         'currency_id',
-        'stock',
-        'moq',
         'is_default_offer',
         'status',
         'created_by',
@@ -29,8 +25,6 @@ class ProductVendorSku extends Model implements HasMedia
 
     protected $casts = [
         'is_default_offer' => 'boolean',
-        'cost_price' => 'decimal:2',
-        'selling_price' => 'decimal:2',
     ];
 
     /* ============================================================
@@ -64,11 +58,11 @@ class ProductVendorSku extends Model implements HasMedia
         return $this->belongsTo(Currency::class);
     }
 
-    // وحدات البيع (ProductUnits)
-    // public function units()
-    // {
-    //     return $this->hasMany(ProductUnit::class, 'product_vendor_sku_id');
-    // }
+    // وحدات البيع (ProductVendorSkuUnits)
+    public function units()
+    {
+        return $this->hasMany(ProductVendorSkuUnit::class, 'product_vendor_sku_id');
+    }
 
     // المستخدم الذي أنشأ العرض
     public function creator()

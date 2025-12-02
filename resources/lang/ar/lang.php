@@ -177,5 +177,22 @@ return [
     'moq_helper' => 'الحد الأدنى للكمية في الطلب الواحد',
     'product_images' => 'صور المنتج',
     'upload_images_helper' => 'رفع صور المنتج (الحد الأقصى 2 ميجابايت لكل صورة)',
-    'variant' => 'المتغير', 
+    'variant' => 'المتغير',
+
+    // Units & Pricing
+    'units_pricing' => 'الوحدات والتسعير',
+    'unit_prices' => 'أسعار الوحدات',
+    'add_unit' => 'إضافة وحدة',
+    'package_size' => 'حجم العبوة',
+    'package_size_helper' => 'عدد القطع في هذه الوحدة (مثال: 12 قطعة في العلبة)',
+    'moq_unit_helper' => 'الحد الأدنى للطلب بهذه الوحدة',
+    'unit_cost_price' => 'سعر تكلفة الوحدة',
+    'unit_cost_price_helper' => 'سعر التكلفة للوحدة الكاملة',
+    'unit_selling_price' => 'سعر بيع الوحدة',
+    'unit_selling_price_helper' => 'سعر البيع للوحدة الكاملة',
+    'unit_stock' => 'مخزون الوحدة',
+    'unit_stock_helper' => 'الكمية المتوفرة من هذه الوحدة',
+    'is_default_unit' => 'وحدة افتراضية؟',
+    'is_default_unit_helper' => 'هل هذه الوحدة الافتراضية للعرض؟',
+    'sort_order_helper' => 'ترتيب العرض (الأصغر يظهر أولاً)',
 ];

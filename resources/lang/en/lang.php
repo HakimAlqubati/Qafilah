@@ -178,4 +178,21 @@ return [
     'product_images' => 'Product Images',
     'upload_images_helper' => 'Upload product images (Max 2MB per image)',
     'variant' => 'Variant',
+
+    // Units & Pricing
+    'units_pricing' => 'Units & Pricing',
+    'unit_prices' => 'Unit Prices',
+    'add_unit' => 'Add Unit',
+    'package_size' => 'Package Size',
+    'package_size_helper' => 'Number of pieces in this unit (e.g., 12 pieces per box)',
+    'moq_unit_helper' => 'Minimum order quantity for this unit',
+    'unit_cost_price' => 'Unit Cost Price',
+    'unit_cost_price_helper' => 'Cost price for the complete unit',
+    'unit_selling_price' => 'Unit Selling Price',
+    'unit_selling_price_helper' => 'Selling price for the complete unit',
+    'unit_stock' => 'Unit Stock',
+    'unit_stock_helper' => 'Available quantity of this unit',
+    'is_default_unit' => 'Default Unit?',
+    'is_default_unit_helper' => 'Is this the default unit for display?',
+    'sort_order_helper' => 'Display order (smaller appears first)',
 ];

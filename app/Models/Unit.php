@@ -19,6 +19,22 @@ class Unit extends Model
         'sort_order',
     ];
 
+    /* ============================================================
+     | 🔗 العلاقات (Relations)
+     |============================================================ */
+
+    /**
+     * علاقة الوحدة بـ ProductVendorSkuUnits
+     */
+    public function productVendorSkuUnits()
+    {
+        return $this->hasMany(ProductVendorSkuUnit::class);
+    }
+
+    /* ============================================================
+     | 🧭 Scopes
+     |============================================================ */
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('active', 1);
