@@ -221,4 +221,15 @@ return [
     'good_afternoon' => 'Good Afternoon',
     'good_evening'   => 'Good Evening',
     'welcome'        => 'Welcome',
+
+    'total_vendors'             => 'Total Vendors',
+    'active_vendors_desc'       => 'Active vendors',
+    'total_products'            => 'Total Products',
+    'all_products_desc'         => 'All available products',
+    'total_customers'           => 'Total Customers',
+    'registered_customers_desc' => 'Registered customers',
+    'total_orders'              => 'Total Orders',
+    'processed_orders_desc'     => 'Processed orders',
+    'coming_soon'               => 'SOON :)',
+    'new_customers'             => 'New Customers',
 ];

@@ -16,7 +16,7 @@ class CustomersChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'New Customers',
+                    'label' => __('lang.new_customers'),
                     'data' => [12, 19, 3, 5, 2, 3, 10, 15, 20, 25, 30, 45],
                     'borderColor' => '#FF6384',
                     'backgroundColor' => '#FF6384',

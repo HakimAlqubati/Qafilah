@@ -217,8 +217,20 @@ return [
     'add_new_value' => 'إضافة قيمة جديدة',
     'manage_options' => 'ادارة الاختيارات',
     'defined_values' => 'القيم المعرفة',
-     'good_morning'   => 'صباح الخير',
+    'good_morning'   => 'صباح الخير',
     'good_afternoon' => 'طاب يومك', // أو "نهارك سعيد"
     'good_evening'   => 'مساء الخير',
     'welcome'        => 'أهلاً بك',
+
+    'total_vendors'             => 'إجمالي الموردين',
+    'active_vendors_desc'       => 'الموردون النشطون حالياً',
+    'total_products'            => 'إجمالي المنتجات',
+    'all_products_desc'         => 'جميع المنتجات المتاحة',
+    'total_customers'           => 'إجمالي العملاء',
+    'registered_customers_desc' => 'العملاء المسجلون بالنظام',
+    'total_orders'              => 'إجمالي الطلبات',
+    'processed_orders_desc'     => 'الطلبات التي تمت معالجتها',
+    'coming_soon'               => 'قريباً :)',
+
+    'new_customers' => 'العملاء الجدد',
 ];

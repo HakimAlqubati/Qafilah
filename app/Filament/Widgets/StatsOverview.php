@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Vendor;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -9,26 +10,32 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatsOverview extends BaseWidget
 {
+    // يمكنك تعديل فترة التحديث التلقائي هنا
+ 
     protected function getStats(): array
     {
         return [
-            Stat::make('Total Vendors', Vendor::count())
-                ->description('Active vendors')
+            // 1. Vendors
+            Stat::make(__('lang.total_vendors'), Vendor::count())
+                ->description(__('lang.active_vendors_desc'))
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('primary'),
 
-            Stat::make('Total Products', Product::count())
-                ->description('All products')
+            // 2. Products
+            Stat::make(__('lang.total_products'), Product::count())
+                ->description(__('lang.all_products_desc'))
                 ->descriptionIcon('heroicon-m-cube')
                 ->color('success'),
 
-            Stat::make('Total Customers', 0)
-                ->description('Registered customers')
+            // 3. Customers
+            Stat::make(__('lang.total_customers'), Customer::count())
+                ->description(__('lang.registered_customers_desc'))
                 ->descriptionIcon('heroicon-m-users')
                 ->color('warning'),
 
-            Stat::make('Total Orders', 0)
-                ->description('Processed orders')
+            // 4. Orders (Placeholder)
+            Stat::make(__('lang.total_orders'), __('lang.coming_soon'))
+                ->description(__('lang.processed_orders_desc'))
                 ->descriptionIcon('heroicon-m-shopping-cart')
                 ->color('danger'),
         ];
