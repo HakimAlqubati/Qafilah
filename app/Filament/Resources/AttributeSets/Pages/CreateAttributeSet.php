@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateAttributeSet extends CreateRecord
 {
     protected static string $resource = AttributeSetResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
