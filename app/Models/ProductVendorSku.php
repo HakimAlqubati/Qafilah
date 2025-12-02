@@ -13,6 +13,7 @@ class ProductVendorSku extends Model implements HasMedia
     use HasFactory, SoftDeletes, InteractsWithMedia;
 
     protected $fillable = [
+        'product_id',
         'variant_id',
         'vendor_id',
         'vendor_sku',
@@ -44,6 +45,12 @@ class ProductVendorSku extends Model implements HasMedia
     public function variant()
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');
+    }
+
+    // المنتج
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 
     // البائع
