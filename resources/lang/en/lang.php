@@ -232,4 +232,9 @@ return [
     'processed_orders_desc'     => 'Processed orders',
     'coming_soon'               => 'SOON :)',
     'new_customers'             => 'New Customers',
+    'orders_per_month'          => 'Orders per Month',
+    'revenue_per_month' => 'Monthly Revenue',
+    'product_distribution' => 'Product Distribution',
+    'users' => 'Users',
+    'user' => 'User',
 ];

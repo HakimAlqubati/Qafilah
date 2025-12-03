@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
+use Illuminate\Contracts\Support\Htmlable;
 
 class CustomersChart extends ChartWidget
 {
@@ -10,6 +11,11 @@ class CustomersChart extends ChartWidget
 
     protected static ?int $sort = 4;
     protected ?string $maxHeight = '400px';
+
+    public function getHeading(): string | Htmlable | null
+    {
+        return __('lang.new_customers');
+    }
 
     protected function getData(): array
     {

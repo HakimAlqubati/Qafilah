@@ -233,4 +233,9 @@ return [
     'coming_soon'               => 'قريباً :)',
 
     'new_customers' => 'العملاء الجدد',
+    'orders_per_month' => 'الطلبات كل شهر',
+    'revenue_per_month' => 'الإيرادات الشهرية', 
+    'product_distribution' => 'توزيع المنتجات',
+    'users' => 'المستخدمين',
+    'user' => 'مستخدم',
 ];

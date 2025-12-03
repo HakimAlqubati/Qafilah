@@ -3,11 +3,17 @@
 namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
+use Illuminate\Contracts\Support\Htmlable;
 
 class RevenueChart extends ChartWidget
 {
     protected ?string $heading = 'Revenue per Month';
     protected static ?int $sort = 3;
+    public function getHeading(): string | Htmlable | null
+    {
+        return __('lang.revenue_per_month');
+    }
+
 
     protected function getData(): array
     {
