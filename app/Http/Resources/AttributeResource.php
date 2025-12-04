@@ -18,6 +18,7 @@ class AttributeResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'code' => $this->code,
+            'input_type' => $this->input_type,
             'type' => $this->type,
             // Include pivot data if available
 
