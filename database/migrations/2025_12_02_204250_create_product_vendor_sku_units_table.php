@@ -60,8 +60,6 @@ return new class extends Migration
             // 🕒 الحذف المنطقي والطوابع الزمنية
             $table->softDeletes();
             $table->timestamps();
-
-            // 🔑 قيود فريدة - لا يمكن تكرار نفس الوحدة لنفس العرض
             $table->unique(['product_vendor_sku_id', 'unit_id'], 'unique_sku_unit');
         });
     }

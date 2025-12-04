@@ -114,6 +114,11 @@ class Product extends Model implements HasMedia
         return $this->hasManyThrough(ProductVendorSku::class, ProductVariant::class, 'product_id', 'variant_id', 'id', 'id');
     }
 
+    public function offers()
+    {
+        return $this->hasMany(ProductVendorSku::class);
+    }
+
     // المستخدم الذي أنشأ المنتج
     public function creator()
     {
