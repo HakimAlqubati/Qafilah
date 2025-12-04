@@ -15,7 +15,7 @@ class AttributeValueResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'attribute_value_id' => $this->id,
             'attribute_id' => $this->attribute_id,
             'value' => $this->value,
             'sort_order' => $this->sort_order,
