@@ -27,6 +27,7 @@ class ProductVendorSkuResource extends JsonResource
                     'name' => $this->vendor->name,
                 ];
             }),
+            'units' => ProductVendorSkuUnitResource::collection($this->whenLoaded('units')),
         ];
     }
 }

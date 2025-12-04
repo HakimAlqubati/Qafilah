@@ -27,6 +27,7 @@ class ProductVariantResource extends JsonResource
                 return $media->getUrl();
             }),
             'variant_values' => AttributeValueResource::collection($this->whenLoaded('variantValues')),
+            'vendor_offers' => ProductVendorSkuResource::collection($this->whenLoaded('vendorOffers')),
         ];
     }
 }

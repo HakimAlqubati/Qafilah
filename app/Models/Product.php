@@ -101,7 +101,11 @@ class Product extends Model implements HasMedia
             ->withTimestamps();
     }
 
-    // البائعون الذين يقدمون عروضًا لهذا المنتج (عبر variants)
+    public function seAttributes()
+    {
+        return $this->hasMany(ProductSeAttribute::class);
+    }
+
     public function vendors()
     {
         return $this->hasManyThrough(Vendor::class, ProductVariant::class);

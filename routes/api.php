@@ -31,6 +31,8 @@ Route::prefix('v1/ecommerce')->group(function () {
     });
     Route::post('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
+    Route::get('/products/{id}/details', [ProductController::class, 'details']);
+    Route::get('/products/{id}/vendor/{vendor_id}/prices', [ProductController::class, 'vendorPrices']);
     Route::get('/vendor-products/{id}', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'show']);
     Route::get('/vendors/{vendor_id}/products', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'index']);
 });

@@ -33,4 +33,34 @@ class ProductController extends  ApiController
 
         return $this->successResponse(new \App\Http\Resources\ProductResource($product), "");
     }
+
+    public function details($id)
+    {
+
+        $product = Product::with([
+            'media',
+            'attributesDirect' => function($query) {
+                $query->with('values')->orderByPivot('sort_order');
+            },
+            'variants.media',
+            'variants.variantValues',
+
+        ])
+        ->active()
+        ->findOrFail($id);
+
+        return $this->successResponse(new \App\Http\Resources\ProductDetailsResource($product), "");
+    }
+
+    public function vendorPrices($id, $vendorId)
+    {
+        $productVendorSkus = \App\Models\ProductVendorSku::where('product_id', $id)
+            ->where('vendor_id', $vendorId)
+            ->with(['variant', 'units' => function($query) {
+                $query->active()->orderBy('sort_order');
+            }, 'units.unit'])
+            ->get();
+
+        return $this->successResponse(\App\Http\Resources\ProductVendorSkuResource::collection($productVendorSkus), "");
+    }
 }

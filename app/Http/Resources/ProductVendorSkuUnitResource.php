@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AttributeResource extends JsonResource
+class ProductVendorSkuUnitResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,12 +16,12 @@ class AttributeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'code' => $this->code,
-            'type' => $this->type,
-            // Include pivot data if available
-
-            'values' => AttributeValueResource::collection($this->whenLoaded('values')),
+            'unit_name' => $this->unit ? $this->unit->name : null,
+            'package_size' => $this->package_size,
+            'selling_price' => $this->selling_price,
+            'stock' => $this->stock,
+            'moq' => $this->moq,
+            'is_default' => $this->is_default,
         ];
     }
 }
