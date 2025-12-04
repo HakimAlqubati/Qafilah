@@ -3,10 +3,17 @@
 namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
+use Illuminate\Contracts\Support\Htmlable;
 
 class OrdersChart extends ChartWidget
 {
     protected ?string $heading = 'Orders per Month';
+
+    public function getHeading(): string | Htmlable | null
+    {
+        return __('lang.orders_per_month');
+    }
+
 
     protected static ?int $sort = 2;
     protected ?string $maxHeight = '400px';

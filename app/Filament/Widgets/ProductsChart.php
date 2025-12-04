@@ -4,12 +4,19 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use App\Models\Category;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ProductsChart extends ChartWidget
 {
     protected ?string $heading = 'Product Distribution';
 
     protected static ?int $sort = 5;
+
+    public function getHeading(): string | Htmlable | null
+    {
+        return __('lang.product_distribution');
+    }
+
 
     protected function getData(): array
     {

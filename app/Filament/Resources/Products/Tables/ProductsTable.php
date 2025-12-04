@@ -22,7 +22,7 @@ class ProductsTable
 {
     public static function configure(Table $table): Table
     {
-        return $table
+        return $table->striped()
             ->columns([
                 // 1. Name & SKU (Primary identifiers)
                 TextColumn::make('id')
