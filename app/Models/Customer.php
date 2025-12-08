@@ -89,4 +89,28 @@ class Customer extends Model
     {
         return $query->where('is_active', true);
     }
+
+    /**
+     * طلبات العميل
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * الحصول على إجمالي الطلبات
+     */
+    public function getTotalOrdersAmount(): float
+    {
+        return $this->orders()->sum('total');
+    }
+
+    /**
+     * الحصول على عدد الطلبات
+     */
+    public function getOrdersCount(): int
+    {
+        return $this->orders()->count();
+    }
 }

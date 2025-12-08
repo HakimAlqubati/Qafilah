@@ -185,4 +185,22 @@ class Product extends Model implements HasMedia
     {
         return $query->where('category_id', $categoryId);
     }
+
+    /**
+     * بنود الطلبات المرتبطة بالمنتج
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * الحصول على إجمالي الكميات المباعة
+     */
+    public function getTotalSoldQuantity(): int
+    {
+        return $this->orderItems()
+            ->whereHas('order', fn($q) => $q->where('status', '!=', 'cancelled'))
+            ->sum('quantity');
+    }
 }

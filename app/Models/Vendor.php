@@ -120,4 +120,20 @@ class Vendor extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /**
+     * طلبات البائع
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * الحصول على إجمالي المبيعات
+     */
+    public function getTotalSalesAmount(): float
+    {
+        return $this->orders()->where('status', '!=', 'cancelled')->sum('total');
+    }
 }
