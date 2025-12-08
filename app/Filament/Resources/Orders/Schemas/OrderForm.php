@@ -143,7 +143,7 @@ class OrderForm
                                                 if (!$productId) return [];
 
                                                 $query = ProductVendorSku::whereHas('variant', fn($q) => $q->where('product_id', $productId))
-                                                    ->with('vendor');
+                                                    ->with(['vendor', 'variant.variantValues.attribute']);
 
                                                 // Filter by vendor if selected
                                                 if ($vendorId) {
@@ -151,9 +151,21 @@ class OrderForm
                                                 }
 
                                                 return $query->get()
-                                                    ->mapWithKeys(fn($sku) => [
-                                                        $sku->id => $sku->vendor?->name . ' - ' . $sku->selling_price
-                                                    ]);
+                                                    ->mapWithKeys(function ($sku) {
+                                                        // Get variant attribute values
+                                                        $attributeLabels = $sku->variant?->variantValues
+                                                            ->map(fn($av) => $av->attribute?->name . ': ' . $av->value)
+                                                            ->filter()
+                                                            ->implode(' | ');
+
+                                                        // $label = $sku->vendor?->name;
+                                                        $label = '';
+                                                        if ($attributeLabels) {
+                                                            $label .=  $attributeLabels;
+                                                        }
+
+                                                        return [$sku->id => $label];
+                                                    });
                                             })
                                             ->searchable()
                                             ->live()

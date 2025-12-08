@@ -303,4 +303,6 @@ return [
     'changed_by' => 'تم بواسطة',
     'date' => 'التاريخ',
     'address' => 'العنوان',
+    'pending_orders' => 'الطلبات المعلقة',
+    'pieces' => 'قطعة',
 ];

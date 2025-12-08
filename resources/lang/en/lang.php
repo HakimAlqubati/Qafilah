@@ -302,4 +302,6 @@ return [
     'changed_by' => 'Changed By',
     'date' => 'Date',
     'address' => 'Address',
+    'pending_orders' => 'Pending Orders',
+    'pieces' => 'piece',
 ];

@@ -90,11 +90,36 @@ class OrderResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('status', Order::STATUS_PENDING)->count() ?: null;
+        return static::getModel()::count();
+        try {
+            $pendingCount = static::getModel()::where('status', Order::STATUS_PENDING)->count();
+            return $pendingCount > 0 ? (string) $pendingCount : null;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
-    public static function getNavigationBadgeColor(): string|array|null
+    // public static function getNavigationBadgeColor(): string|array|null
+    // {
+    //     try {
+    //         $pendingCount = static::getModel()::where('status', Order::STATUS_PENDING)->count();
+
+    //         if ($pendingCount >= 10) {
+    //             return 'danger'; // أحمر - طلبات كثيرة معلقة
+    //         } elseif ($pendingCount >= 5) {
+    //             return 'warning'; // برتقالي - عدد متوسط
+    //         } elseif ($pendingCount > 0) {
+    //             return 'info'; // أزرق - عدد قليل
+    //         }
+
+    //         return 'success'; // أخضر - لا يوجد طلبات معلقة
+    //     } catch (\Exception $e) {
+    //         return 'gray';
+    //     }
+    // }
+
+    public static function getNavigationBadgeTooltip(): ?string
     {
-        return 'warning';
+        return __('lang.pending_orders');
     }
 }
