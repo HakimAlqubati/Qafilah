@@ -64,6 +64,7 @@ return [
     'brand' => 'العلامة التجارية',
     'variants' => 'المتغيرات',
     'featured' => 'مميز',
+    'attributes_count' => 'عدد الخصائص',
     'image' => 'الصورة',
 
     // Category Table Columns
@@ -234,7 +235,7 @@ return [
 
     'new_customers' => 'العملاء الجدد',
     'orders_per_month' => 'الطلبات كل شهر',
-    'revenue_per_month' => 'الإيرادات الشهرية', 
+    'revenue_per_month' => 'الإيرادات الشهرية',
     'product_distribution' => 'توزيع المنتجات',
     'users' => 'المستخدمين',
     'user' => 'مستخدم',

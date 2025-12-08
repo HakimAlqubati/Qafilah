@@ -80,6 +80,14 @@ class ProductsTable
                     ->counts('variants') // Count the number of associated variants
                     ->sortable()->toggleable(),
 
+                // عدد الخصائص (Attributes)
+                TextColumn::make('attributes_direct_count')
+                    ->label(__('lang.attributes_count'))
+                    ->alignCenter()
+                    ->counts('attributesDirect')
+                    ->sortable()
+                    ->toggleable(),
+
                 // 6. Featured Status
                 IconColumn::make('is_featured')
                     ->label(__('lang.featured'))

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api\Ecommerce;
 
 use App\Models\Product;
@@ -9,7 +10,7 @@ class ProductController extends  ApiController
 {
     public function index(Request $request)
     {
-         $perPage = $request->integer('per_page', 10);
+        $perPage = $request->integer('per_page', 10);
 
         $products = Product::query()
             ->with(['media', 'variants.media'])
@@ -21,13 +22,13 @@ class ProductController extends  ApiController
         });
 
         return $this->successResponse($products, "");
-     }
+    }
 
     public function show($id)
     {
-        $product = Product::with(['media', 'variants.media', 'variants.variantValues', 'attributesDirect' => function($query) {
-                $query->with('values')->orderByPivot('sort_order');
-            }])
+        $product = Product::with(['media', 'variants.media', 'variants.variantValues', 'attributesDirect' => function ($query) {
+            $query->with('values')->orderByPivot('sort_order');
+        }])
             ->active()
             ->findOrFail($id);
 
@@ -39,15 +40,15 @@ class ProductController extends  ApiController
 
         $product = Product::with([
             'media',
-            'attributesDirect' => function($query) {
+            'attributesDirect' => function ($query) {
                 $query->with('values')->orderByPivot('sort_order');
             },
             'variants.media',
             'variants.variantValues',
 
         ])
-        ->active()
-        ->findOrFail($id);
+            ->active()
+            ->findOrFail($id);
 
         return $this->successResponse(new \App\Http\Resources\ProductDetailsResource($product), "");
     }
@@ -56,7 +57,7 @@ class ProductController extends  ApiController
     {
         $productVendorSkus = \App\Models\ProductVendorSku::where('product_id', $id)
             ->where('vendor_id', $vendorId)
-            ->with(['variant', 'units' => function($query) {
+            ->with(['variant', 'units' => function ($query) {
                 $query->active()->orderBy('sort_order');
             }, 'units.unit'])
             ->get();

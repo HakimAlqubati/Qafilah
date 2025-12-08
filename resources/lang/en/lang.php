@@ -64,6 +64,7 @@ return [
     'brand' => 'Brand',
     'variants' => 'Variants',
     'featured' => 'Featured',
+    'attributes_count' => 'Attributes Count',
     'image' => 'Image',
 
     // Category Table Columns
