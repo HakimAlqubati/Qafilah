@@ -105,7 +105,17 @@ class OrderForm
                                     ->schema([
                                         Select::make('product_id')
                                             ->label(__('lang.product'))
-                                            ->options(Product::active()->pluck('name', 'id'))
+                                            ->options(function (Get $get) {
+                                                $vendorId = $get('../../vendor_id');
+                                                // if (!$vendorId) {
+                                                //     return Product::query()->pluck('name', 'id');
+                                                // }
+
+                                                // Get products that have offers from this vendor
+                                                return Product::whereHas('vendorOffers', function ($query) use ($vendorId) {
+                                                    $query->where('vendor_id', $vendorId);
+                                                })->pluck('name', 'id');
+                                            })
                                             ->searchable()
                                             ->required()
                                             ->live()
@@ -113,6 +123,11 @@ class OrderForm
                                                 if ($state) {
                                                     $product = Product::find($state);
                                                     $set('product_name', $product?->name ?? '');
+                                                    // Reset dependent fields
+                                                    $set('product_vendor_sku_id', null);
+                                                    $set('product_vendor_sku_unit_id', null);
+                                                    $set('package_size', 1);
+                                                    $set('unit_price', 0);
                                                 }
                                             })
                                             ->columnSpan(2),
@@ -124,11 +139,18 @@ class OrderForm
                                             ->label(__('lang.vendor_offer'))
                                             ->options(function (Get $get) {
                                                 $productId = $get('product_id');
+                                                $vendorId = $get('../../vendor_id');
                                                 if (!$productId) return [];
 
-                                                return ProductVendorSku::whereHas('variant', fn($q) => $q->where('product_id', $productId))
-                                                    ->with('vendor')
-                                                    ->get()
+                                                $query = ProductVendorSku::whereHas('variant', fn($q) => $q->where('product_id', $productId))
+                                                    ->with('vendor');
+
+                                                // Filter by vendor if selected
+                                                if ($vendorId) {
+                                                    $query->where('vendor_id', $vendorId);
+                                                }
+
+                                                return $query->get()
                                                     ->mapWithKeys(fn($sku) => [
                                                         $sku->id => $sku->vendor?->name . ' - ' . $sku->selling_price
                                                     ]);
@@ -140,6 +162,9 @@ class OrderForm
                                                     $sku = ProductVendorSku::find($state);
                                                     $set('sku', $sku?->vendor_sku);
                                                     $set('unit_price', $sku?->selling_price ?? 0);
+                                                    // Reset unit selection
+                                                    $set('product_vendor_sku_unit_id', null);
+                                                    $set('package_size', 1);
                                                 }
                                             })
                                             ->columnSpan(2),
@@ -151,10 +176,11 @@ class OrderForm
                                                 if (!$skuId) return [];
 
                                                 return ProductVendorSkuUnit::where('product_vendor_sku_id', $skuId)
+                                                    ->active()
                                                     ->with('unit')
                                                     ->get()
                                                     ->mapWithKeys(fn($u) => [
-                                                        $u->id => $u->unit?->name . ' (' . $u->package_size . ')'
+                                                        $u->id => $u->unit?->name . ' (' . $u->package_size . ' ' . __('lang.pieces') . ')'
                                                     ]);
                                             })
                                             ->searchable()
@@ -176,7 +202,8 @@ class OrderForm
                                             ->label(__('lang.package_size'))
                                             ->numeric()
                                             ->default(1)
-                                            ->required(),
+                                            ->disabled()
+                                            ->dehydrated(true),
 
                                         TextInput::make('quantity')
                                             ->label(__('lang.quantity'))

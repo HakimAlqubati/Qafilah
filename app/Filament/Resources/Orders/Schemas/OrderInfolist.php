@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Models\Order;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Group;
 use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 
@@ -167,7 +167,7 @@ class OrderInfolist
                                 ->label(__('lang.total'))
                                 ->money('YER')
                                 ->weight(FontWeight::Bold)
-                                ->size(TextEntry\TextEntrySize::Large),
+                                // ->size(TextEntrySize::Large),
                         ]),
                     ]),
 
