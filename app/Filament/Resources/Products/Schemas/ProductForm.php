@@ -98,6 +98,7 @@ class ProductForm
                         ->icon('heroicon-o-photo')
                         ->schema([
                             SpatieMediaLibraryFileUpload::make('images')
+                                ->lazy()
                                 ->disk('public')
                                 ->label('')
                                 ->directory('products')
