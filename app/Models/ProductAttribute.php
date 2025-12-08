@@ -13,6 +13,13 @@ class ProductAttribute extends Model
         'product_id',
         'attribute_id',
         'value',
+        'is_variant_option',
+        'sort_order',
+    ];
+
+    protected $casts = [
+        'is_variant_option' => 'boolean',
+        'sort_order' => 'integer',
     ];
 
     /* ============================================================
@@ -43,8 +50,23 @@ class ProductAttribute extends Model
         return $this->value ?? '';
     }
 
+    public function isVariantOption(): bool
+    {
+        return $this->is_variant_option === true;
+    }
+
     public static function forProduct($productId)
     {
-        return self::where('product_id', $productId)->get();
+        return self::where('product_id', $productId)
+            ->orderBy('sort_order')
+            ->get();
+    }
+
+    public static function variantOptionsForProduct($productId)
+    {
+        return self::where('product_id', $productId)
+            ->where('is_variant_option', true)
+            ->orderBy('sort_order')
+            ->get();
     }
 }

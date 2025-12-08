@@ -93,17 +93,12 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ProductAttribute::class);
     }
 
-
+    // علاقة M2M مع الخصائص عبر جدول product_attributes (للـ API والعرض)
     public function attributesDirect()
     {
-        return $this->belongsToMany(Attribute::class, 'product_set_attributes')
-            ->withPivot(['is_variant_option', 'sort_order'])
+        return $this->belongsToMany(Attribute::class, 'product_attributes')
+            ->withPivot(['value', 'is_variant_option', 'sort_order'])
             ->withTimestamps();
-    }
-
-    public function seAttributes()
-    {
-        return $this->hasMany(ProductSeAttribute::class);
     }
 
     public function vendors()

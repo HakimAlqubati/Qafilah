@@ -306,10 +306,10 @@ class ProductForm
                                 return false;
                             }
 
-                            // نفس منطقك: نعتمد على product_set_attributes
+                            // نعتمد على product_attributes
                             return \App\Models\Attribute::query()
-                                ->join('product_set_attributes as psa', 'psa.attribute_id', '=', 'attributes.id')
-                                ->where('psa.product_id', $productId)
+                                ->join('product_attributes as pa', 'pa.attribute_id', '=', 'attributes.id')
+                                ->where('pa.product_id', $productId)
                                 ->where('attributes.active', true)
                                 ->exists();
                         })->hiddenOn('create'),
@@ -486,10 +486,10 @@ class ProductForm
                                 return false;
                             }
 
-                            // نفس منطقك: نعتمد على product_set_attributes
+                            // نعتمد على product_attributes
                             return \App\Models\Attribute::query()
-                                ->join('product_set_attributes as psa', 'psa.attribute_id', '=', 'attributes.id')
-                                ->where('psa.product_id', $productId)
+                                ->join('product_attributes as pa', 'pa.attribute_id', '=', 'attributes.id')
+                                ->where('pa.product_id', $productId)
                                 ->where('attributes.active', true)
                                 ->exists();
                         })
@@ -531,10 +531,10 @@ class ProductForm
         // ✅ أولاً نحاول السمات المرتبطة مباشرةً بالمنتج
         if ($productId) {
             $attributes = Attribute::query()
-                ->join('product_set_attributes as psa', 'psa.attribute_id', '=', 'attributes.id')
-                ->where('psa.product_id', $productId)
+                ->join('product_attributes as pa', 'pa.attribute_id', '=', 'attributes.id')
+                ->where('pa.product_id', $productId)
                 ->where('attributes.active', true)
-                ->orderBy('psa.sort_order')
+                ->orderBy('pa.sort_order')
                 ->orderBy('attributes.name')
                 ->select('attributes.id', 'attributes.name')
                 ->get()
@@ -684,11 +684,11 @@ class ProductForm
         if ($productId) {
             $attrs = Attribute::query()
                 ->with('values')
-                ->select('attributes.*', 'psa.sort_order', 'psa.is_variant_option')
-                ->join('product_set_attributes as psa', 'psa.attribute_id', '=', 'attributes.id')
-                ->where('psa.product_id', $productId)
+                ->select('attributes.*', 'pa.sort_order', 'pa.is_variant_option')
+                ->join('product_attributes as pa', 'pa.attribute_id', '=', 'attributes.id')
+                ->where('pa.product_id', $productId)
                 ->where('attributes.active', true)
-                ->where('psa.is_variant_option', true)
+                ->where('pa.is_variant_option', true)
                 ->get()
                 ->filter(fn(Attribute $a) => $a->isChoiceType())
                 ->sortBy(fn($a) => $a->sort_order ?? PHP_INT_MAX)

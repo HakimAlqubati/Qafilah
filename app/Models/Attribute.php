@@ -109,8 +109,8 @@ class Attribute extends Model
 
     public function productsDirect()
     {
-        return $this->belongsToMany(Product::class, 'product_set_attributes')
-            ->withPivot(['is_variant_option', 'sort_order'])
+        return $this->belongsToMany(Product::class, 'product_attributes')
+            ->withPivot(['value', 'is_variant_option', 'sort_order'])
             ->withTimestamps();
     }
 }
