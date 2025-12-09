@@ -313,4 +313,11 @@ return [
     'roles' => 'الأدوار',
     'no_vendor' => 'بدون تاجر',
     'select_vendor' => 'اختر تاجر',
+
+    // Vendor User Management
+    'has_user' => 'لديه مستخدم',
+    'create_user' => 'إنشاء مستخدم',
+    'create_user_for_vendor' => 'إنشاء مستخدم للتاجر',
+    'user_created_successfully' => 'تم إنشاء المستخدم بنجاح',
+    'password_confirmation' => 'تأكيد كلمة المرور',
 ];

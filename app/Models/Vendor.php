@@ -136,4 +136,12 @@ class Vendor extends Model
     {
         return $this->orders()->where('status', '!=', 'cancelled')->sum('total');
     }
+
+    /**
+     * تحديد ما إذا كان التاجر لديه مستخدم مرتبط
+     */
+    public function getHasUserAttribute(): bool
+    {
+        return $this->users()->exists();
+    }
 }

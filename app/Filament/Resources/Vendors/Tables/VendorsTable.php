@@ -7,13 +7,19 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
+use Filament\Notifications\Notification;
 use App\Models\Vendor;
+use App\Models\User;
 use Filament\Tables\Enums\FiltersLayout;
+use Illuminate\Support\Facades\Hash;
 
 class VendorsTable
 {
@@ -54,6 +60,17 @@ class VendorsTable
                         'pending' => 'heroicon-o-clock',
                         default => 'heroicon-o-question-mark-circle',
                     }),
+
+                // Has User Column
+                IconColumn::make('has_user')
+                    ->label(__('lang.has_user'))
+                    ->boolean()
+                    ->getStateUsing(fn(Vendor $record): bool => $record->has_user)
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger')
+                    ->alignCenter(),
 
                 // 4. Email Column
                 TextColumn::make('email')
@@ -108,6 +125,57 @@ class VendorsTable
             ], FiltersLayout::Modal)
             ->actions([
                 EditAction::make(),
+
+                // Action to create user for vendor
+                Action::make('createUser')
+                    ->label(__('lang.create_user'))
+                    ->icon('heroicon-o-user-plus')
+                    ->color('success')
+                    ->visible(fn(Vendor $record): bool => !$record->has_user)
+                    ->form([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label(__('lang.name'))
+                                    ->default(fn(Vendor $record): string => $record->name)
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('email')
+                                    ->label(__('lang.email'))
+                                    ->email()
+                                    ->default(fn(Vendor $record): ?string => $record->email)
+                                    ->required()
+                                    ->unique(User::class, 'email')
+                                    ->maxLength(255),
+                                TextInput::make('password')
+                                    ->label(__('lang.password'))
+                                    ->password()
+                                    ->default('123456')
+                                    ->required()  
+                                    ->minLength(6)
+                                    ->same('password_confirmation'),
+                                TextInput::make('password_confirmation')
+                                    ->label(__('lang.password_confirmation'))
+                                    ->password()
+                                    ->default('123456')
+                                    ->required(),
+                            ]),
+                    ])
+                    ->action(function (Vendor $record, array $data): void {
+                        User::create([
+                            'name' => $data['name'],
+                            'email' => $data['email'],
+                            'password' => Hash::make($data['password']),
+                            'vendor_id' => $record->id,
+                        ]);
+
+                        Notification::make()
+                            ->title(__('lang.user_created_successfully'))
+                            ->success()
+                            ->send();
+                    })
+                    ->modalHeading(__('lang.create_user_for_vendor'))
+                    ->modalSubmitActionLabel(__('lang.create')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([

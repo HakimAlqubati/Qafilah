@@ -312,4 +312,11 @@ return [
     'roles' => 'Roles',
     'no_vendor' => 'No Vendor',
     'select_vendor' => 'Select a vendor',
+
+    // Vendor User Management
+    'has_user' => 'Has User',
+    'create_user' => 'Create User',
+    'create_user_for_vendor' => 'Create User for Vendor',
+    'user_created_successfully' => 'User created successfully',
+    'password_confirmation' => 'Password Confirmation',
 ];
