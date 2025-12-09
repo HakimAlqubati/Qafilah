@@ -326,4 +326,11 @@ return [
     'suspended' => 'موقوف',
     'last_login_at' => 'آخر تسجيل دخول',
     'phone_already_exists' => 'رقم الهاتف موجود بالفعل، يرجى استخدام رقم آخر',
+    'user_basic_info_description' => 'المعلومات الأساسية وبيانات الاتصال للمستخدم',
+    'security' => 'الأمان',
+    'user_security_description' => 'إعدادات كلمة المرور والأمان',
+    'status_and_permissions' => 'الحالة والصلاحيات',
+    'user_status_permissions_description' => 'تحديد حالة المستخدم وصلاحياته',
+    'vendor_assignment' => 'ربط بتاجر',
+    'vendor_assignment_description' => 'ربط المستخدم بتاجر معين (اختياري)',
 ];

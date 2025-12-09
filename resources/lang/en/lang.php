@@ -325,4 +325,11 @@ return [
     'suspended' => 'Suspended',
     'last_login_at' => 'Last Login',
     'phone_already_exists' => 'This phone number is already registered. Please use a different number.',
+    'user_basic_info_description' => 'Basic information and contact details for the user',
+    'security' => 'Security',
+    'user_security_description' => 'Password and security settings',
+    'status_and_permissions' => 'Status & Permissions',
+    'user_status_permissions_description' => 'Define user status and permissions',
+    'vendor_assignment' => 'Vendor Assignment',
+    'vendor_assignment_description' => 'Link user to a specific vendor (optional)',
 ];
