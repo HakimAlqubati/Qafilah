@@ -19,25 +19,28 @@ class UsersTable
             ->columns([
                 // ID Column
                 TextColumn::make('id')
+                    ->label(__('lang.id'))
                     ->sortable(),
 
                 // Name Column
                 TextColumn::make('name')
+                    ->label(__('lang.name'))
                     ->searchable()
                     ->sortable(),
 
                 // Email Column
                 TextColumn::make('email')
+                    ->label(__('lang.email'))
                     ->icon('heroicon-m-envelope')
                     ->searchable(),
 
                 // Vendor Relationship Column
                 // Uses dot notation to access the vendor name
                 TextColumn::make('vendor.name')
-                    ->label('Vendor')
+                    ->label(__('lang.vendor'))
                     ->searchable()
                     ->sortable()
-                    ->placeholder('No Vendor')
+                    ->placeholder(__('lang.no_vendor'))
                     ->toggleable(),
 
                 // Roles Column (Spatie)
@@ -53,6 +56,7 @@ class UsersTable
 
                 // Created At Column
                 TextColumn::make('created_at')
+                    ->label(__('lang.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -60,12 +64,14 @@ class UsersTable
             ->filters([
                 // Filter by Vendor
                 SelectFilter::make('vendor')
+                    ->label(__('lang.vendor'))
                     ->relationship('vendor', 'name')
                     ->searchable()
                     ->preload(),
-                
+
                 // Filter by Role (if you want to filter users by their role)
                 SelectFilter::make('roles')
+                    ->label(__('lang.roles'))
                     ->relationship('roles', 'name'),
             ])
             ->actions([

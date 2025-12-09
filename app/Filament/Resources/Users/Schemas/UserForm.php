@@ -15,16 +15,18 @@ class UserForm
     {
         return $schema
             ->components([
-                Section::make('User Details')->columnSpanFull()
-                    ->description('Manage user basic information and authentication.')
+                Section::make(__('lang.user_details'))->columnSpanFull()
+                    ->description(__('lang.user_details_description'))
                     ->schema([
                         // Name Field
                         TextInput::make('name')
+                            ->label(__('lang.name'))
                             ->required()
                             ->maxLength(255),
 
                         // Email Field
                         TextInput::make('email')
+                            ->label(__('lang.email'))
                             ->email()
                             ->required()
                             ->unique(ignoreRecord: true)
@@ -32,10 +34,11 @@ class UserForm
 
                         // Password Field
                         TextInput::make('password')
+                            ->label(__('lang.password'))
                             ->password()
-                            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                            ->dehydrated(fn ($state) => filled($state))
-                            ->required(fn (string $context): bool => $context === 'create')
+                            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                            ->dehydrated(fn($state) => filled($state))
+                            ->required(fn(string $context): bool => $context === 'create')
                             // ->rule(Password::default())
                             ->minLength(6),
 
@@ -44,11 +47,12 @@ class UserForm
                             ->relationship('vendor', 'name')
                             ->searchable()
                             ->preload()
-                            ->label('Vendor')
-                            ->placeholder('Select a vendor'),
-                        
+                            ->label(__('lang.vendor'))
+                            ->placeholder(__('lang.select_vendor')),
+
                         // Roles (Based on HasRoles trait)
                         Select::make('roles')
+                            ->label(__('lang.roles'))
                             ->relationship('roles', 'name')
                             ->multiple()
                             ->preload()

@@ -305,4 +305,12 @@ return [
     'address' => 'العنوان',
     'pending_orders' => 'الطلبات المعلقة',
     'pieces' => 'قطعة',
+
+    // User Management
+    'user_details' => 'تفاصيل المستخدم',
+    'user_details_description' => 'إدارة المعلومات الأساسية والمصادقة للمستخدم.',
+    'password' => 'كلمة المرور',
+    'roles' => 'الأدوار',
+    'no_vendor' => 'بدون تاجر',
+    'select_vendor' => 'اختر تاجر',
 ];

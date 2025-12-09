@@ -304,4 +304,12 @@ return [
     'address' => 'Address',
     'pending_orders' => 'Pending Orders',
     'pieces' => 'piece',
+
+    // User Management
+    'user_details' => 'User Details',
+    'user_details_description' => 'Manage user basic information and authentication.',
+    'password' => 'Password',
+    'roles' => 'Roles',
+    'no_vendor' => 'No Vendor',
+    'select_vendor' => 'Select a vendor',
 ];
