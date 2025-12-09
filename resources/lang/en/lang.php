@@ -324,4 +324,5 @@ return [
     'avatar' => 'Avatar',
     'suspended' => 'Suspended',
     'last_login_at' => 'Last Login',
+    'phone_already_exists' => 'This phone number is already registered. Please use a different number.',
 ];

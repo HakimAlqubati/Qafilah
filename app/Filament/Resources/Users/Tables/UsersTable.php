@@ -22,7 +22,7 @@ class UsersTable
         return $table->striped()->defaultSort('id', 'desc')
             ->columns([
                 // ID Column
-                TextColumn::make('id')
+                TextColumn::make('id')->alignCenter()
                     ->label(__('lang.id'))
                     ->sortable(),
 
@@ -30,8 +30,8 @@ class UsersTable
                 ImageColumn::make('avatar')
                     ->label(__('lang.avatar'))
                     ->circular()
-                    ->defaultImageUrl(url('/images/default-avatar.png'))
-                    ->toggleable(),
+                    ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=FF6B35')
+                    ->toggleable()->alignCenter(),
 
                 // Name Column
                 TextColumn::make('name')

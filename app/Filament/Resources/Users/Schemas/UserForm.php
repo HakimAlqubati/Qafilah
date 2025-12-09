@@ -43,6 +43,10 @@ class UserForm
                             TextInput::make('phone')
                                 ->label(__('lang.phone'))
                                 ->tel()
+                                ->unique(ignoreRecord: true)
+                                ->validationMessages([
+                                    'unique' => __('lang.phone_already_exists'),
+                                ])
                                 ->maxLength(255),
 
                             // Avatar Upload

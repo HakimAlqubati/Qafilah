@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('phone')->nullable()->after('email');
+            $table->string('phone')->nullable()->unique()
+                ->after('email');
             $table->string('avatar')->nullable()->after('password');
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active')->after('avatar');
             $table->boolean('is_active')->default(true)->after('status');
