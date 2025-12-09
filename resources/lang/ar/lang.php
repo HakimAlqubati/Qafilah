@@ -320,4 +320,6 @@ return [
     'create_user_for_vendor' => 'إنشاء مستخدم للتاجر',
     'user_created_successfully' => 'تم إنشاء المستخدم بنجاح',
     'password_confirmation' => 'تأكيد كلمة المرور',
+    'is_vendor_user' => 'مستخدم تاجر؟',
+    'is_vendor_user_helper' => 'فعّل هذا الخيار لربط المستخدم بتاجر',
 ];

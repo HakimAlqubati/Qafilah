@@ -150,13 +150,15 @@ class VendorsTable
                                 TextInput::make('password')
                                     ->label(__('lang.password'))
                                     ->password()
+                                    ->revealable()
                                     ->default('123456')
-                                    ->required()  
+                                    ->required()
                                     ->minLength(6)
                                     ->same('password_confirmation'),
                                 TextInput::make('password_confirmation')
                                     ->label(__('lang.password_confirmation'))
                                     ->password()
+                                    ->revealable()
                                     ->default('123456')
                                     ->required(),
                             ]),

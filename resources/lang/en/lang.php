@@ -319,4 +319,6 @@ return [
     'create_user_for_vendor' => 'Create User for Vendor',
     'user_created_successfully' => 'User created successfully',
     'password_confirmation' => 'Password Confirmation',
+    'is_vendor_user' => 'Vendor User?',
+    'is_vendor_user_helper' => 'Enable this to link the user to a vendor',
 ];
