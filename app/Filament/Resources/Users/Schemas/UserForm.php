@@ -8,8 +8,10 @@ use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use App\Models\User;
 
 class UserForm
 {
@@ -37,6 +39,22 @@ class UserForm
                         ]),
 
                         Grid::make(2)->schema([
+                            // Phone Field
+                            TextInput::make('phone')
+                                ->label(__('lang.phone'))
+                                ->tel()
+                                ->maxLength(255),
+
+                            // Avatar Upload
+                            FileUpload::make('avatar')
+                                ->label(__('lang.avatar'))
+                                ->image()
+                                ->avatar()
+                                ->directory('avatars')
+                                ->maxSize(2048),
+                        ]),
+
+                        Grid::make(2)->schema([
                             // Password Field
                             TextInput::make('password')
                                 ->label(__('lang.password'))
@@ -55,6 +73,25 @@ class UserForm
                                 ->revealable()
                                 ->required(fn(string $context): bool => $context === 'create')
                                 ->dehydrated(false),
+                        ]),
+
+                        Grid::make(2)->schema([
+                            // Status Field
+                            Select::make('status')
+                                ->label(__('lang.status'))
+                                ->options([
+                                    User::STATUS_ACTIVE => __('lang.active'),
+                                    User::STATUS_INACTIVE => __('lang.inactive'),
+                                    User::STATUS_SUSPENDED => __('lang.suspended'),
+                                ])
+                                ->default(User::STATUS_ACTIVE)
+                                ->required(),
+
+                            // Is Active Toggle
+                            Toggle::make('is_active')
+                                ->label(__('lang.is_active'))
+                                ->default(true)
+                                ->inline(false),
                         ]),
 
                         Grid::make(2)->schema([

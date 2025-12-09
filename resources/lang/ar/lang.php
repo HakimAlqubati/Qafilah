@@ -322,4 +322,7 @@ return [
     'password_confirmation' => 'تأكيد كلمة المرور',
     'is_vendor_user' => 'مستخدم تاجر؟',
     'is_vendor_user_helper' => 'فعّل هذا الخيار لربط المستخدم بتاجر',
+    'avatar' => 'الصورة الشخصية',
+    'suspended' => 'موقوف',
+    'last_login_at' => 'آخر تسجيل دخول',
 ];
