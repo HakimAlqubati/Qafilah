@@ -305,4 +305,32 @@ return [
     'address' => 'العنوان',
     'pending_orders' => 'الطلبات المعلقة',
     'pieces' => 'قطعة',
+
+    // User Management
+    'user_details' => 'تفاصيل المستخدم',
+    'user_details_description' => 'إدارة المعلومات الأساسية والمصادقة للمستخدم.',
+    'password' => 'كلمة المرور',
+    'roles' => 'الأدوار',
+    'no_vendor' => 'بدون تاجر',
+    'select_vendor' => 'اختر تاجر',
+
+    // Vendor User Management
+    'has_user' => 'لديه مستخدم',
+    'create_user' => 'إنشاء مستخدم',
+    'create_user_for_vendor' => 'إنشاء مستخدم للتاجر',
+    'user_created_successfully' => 'تم إنشاء المستخدم بنجاح',
+    'password_confirmation' => 'تأكيد كلمة المرور',
+    'is_vendor_user' => 'مستخدم تاجر؟',
+    'is_vendor_user_helper' => 'فعّل هذا الخيار لربط المستخدم بتاجر',
+    'avatar' => 'الصورة الشخصية',
+    'suspended' => 'موقوف',
+    'last_login_at' => 'آخر تسجيل دخول',
+    'phone_already_exists' => 'رقم الهاتف موجود بالفعل، يرجى استخدام رقم آخر',
+    'user_basic_info_description' => 'المعلومات الأساسية وبيانات الاتصال للمستخدم',
+    'security' => 'الأمان',
+    'user_security_description' => 'إعدادات كلمة المرور والأمان',
+    'status_and_permissions' => 'الحالة والصلاحيات',
+    'user_status_permissions_description' => 'تحديد حالة المستخدم وصلاحياته',
+    'vendor_assignment' => 'ربط بتاجر',
+    'vendor_assignment_description' => 'ربط المستخدم بتاجر معين (اختياري)',
 ];

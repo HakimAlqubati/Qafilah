@@ -31,6 +31,8 @@ class Vendor extends Model
         'min_delivery_charge',
         'max_delivery_distance',
         'default_currency_id',
+        // 'created_by' and 'updated_by' are typically handled automatically by Observers/Events
+        // or by manually assigning Auth::id() before saving.
     ];
 
     protected $casts = [
@@ -141,5 +143,13 @@ class Vendor extends Model
             return null;
         }
         return Storage::disk('public')->url($this->logo_path);
+    }
+
+    /**
+     * تحديد ما إذا كان التاجر لديه مستخدم مرتبط
+     */
+    public function getHasUserAttribute(): bool
+    {
+        return $this->users()->exists();
     }
 }
