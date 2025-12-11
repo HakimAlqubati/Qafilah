@@ -63,6 +63,11 @@ class ProductVendorSkuUnit extends Model
         return $this->belongsTo(Unit::class);
     }
 
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class, 'vendor_id');
+    }
+
     /**
      * المستخدم الذي أنشأ السجل
      */

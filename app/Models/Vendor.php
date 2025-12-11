@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class Vendor extends Model
 {
@@ -30,8 +31,6 @@ class Vendor extends Model
         'min_delivery_charge',
         'max_delivery_distance',
         'default_currency_id',
-        // 'created_by' and 'updated_by' are typically handled automatically by Observers/Events 
-        // or by manually assigning Auth::id() before saving.
     ];
 
     protected $casts = [
@@ -76,7 +75,7 @@ class Vendor extends Model
 
     /**
      * Calculate delivery cost based on distance in KM.
-     * 
+     *
      * @param float $distanceInKm
      * @return float
      */
@@ -135,5 +134,12 @@ class Vendor extends Model
     public function getTotalSalesAmount(): float
     {
         return $this->orders()->where('status', '!=', 'cancelled')->sum('total');
+    }
+    public function getLogoUrlAttribute(): ?string
+    {
+        if (! $this->logo_path) {
+            return null;
+        }
+        return Storage::disk('public')->url($this->logo_path);
     }
 }
