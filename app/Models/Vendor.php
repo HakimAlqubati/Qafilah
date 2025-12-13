@@ -43,8 +43,6 @@ class Vendor extends Model
         'delivery_time_unit',
         'default_currency_id',
         'referrer_id',
-        // 'created_by' and 'updated_by' are typically handled automatically by Observers/Events
-        // or by manually assigning Auth::id() before saving.
     ];
 
     protected $casts = [
@@ -54,11 +52,16 @@ class Vendor extends Model
         'longitude' => 'decimal:8',
     ];
 
-    // --- 🔑 Audit Relations ---
+    public const STATUSES = [
+        'ACTIVE'   => 'active',
+        'INACTIVE' => 'inactive',
+        'PENDING'  => 'pending',
+    ];
 
-    /**
-     * Get the User who created this Vendor record.
-     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', self::STATUSES['ACTIVE']);
+    }
     public function creator(): BelongsTo
     {
         // Assumes the User model is App\Models\User and the foreign key is 'created_by'
@@ -263,4 +266,5 @@ class Vendor extends Model
             self::DELIVERY_TIME_UNIT_DAYS => __('lang.days'),
         ];
     }
+
 }
