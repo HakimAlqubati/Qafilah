@@ -40,6 +40,18 @@ class AttributeValuesTable
                     ->copyable()
                     ->tooltip('Click to copy value'),
 
+                // 🔹 الكود (مثل hex color)
+                TextColumn::make('code')
+                    ->label(__('lang.code'))
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->color('warning')
+                    ->copyable()
+                    ->tooltip('Click to copy code')
+                    ->placeholder('—')
+                    ->limit(20),
+
                 // 🔹 نوع الإدخال من الخاصية
                 BadgeColumn::make('attribute.input_type')
                     ->label(__('lang.type'))
