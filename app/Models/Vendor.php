@@ -14,6 +14,15 @@ class Vendor extends Model
 {
     use SoftDeletes, HasFactory;
 
+    // Delivery Time Unit Constants
+    public const DELIVERY_TIME_UNIT_HOURS = 'hours';
+    public const DELIVERY_TIME_UNIT_DAYS = 'days';
+
+    public const DELIVERY_TIME_UNITS = [
+        self::DELIVERY_TIME_UNIT_HOURS => 'hours',
+        self::DELIVERY_TIME_UNIT_DAYS => 'days',
+    ];
+
     // Fillable fields (essential for mass assignment)
     protected $fillable = [
         'name',
@@ -30,6 +39,8 @@ class Vendor extends Model
         'delivery_rate_per_km',
         'min_delivery_charge',
         'max_delivery_distance',
+        'delivery_time_value',
+        'delivery_time_unit',
         'default_currency_id',
         'referrer_id',
         // 'created_by' and 'updated_by' are typically handled automatically by Observers/Events
@@ -210,5 +221,46 @@ class Vendor extends Model
     public function getHasUserAttribute(): bool
     {
         return $this->users()->exists();
+    }
+
+    /**
+     * Get formatted delivery time (e.g., "2 hours", "3 days")
+     */
+    public function getDeliveryTimeFormattedAttribute(): ?string
+    {
+        if (!$this->delivery_time_value || !$this->delivery_time_unit) {
+            return null;
+        }
+
+        $unitTranslationKey = $this->delivery_time_unit === self::DELIVERY_TIME_UNIT_HOURS
+            ? 'lang.hours'
+            : 'lang.days';
+
+        return "{$this->delivery_time_value} " . __($unitTranslationKey);
+    }
+
+    /**
+     * Convert delivery time to hours for calculations
+     */
+    public function getDeliveryTimeInHoursAttribute(): ?int
+    {
+        if (!$this->delivery_time_value || !$this->delivery_time_unit) {
+            return null;
+        }
+
+        return $this->delivery_time_unit === self::DELIVERY_TIME_UNIT_DAYS
+            ? $this->delivery_time_value * 24
+            : $this->delivery_time_value;
+    }
+
+    /**
+     * Get delivery time units options for forms
+     */
+    public static function getDeliveryTimeUnitOptions(): array
+    {
+        return [
+            self::DELIVERY_TIME_UNIT_HOURS => __('lang.hours'),
+            self::DELIVERY_TIME_UNIT_DAYS => __('lang.days'),
+        ];
     }
 }

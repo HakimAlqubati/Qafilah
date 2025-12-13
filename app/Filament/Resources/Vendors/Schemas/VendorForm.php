@@ -123,6 +123,23 @@ class VendorForm
                                             ->suffix('KM'),
                                     ]),
 
+                                // Delivery Time (مدة التوصيل)
+                                ComponentsGrid::make(2)
+                                    ->schema([
+                                        TextInput::make('delivery_time_value')
+                                            ->label(__('lang.delivery_time_value'))
+                                            ->numeric()
+                                            ->minValue(1)
+                                            ->placeholder('1, 2, 3, 24, 48...')
+                                            ->helperText(__('lang.delivery_time_helper')),
+
+                                        Select::make('delivery_time_unit')
+                                            ->label(__('lang.delivery_time_unit'))
+                                            ->options(\App\Models\Vendor::getDeliveryTimeUnitOptions())
+                                            ->default(\App\Models\Vendor::DELIVERY_TIME_UNIT_HOURS)
+                                            ->native(false),
+                                    ]),
+
 
                                 // Currency & Commission
                                 ComponentsGrid::make(2)
