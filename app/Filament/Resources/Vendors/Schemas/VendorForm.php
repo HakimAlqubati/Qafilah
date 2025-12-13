@@ -86,10 +86,20 @@ class VendorForm
                                         // Location
                                         TextInput::make('latitude')
                                             ->numeric()
-                                            ->label(__('lang.latitude')),
+                                            ->label(__('lang.latitude'))
+                                            ->minValue(-90)
+                                            ->maxValue(90)
+                                            ->step(0.00000001) // 8 decimal places precision
+                                            ->placeholder('مثال: 15.3694')
+                                            ->helperText('يجب أن تكون القيمة بين -90 و 90'),
                                         TextInput::make('longitude')
                                             ->numeric()
-                                            ->label(__('lang.longitude')),
+                                            ->label(__('lang.longitude'))
+                                            ->minValue(-180)
+                                            ->maxValue(180)
+                                            ->step(0.00000001) // 8 decimal places precision
+                                            ->placeholder('مثال: 44.1910')
+                                            ->helperText('يجب أن تكون القيمة بين -180 و 180'),
                                     ]),
 
                                 ComponentsGrid::make(3)

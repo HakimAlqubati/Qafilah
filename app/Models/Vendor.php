@@ -92,6 +92,56 @@ class Vendor extends Model
         return max($cost, $this->min_delivery_charge);
     }
 
+    /**
+     * Set the latitude attribute with validation.
+     * Ensures latitude is within valid range (-90 to 90).
+     *
+     * @param float|null $value
+     */
+    public function setLatitudeAttribute($value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['latitude'] = null;
+            return;
+        }
+
+        $numericValue = (float) $value;
+
+        // Validate range
+        if ($numericValue < -90 || $numericValue > 90) {
+            throw new \InvalidArgumentException(
+                "خط العرض (Latitude) يجب أن يكون بين -90 و 90. القيمة المدخلة: {$numericValue}"
+            );
+        }
+
+        $this->attributes['latitude'] = $numericValue;
+    }
+
+    /**
+     * Set the longitude attribute with validation.
+     * Ensures longitude is within valid range (-180 to 180).
+     *
+     * @param float|null $value
+     */
+    public function setLongitudeAttribute($value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['longitude'] = null;
+            return;
+        }
+
+        $numericValue = (float) $value;
+
+        // Validate range
+        if ($numericValue < -180 || $numericValue > 180) {
+            throw new \InvalidArgumentException(
+                "خط الطول (Longitude) يجب أن يكون بين -180 و 180. القيمة المدخلة: {$numericValue}"
+            );
+        }
+
+        $this->attributes['longitude'] = $numericValue;
+    }
+
     protected static function boot()
     {
         parent::boot();
