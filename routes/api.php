@@ -28,6 +28,7 @@ Route::prefix('v1/ecommerce')->group(function () {
         Route::post('attributes',       [BasicDataController::class, 'attributes']);
         Route::post('attribute-values', [BasicDataController::class, 'attributeValues']);
         Route::post('units',            [BasicDataController::class, 'units']);
+        Route::post('currencies',            [BasicDataController::class, 'currencies']);
     });
     Route::post('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}', [ProductController::class, 'show']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\Category;
+use App\Models\Currency;
 use App\Models\Unit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -80,6 +81,12 @@ class BasicDataController extends ApiController
     public function units(Request $request): JsonResponse
     {
         $query = Unit::active()->orderBy('sort_order');
+
+        return $this->syncByUpdatedAt($request, $query, 'Units sync data');
+    }
+    public function currencies(Request $request): JsonResponse
+    {
+        $query = Currency::active()->orderBy('sort_order');
 
         return $this->syncByUpdatedAt($request, $query, 'Units sync data');
     }
