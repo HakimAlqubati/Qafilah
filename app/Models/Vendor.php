@@ -14,6 +14,15 @@ class Vendor extends Model
 {
     use SoftDeletes, HasFactory;
 
+    // Delivery Time Unit Constants
+    public const DELIVERY_TIME_UNIT_HOURS = 'hours';
+    public const DELIVERY_TIME_UNIT_DAYS = 'days';
+
+    public const DELIVERY_TIME_UNITS = [
+        self::DELIVERY_TIME_UNIT_HOURS => 'hours',
+        self::DELIVERY_TIME_UNIT_DAYS => 'days',
+    ];
+
     // Fillable fields (essential for mass assignment)
     protected $fillable = [
         'name',
@@ -30,7 +39,10 @@ class Vendor extends Model
         'delivery_rate_per_km',
         'min_delivery_charge',
         'max_delivery_distance',
+        'delivery_time_value',
+        'delivery_time_unit',
         'default_currency_id',
+        'referrer_id',
         // 'created_by' and 'updated_by' are typically handled automatically by Observers/Events
         // or by manually assigning Auth::id() before saving.
     ];
@@ -76,6 +88,14 @@ class Vendor extends Model
     }
 
     /**
+     * Get the User who referred this vendor (for commission tracking).
+     */
+    public function referrer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'referrer_id');
+    }
+
+    /**
      * Calculate delivery cost based on distance in KM.
      *
      * @param float $distanceInKm
@@ -91,6 +111,56 @@ class Vendor extends Model
         $cost = $distanceInKm * $this->delivery_rate_per_km;
 
         return max($cost, $this->min_delivery_charge);
+    }
+
+    /**
+     * Set the latitude attribute with validation.
+     * Ensures latitude is within valid range (-90 to 90).
+     *
+     * @param float|null $value
+     */
+    public function setLatitudeAttribute($value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['latitude'] = null;
+            return;
+        }
+
+        $numericValue = (float) $value;
+
+        // Validate range
+        if ($numericValue < -90 || $numericValue > 90) {
+            throw new \InvalidArgumentException(
+                __('lang.latitude_validation_error', ['value' => $numericValue])
+            );
+        }
+
+        $this->attributes['latitude'] = $numericValue;
+    }
+
+    /**
+     * Set the longitude attribute with validation.
+     * Ensures longitude is within valid range (-180 to 180).
+     *
+     * @param float|null $value
+     */
+    public function setLongitudeAttribute($value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['longitude'] = null;
+            return;
+        }
+
+        $numericValue = (float) $value;
+
+        // Validate range
+        if ($numericValue < -180 || $numericValue > 180) {
+            throw new \InvalidArgumentException(
+                __('lang.longitude_validation_error', ['value' => $numericValue])
+            );
+        }
+
+        $this->attributes['longitude'] = $numericValue;
     }
 
     protected static function boot()
@@ -151,5 +221,46 @@ class Vendor extends Model
     public function getHasUserAttribute(): bool
     {
         return $this->users()->exists();
+    }
+
+    /**
+     * Get formatted delivery time (e.g., "2 hours", "3 days")
+     */
+    public function getDeliveryTimeFormattedAttribute(): ?string
+    {
+        if (!$this->delivery_time_value || !$this->delivery_time_unit) {
+            return null;
+        }
+
+        $unitTranslationKey = $this->delivery_time_unit === self::DELIVERY_TIME_UNIT_HOURS
+            ? 'lang.hours'
+            : 'lang.days';
+
+        return "{$this->delivery_time_value} " . __($unitTranslationKey);
+    }
+
+    /**
+     * Convert delivery time to hours for calculations
+     */
+    public function getDeliveryTimeInHoursAttribute(): ?int
+    {
+        if (!$this->delivery_time_value || !$this->delivery_time_unit) {
+            return null;
+        }
+
+        return $this->delivery_time_unit === self::DELIVERY_TIME_UNIT_DAYS
+            ? $this->delivery_time_value * 24
+            : $this->delivery_time_value;
+    }
+
+    /**
+     * Get delivery time units options for forms
+     */
+    public static function getDeliveryTimeUnitOptions(): array
+    {
+        return [
+            self::DELIVERY_TIME_UNIT_HOURS => __('lang.hours'),
+            self::DELIVERY_TIME_UNIT_DAYS => __('lang.days'),
+        ];
     }
 }

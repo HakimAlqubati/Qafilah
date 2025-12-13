@@ -86,10 +86,20 @@ class VendorForm
                                         // Location
                                         TextInput::make('latitude')
                                             ->numeric()
-                                            ->label(__('lang.latitude')),
+                                            ->label(__('lang.latitude'))
+                                            ->minValue(-90)
+                                            ->maxValue(90)
+                                            ->step(0.00000001) // 8 decimal places precision
+                                            ->placeholder(__('lang.latitude_placeholder'))
+                                            ->helperText(__('lang.latitude_helper')),
                                         TextInput::make('longitude')
                                             ->numeric()
-                                            ->label(__('lang.longitude')),
+                                            ->label(__('lang.longitude'))
+                                            ->minValue(-180)
+                                            ->maxValue(180)
+                                            ->step(0.00000001) // 8 decimal places precision
+                                            ->placeholder(__('lang.longitude_placeholder'))
+                                            ->helperText(__('lang.longitude_helper')),
                                     ]),
 
                                 ComponentsGrid::make(3)
@@ -113,12 +123,44 @@ class VendorForm
                                             ->suffix('KM'),
                                     ]),
 
-                                // Default Currency
-                                Select::make('default_currency_id')
-                                    ->label(__('lang.default_currency'))
-                                    ->relationship('defaultCurrency', 'name')
-                                    ->searchable()
-                                    ->preload(),
+                                // Delivery Time (مدة التوصيل)
+                                ComponentsGrid::make(2)
+                                    ->schema([
+                                        TextInput::make('delivery_time_value')
+                                            ->label(__('lang.delivery_time_value'))
+                                            ->numeric()
+                                            ->minValue(1)
+                                            ->placeholder('1, 2, 3, 24, 48...')
+                                            ->helperText(__('lang.delivery_time_helper')),
+
+                                        Select::make('delivery_time_unit')
+                                            ->label(__('lang.delivery_time_unit'))
+                                            ->options(\App\Models\Vendor::getDeliveryTimeUnitOptions())
+                                            ->default(\App\Models\Vendor::DELIVERY_TIME_UNIT_HOURS)
+                                            ->native(false),
+                                    ]),
+
+
+                                // Currency & Commission
+                                ComponentsGrid::make(2)
+                                    ->schema([
+                                        // Default Currency
+                                        Select::make('default_currency_id')
+                                            ->label(__('lang.default_currency'))
+                                            ->relationship('defaultCurrency', 'name')
+                                            ->searchable()
+                                            ->preload(),
+
+                                        // Referrer User (for Commission)
+                                        Select::make('referrer_id')
+                                            ->label(__('lang.referrer_user'))
+                                            ->relationship('referrer', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->helperText(__('lang.referrer_helper'))
+                                            ->nullable(),
+                                    ]),
+
                             ]),
 
                         // Tab 3: Settings & Media

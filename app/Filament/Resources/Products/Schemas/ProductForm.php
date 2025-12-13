@@ -313,7 +313,8 @@ class ProductForm
                                 ->where('pa.product_id', $productId)
                                 ->where('attributes.active', true)
                                 ->exists();
-                        })->hiddenOn('create'),
+                        })
+                        ->hiddenOn('create')->hidden(),
 
                     // ----------------------------------------------------
                     // Step 5) Variants

@@ -44,6 +44,12 @@ class AttributeValueForm
                                     ->autocapitalize('words')
                                     ->maxLength(100)
                                     ->hint(__('lang.display_value')),
+
+                                TextInput::make('code')
+                                    ->label(__('lang.code'))
+                                    ->placeholder(__('lang.code_placeholder'))
+                                    ->maxLength(100)
+                                    ->hint(__('lang.code_helper')),
                             ]),
 
                         Grid::make(2)
