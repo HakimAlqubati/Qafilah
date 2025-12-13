@@ -258,6 +258,93 @@ class ProductForm
                         ]),
 
                     // ----------------------------------------------------
+                    // Step 3.5) Product Units (للمنتجات البسيطة)
+                    // ----------------------------------------------------
+                    Step::make(__('lang.product_units'))
+                        ->icon('heroicon-o-cube')
+                        ->description(__('lang.product_units_desc'))
+                        ->visible(function (Get $get, Component $component) {
+                            $productId = $get('id') ?? ($component->getRecord()?->id);
+                            if (! $productId) {
+                                return false; // في الإنشاء، لا نعرض هذا Step
+                            }
+
+                            // نعرض فقط للمنتجات البسيطة (بدون variant attributes)
+                            $product = \App\Models\Product::find($productId);
+                            return $product && !$product->needsVariants();
+                        })
+                        ->schema([
+                            Section::make(__('lang.product_units'))
+                                ->description(__('lang.base_unit_desc'))
+                                ->schema([
+                                    Repeater::make('units')
+                                        ->relationship('units')
+                                        ->label('')
+                                        ->columns(12)
+                                        ->defaultItems(0)
+                                        ->addActionLabel(__('lang.add_product_unit'))
+                                        ->schema([
+                                            Grid::make(12)->schema([
+                                                Select::make('unit_id')
+                                                    ->label(__('lang.unit'))
+                                                    ->relationship('unit', 'name')
+                                                    ->required()
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->distinct()
+                                                    ->columnSpan(3),
+
+                                                TextInput::make('package_size')
+                                                    ->label(__('lang.package_size'))
+                                                    ->helperText(__('lang.package_size_helper'))
+                                                    ->numeric()
+                                                    ->default(1)
+                                                    ->minValue(1)
+                                                    ->required()
+                                                    ->columnSpan(2),
+
+                                                TextInput::make('conversion_factor')
+                                                    ->label(__('lang.conversion_factor'))
+                                                    ->helperText(__('lang.conversion_factor_helper'))
+                                                    ->numeric()
+                                                    ->default(1.0000)
+                                                    ->step(0.0001)
+                                                    ->minValue(0.0001)
+                                                    ->columnSpan(2),
+
+                                                Toggle::make('is_base_unit')
+                                                    ->label(__('lang.is_base_unit'))
+                                                    ->helperText(__('lang.is_base_unit_helper'))
+                                                    ->inline(false)
+                                                    ->columnSpan(2),
+
+                                                Toggle::make('is_sellable')
+                                                    ->label(__('lang.is_sellable'))
+                                                    ->helperText(__('lang.is_sellable_helper'))
+                                                    ->default(true)
+                                                    ->inline(false)
+                                                    ->columnSpan(2),
+
+                                                TextInput::make('sort_order')
+                                                    ->label(__('lang.sort_order'))
+                                                    ->helperText(__('lang.sort_order_helper'))
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->minValue(0)
+                                                    ->columnSpan(1),
+                                            ]),
+                                        ])
+                                        ->reorderable()
+                                        ->collapsible()
+                                        ->itemLabel(
+                                            fn(array $state): ?string =>
+                                            \App\Models\Unit::find($state['unit_id'] ?? null)?->name ?? 'Unit'
+                                        ),
+                                ]),
+                        ])
+                        ->hiddenOn('create'),
+
+                    // ----------------------------------------------------
                     // Step 4) Attribute Values (Custom Attributes)
                     // ----------------------------------------------------
                     Step::make(__('lang.attribute_values'))

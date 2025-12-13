@@ -118,6 +118,24 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ProductVendorSku::class);
     }
 
+    // علاقات الوحدات المباشرة (للمنتجات البسيطة)
+    public function units()
+    {
+        return $this->hasMany(ProductUnit::class);
+    }
+
+    public function baseUnit()
+    {
+        return $this->hasOne(ProductUnit::class)->where('is_base_unit', true);
+    }
+
+    public function sellableUnits()
+    {
+        return $this->hasMany(ProductUnit::class)
+            ->where('is_sellable', true)
+            ->orderBy('sort_order');
+    }
+
     // المستخدم الذي أنشأ المنتج
     public function creator()
     {
@@ -202,5 +220,31 @@ class Product extends Model implements HasMedia
         return $this->orderItems()
             ->whereHas('order', fn($q) => $q->where('status', '!=', 'cancelled'))
             ->sum('quantity');
+    }
+
+    /**
+     * هل المنتج بسيط (بدون متغيرات)
+     * يتحقق من عدم وجود attributes مع is_variant_option = true
+     */
+    public function isSimpleProduct(): bool
+    {
+        return !$this->needsVariants();
+    }
+
+    /**
+     * هل المنتج يحتاج متغيرات
+     * يتحقق من وجود attributes مع is_variant_option = true
+     */
+    public function needsVariants(): bool
+    {
+        if ($this->relationLoaded('attributes')) {
+            return $this->attributes
+                ->where('pivot.is_variant_option', true)
+                ->isNotEmpty();
+        }
+
+        return $this->attributes()
+            ->where('is_variant_option', true)
+            ->exists();
     }
 }
