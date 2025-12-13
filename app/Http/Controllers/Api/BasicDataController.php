@@ -86,8 +86,7 @@ class BasicDataController extends ApiController
     }
     public function currencies(Request $request): JsonResponse
     {
-        $query = Currency::active()->orderBy('sort_order');
-
-        return $this->syncByUpdatedAt($request, $query, 'Units sync data');
+        $query = Currency::active();
+        return $this->syncByUpdatedAt($request, $query, 'currencies sync data');
     }
 }
