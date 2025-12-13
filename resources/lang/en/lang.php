@@ -95,6 +95,8 @@ return [
     'attribute_details' => 'Attribute Details',
     'attribute_name' => 'Attribute Name',
     'code' => 'Code',
+    'code_placeholder' => 'e.g., #FF5733, SKU123',
+    'code_helper' => 'Additional code for the value (e.g., hex color code, SKU)',
     'input_type' => 'Input Type',
     'is_required' => 'Is Required',
     'is_active' => 'Is Active',

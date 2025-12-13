@@ -26,8 +26,8 @@ class AttributeForm
                 Wizard::make()->columnSpanFull()->skippable()->schema([
                     // ... (Step 1 code remains the same) ...
                     Step::make('basic')
-                    ->label(__('lang.basic_info'))
-                    ->columnSpanFull()
+                        ->label(__('lang.basic_info'))
+                        ->columnSpanFull()
                         ->columns(2)
                         ->schema([
                             Section::make(__('lang.basic_information'))
@@ -108,6 +108,13 @@ class AttributeForm
                                         ->label(__('lang.value'))
                                         ->required()
                                         ->distinct() // يمنع تكرار القيم داخل القائمة
+                                        ->columnSpan(2),
+
+                                    TextInput::make('code')
+                                        ->label(__('lang.code'))
+                                        ->maxLength(100)
+                                        ->placeholder(__('lang.code_placeholder'))
+                                        ->helperText(__('lang.code_helper'))
                                         ->columnSpan(2),
 
                                     TextInput::make('sort_order')

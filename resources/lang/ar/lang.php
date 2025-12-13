@@ -95,6 +95,8 @@ return [
     'attribute_details' => 'تفاصيل الخاصية',
     'attribute_name' => 'اسم الخاصية',
     'code' => 'الرمز',
+    'code_placeholder' => 'مثال: #FF5733, SKU123',
+    'code_helper' => 'رمز إضافي للقيمة (مثل: كود لون hex, SKU)',
     'input_type' => 'نوع الإدخال',
     'is_required' => 'مطلوب',
     'is_active' => 'نشط',
