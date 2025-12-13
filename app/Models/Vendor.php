@@ -31,6 +31,7 @@ class Vendor extends Model
         'min_delivery_charge',
         'max_delivery_distance',
         'default_currency_id',
+        'referrer_id',
         // 'created_by' and 'updated_by' are typically handled automatically by Observers/Events
         // or by manually assigning Auth::id() before saving.
     ];
@@ -76,6 +77,14 @@ class Vendor extends Model
     }
 
     /**
+     * Get the User who referred this vendor (for commission tracking).
+     */
+    public function referrer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'referrer_id');
+    }
+
+    /**
      * Calculate delivery cost based on distance in KM.
      *
      * @param float $distanceInKm
@@ -111,7 +120,7 @@ class Vendor extends Model
         // Validate range
         if ($numericValue < -90 || $numericValue > 90) {
             throw new \InvalidArgumentException(
-                "خط العرض (Latitude) يجب أن يكون بين -90 و 90. القيمة المدخلة: {$numericValue}"
+                __('lang.latitude_validation_error', ['value' => $numericValue])
             );
         }
 
@@ -136,7 +145,7 @@ class Vendor extends Model
         // Validate range
         if ($numericValue < -180 || $numericValue > 180) {
             throw new \InvalidArgumentException(
-                "خط الطول (Longitude) يجب أن يكون بين -180 و 180. القيمة المدخلة: {$numericValue}"
+                __('lang.longitude_validation_error', ['value' => $numericValue])
             );
         }
 

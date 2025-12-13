@@ -90,16 +90,16 @@ class VendorForm
                                             ->minValue(-90)
                                             ->maxValue(90)
                                             ->step(0.00000001) // 8 decimal places precision
-                                            ->placeholder('مثال: 15.3694')
-                                            ->helperText('يجب أن تكون القيمة بين -90 و 90'),
+                                            ->placeholder(__('lang.latitude_placeholder'))
+                                            ->helperText(__('lang.latitude_helper')),
                                         TextInput::make('longitude')
                                             ->numeric()
                                             ->label(__('lang.longitude'))
                                             ->minValue(-180)
                                             ->maxValue(180)
                                             ->step(0.00000001) // 8 decimal places precision
-                                            ->placeholder('مثال: 44.1910')
-                                            ->helperText('يجب أن تكون القيمة بين -180 و 180'),
+                                            ->placeholder(__('lang.longitude_placeholder'))
+                                            ->helperText(__('lang.longitude_helper')),
                                     ]),
 
                                 ComponentsGrid::make(3)
@@ -123,12 +123,27 @@ class VendorForm
                                             ->suffix('KM'),
                                     ]),
 
-                                // Default Currency
-                                Select::make('default_currency_id')
-                                    ->label(__('lang.default_currency'))
-                                    ->relationship('defaultCurrency', 'name')
-                                    ->searchable()
-                                    ->preload(),
+
+                                // Currency & Commission
+                                ComponentsGrid::make(2)
+                                    ->schema([
+                                        // Default Currency
+                                        Select::make('default_currency_id')
+                                            ->label(__('lang.default_currency'))
+                                            ->relationship('defaultCurrency', 'name')
+                                            ->searchable()
+                                            ->preload(),
+
+                                        // Referrer User (for Commission)
+                                        Select::make('referrer_id')
+                                            ->label(__('lang.referrer_user'))
+                                            ->relationship('referrer', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->helperText(__('lang.referrer_helper'))
+                                            ->nullable(),
+                                    ]),
+
                             ]),
 
                         // Tab 3: Settings & Media

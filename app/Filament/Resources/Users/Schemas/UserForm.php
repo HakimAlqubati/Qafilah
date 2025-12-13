@@ -146,7 +146,7 @@ class UserForm
                             ->live()
                             ->default(false)
                             ->dehydrated(false)
-                            ->visible(fn(string $context): bool => $context === 'create')
+                            // ->visible(fn(string $context): bool => $context === 'create')
                             ->columnSpanFull(),
 
                         // Vendor Select
@@ -159,9 +159,7 @@ class UserForm
                             ->native(false)
                             ->visible(
                                 fn($get, string $context, $record): bool =>
-                                $context === 'create'
-                                    ? (bool) $get('is_vendor_user')
-                                    : (bool) $record?->vendor_id
+                                (bool) $get('is_vendor_user')
                             )
                             ->columnSpanFull(),
                     ])->columns(1),
