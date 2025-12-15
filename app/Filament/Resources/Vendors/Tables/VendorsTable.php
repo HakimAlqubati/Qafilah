@@ -145,7 +145,7 @@ class VendorsTable
                                     ->email()
                                     ->default(fn(Vendor $record): ?string => $record->email)
                                     ->required()
-                                    ->unique(User::class, 'email')
+                                    ->unique(User::class, 'email', ignoreRecord: false)
                                     ->maxLength(255),
                                 TextInput::make('password')
                                     ->label(__('lang.password'))
