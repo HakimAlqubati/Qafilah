@@ -18,16 +18,17 @@ class ProductShowController extends Controller
                 'variants' => function ($q) {
                     $q->with([
                         'values.attribute:id,name',
-                        'values.value:id,attribute_id,value',
+                        'values.attributeValue:id,attribute_id,value',
                         'media',            // images for the variant (if you use them)
                         'values.media',     // swatches/images on ProductVariantValue
                     ])->orderBy('is_default', 'desc');
                 },
                 'media', // product images
-                // eager load vendor offers and related data
-                'vendorOffers.vendor',
-                'vendorOffers.currency',
-                'vendorOffers.media',
+                // eager load ALL vendor offers (both direct product offers and variant offers)
+                'offers.vendor',
+                'offers.currency',
+                'offers.media',
+                'offers.units.unit',
             ])
             ->where(function ($query) use ($idOrSlug) {
                 // الافتراضي البحث بالـ slug
@@ -99,8 +100,8 @@ class ProductShowController extends Controller
             'variants'       => $variants,
             'optionMatrix'   => $optionMatrix,
             'defaultVariant' => $defaultVariant,
-            // group vendor offers by vendor for tabs
-            'vendorTabs' => $product->vendorOffers->groupBy('vendor_id'),
+            // group vendor offers by vendor for tabs (includes both direct and variant offers)
+            'vendorTabs' => $product->offers->groupBy('vendor_id'),
         ]);
     }
 }

@@ -93,20 +93,34 @@ class ProductVendorSkuForm
                                         $set('variant_id', null);
                                         $set('attributes', []);
 
-                                        // Auto-select variant if product has no variant attributes
                                         $productId = $get('product_id');
                                         if ($productId) {
-                                            $product = \App\Models\Product::with(['attributesDirect'])->find($productId);
+                                            $product = \App\Models\Product::with(['attributesDirect', 'units.unit'])->find($productId);
                                             $hasVariantAttributes = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
 
+                                            // إذا المنتج بسيط (بدون متغيرات)
                                             if (!$hasVariantAttributes) {
-                                                // Find the default/single variant
+                                                // Find the default/single variant if exists
                                                 $variant = \App\Models\ProductVariant::where('product_id', $productId)->active()->first();
                                                 if ($variant) {
                                                     $set('variant_id', $variant->id);
                                                     $set('vendor_sku', $variant->master_sku);
                                                 }
                                             }
+
+                                            // تحميل الوحدات الافتراضية من المنتج
+                                            $defaultUnits = $product->units->map(fn($pu) => [
+                                                'unit_id' => $pu->unit_id,
+                                                'package_size' => $pu->package_size,
+                                                'cost_price' => $pu->cost_price,
+                                                'selling_price' => $pu->selling_price,
+                                                'moq' => 1,
+                                                'stock' => 0,
+                                                'is_default' => $pu->is_base_unit,
+                                                'status' => 'active',
+                                                'sort_order' => $pu->sort_order,
+                                            ])->toArray();
+                                            $set('units', $defaultUnits);
                                         }
                                     })
                                     ->required(),
@@ -210,9 +224,8 @@ class ProductVendorSkuForm
                                         return $components;
                                     }),
 
-                                // Variant Selection (Hidden)
+                                // Variant Selection (Hidden) - اختياري للمنتجات البسيطة
                                 Hidden::make('variant_id')
-                                    ->required()
                                     ->dehydrated(),
 
                                 TextInput::make('vendor_sku')
@@ -220,7 +233,7 @@ class ProductVendorSkuForm
                                     ->helperText(__('lang.vendor_sku_helper'))
                                     ->maxLength(255)
                                     ->required()
-                                    ->visible(fn($get) => filled($get('variant_id'))),
+                                    ->visible(fn($get) => filled($get('product_id'))),
 
                                 Select::make('currency_id')
                                     ->label(__('lang.currency'))
@@ -229,23 +242,31 @@ class ProductVendorSkuForm
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->visible(fn($get) => filled($get('variant_id')))
+                                    ->visible(fn($get) => filled($get('product_id')))
                                     ->validationMessages([
                                         'unique' => __('This product variant is already added with this currency.'),
                                     ])
                                     ->rules([
                                         function (Get $get, Component $component) {
                                             return function (string $attribute, $value, \Closure $fail) use ($get, $component) {
+                                                $productId = $get('product_id');
                                                 $variantId = $get('variant_id');
                                                 $vendorId = $get('vendor_id');
 
-                                                if (!$variantId || !$vendorId) {
+                                                if (!$productId || !$vendorId) {
                                                     return;
                                                 }
 
-                                                $query = \App\Models\ProductVendorSku::where('variant_id', $variantId)
+                                                $query = \App\Models\ProductVendorSku::where('product_id', $productId)
                                                     ->where('vendor_id', $vendorId)
                                                     ->where('currency_id', $value);
+
+                                                // إذا كان هناك متغير محدد، نتحقق منه أيضاً
+                                                if ($variantId) {
+                                                    $query->where('variant_id', $variantId);
+                                                } else {
+                                                    $query->whereNull('variant_id');
+                                                }
 
                                                 // Ignore current record if editing
                                                 $record = $component->getRecord();
@@ -254,7 +275,7 @@ class ProductVendorSkuForm
                                                 }
 
                                                 if ($query->exists()) {
-                                                    $fail(__('This product variant is already added with this currency.'));
+                                                    $fail(__('This product is already added with this currency.'));
                                                 }
                                             };
                                         },
@@ -262,6 +283,10 @@ class ProductVendorSkuForm
 
                                 Hidden::make('vendor_id')
                                     ->default(fn() => auth()->user()->vendor_id),
+
+                                // حقل مخفي لحفظ product_id مباشرة
+                                Hidden::make('product_id')
+                                    ->dehydrated(),
                             ]),
 
                         // Step 2: Units & Pricing
@@ -271,7 +296,6 @@ class ProductVendorSkuForm
                             ->columnSpanFull()
                             ->schema([
                                 \Filament\Forms\Components\Repeater::make('units')
-                                    ->relationship('units')
                                     ->label(__('lang.unit_prices'))
                                     ->columnSpanFull()
                                     ->collapsible()
