@@ -215,6 +215,18 @@ return [
     'is_default_unit_helper' => 'هل هذه الوحدة الافتراضية للعرض؟',
     'sort_order_helper' => 'ترتيب العرض (الأصغر يظهر أولاً)',
 
+    // Product Units (للمنتجات البسيطة)
+    'product_units' => 'وحدات المنتج',
+    'product_units_desc' => 'حدد الوحدات المتاحة لهذا المنتج (قطعة، علبة، كرتونة...)',
+    'conversion_factor' => 'معامل التحويل',
+    'conversion_factor_helper' => 'معامل التحويل للوحدة الأساسية',
+    'is_base_unit' => 'وحدة أساسية',
+    'is_base_unit_helper' => 'هل هذه الوحدة الأساسية للمنتج؟',
+    'is_sellable' => 'قابلة للبيع',
+    'is_sellable_helper' => 'هل يمكن بيع المنتج بهذه الوحدة؟',
+    'base_unit_desc' => 'الوحدة الأساسية تُستخدم للحسابات والمخزون',
+    'add_product_unit' => 'إضافة وحدة',
+
     // Customers
     'customers' => 'العملاء',
     'customer' => 'عميل',

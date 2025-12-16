@@ -97,6 +97,22 @@ class ProductVendorSku extends Model implements HasMedia
         return $query->where('is_default_offer', true);
     }
 
+    /**
+     * عروض المنتجات البسيطة (بدون متغيرات)
+     */
+    public function scopeSimpleProducts($query)
+    {
+        return $query->whereNull('variant_id');
+    }
+
+    /**
+     * عروض المنتجات المتغيرة (مع متغيرات)
+     */
+    public function scopeVariableProducts($query)
+    {
+        return $query->whereNotNull('variant_id');
+    }
+
     /* ============================================================
      | ⚙️ Helper Methods
      |============================================================ */

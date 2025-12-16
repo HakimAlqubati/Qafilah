@@ -258,6 +258,69 @@ class ProductForm
                         ]),
 
                     // ----------------------------------------------------
+                    // Step 3.5) Product Units (للمنتجات البسيطة)
+                    // ----------------------------------------------------
+                    Step::make(__('lang.product_units'))
+                        ->icon('heroicon-o-cube')
+                        // ->description(__('lang.product_units_desc'))
+                        ->schema([
+
+                            Repeater::make('units')
+                                ->relationship('units')
+                                ->label('')->columnSpanFull()
+                                ->columns(4)
+                                ->defaultItems(0)
+                                ->table([
+                                    TableColumn::make(__('lang.unit'))->width('25%'),
+                                    TableColumn::make(__('lang.package_size'))->width('25%'),
+                                    TableColumn::make(__('lang.selling_price'))->width('25%'),
+                                    TableColumn::make(__('lang.cost_price'))->width('25%'),
+                                ])
+                                ->addActionLabel(__('lang.add_product_unit'))
+                                ->schema([
+
+                                    Select::make('unit_id')
+                                        ->label(__('lang.unit'))
+                                        ->relationship('unit', 'name')
+                                        ->required()
+                                        ->searchable()
+                                        ->preload()
+                                        ->distinct(),
+
+                                    TextInput::make('package_size')
+                                        ->label(__('lang.package_size'))
+                                        // ->helperText(__('lang.package_size_helper'))
+                                        ->numeric()
+                                        ->extraInputAttributes(['style' => 'text-align: center;'])
+                                        ->default(1)
+                                        ->minValue(1)
+                                        ->required(),
+
+                                    TextInput::make('selling_price')
+                                        ->label(__('lang.selling_price'))
+                                        ->numeric()
+                                        ->extraInputAttributes(['style' => 'text-align: center;'])
+                                        ->minValue(0)
+                                        ->step(0.01),
+
+                                    TextInput::make('cost_price')
+                                        ->label(__('lang.cost_price'))
+                                        ->numeric()
+                                        ->extraInputAttributes(['style' => 'text-align: center;'])
+                                        ->minValue(0)
+                                        ->step(0.01),
+
+                                ])
+                                ->reorderable()
+                                ->collapsible()
+                                ->itemLabel(
+                                    fn(array $state): ?string =>
+                                    \App\Models\Unit::find($state['unit_id'] ?? null)?->name ?? 'Unit'
+                                ),
+
+                        ]),
+
+                    // ----------------------------------------------------
                     // Step 4) Attribute Values (Custom Attributes)
                     // ----------------------------------------------------
                     Step::make(__('lang.attribute_values'))

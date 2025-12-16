@@ -215,6 +215,18 @@ return [
     'is_default_unit_helper' => 'Is this the default unit for display?',
     'sort_order_helper' => 'Display order (smaller appears first)',
 
+    // Product Units (for simple products)
+    'product_units' => 'Product Units',
+    'product_units_desc' => 'Define available units for this product (piece, box, carton...)',
+    'conversion_factor' => 'Conversion Factor',
+    'conversion_factor_helper' => 'Conversion factor to base unit',
+    'is_base_unit' => 'Base Unit',
+    'is_base_unit_helper' => 'Is this the base unit for the product?',
+    'is_sellable' => 'Sellable',
+    'is_sellable_helper' => 'Can the product be sold in this unit?',
+    'base_unit_desc' => 'Base unit is used for calculations and inventory',
+    'add_product_unit' => 'Add Unit',
+
     // Customers
     'customers' => 'Customers',
     'customer' => 'Customer',

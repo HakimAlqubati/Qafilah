@@ -13,6 +13,7 @@ class ProductVendorSkuUnit extends Model
     protected $fillable = [
         'product_vendor_sku_id',
         'unit_id',
+        'product_unit_id', // ✅ جديد
         'package_size',
         'cost_price',
         'selling_price',
@@ -82,6 +83,22 @@ class ProductVendorSkuUnit extends Model
     public function editor()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * الوحدة المعرفة في المنتج (للمنتجات البسيطة)
+     */
+    public function productUnit()
+    {
+        return $this->belongsTo(ProductUnit::class);
+    }
+
+    /**
+     * الحصول على package_size من ProductUnit إذا كان موجود
+     */
+    public function getPackageSizeFromUnitAttribute(): ?int
+    {
+        return $this->productUnit?->package_size ?? $this->package_size;
     }
 
     /* ============================================================

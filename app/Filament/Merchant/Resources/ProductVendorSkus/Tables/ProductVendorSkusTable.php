@@ -21,12 +21,10 @@ class ProductVendorSkusTable
     {
         return $table->striped()->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('variant.product.name')
+                TextColumn::make('product.name')
                     ->label('Product')
                     ->searchable()
                     ->sortable()
-
-
                     ->color('primary')
                     ->fontFamily(FontFamily::Mono)
                     ->weight(FontWeight::Bold),
