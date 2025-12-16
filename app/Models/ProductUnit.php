@@ -15,6 +15,8 @@ class ProductUnit extends Model
         'unit_id',
         'package_size',
         'conversion_factor',
+        'selling_price',
+        'cost_price',
         'is_base_unit',
         'is_sellable',
         'sort_order',
@@ -26,6 +28,8 @@ class ProductUnit extends Model
         'is_sellable' => 'boolean',
         'package_size' => 'integer',
         'conversion_factor' => 'decimal:4',
+        'selling_price' => 'decimal:2',
+        'cost_price' => 'decimal:2',
         'sort_order' => 'integer',
     ];
 
