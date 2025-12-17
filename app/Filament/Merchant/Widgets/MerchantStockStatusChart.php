@@ -5,14 +5,18 @@ namespace App\Filament\Merchant\Widgets;
 use App\Models\ProductVendorSku;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Support\Htmlable;
 
 class MerchantStockStatusChart extends ChartWidget
 {
-    protected ?string $heading = 'Stock Status Distribution';
-
     protected static ?int $sort = 3;
 
     protected ?string $maxHeight = '300px';
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('lang.stock_status_distribution');
+    }
 
     protected function getData(): array
     {
@@ -34,7 +38,7 @@ class MerchantStockStatusChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => __('Products'),
+                    'label' => __('lang.products'),
                     'data' => [$available, $outOfStock, $inactive],
                     'backgroundColor' => [
                         '#10b981', // green for available
@@ -46,9 +50,9 @@ class MerchantStockStatusChart extends ChartWidget
                 ],
             ],
             'labels' => [
-                __('Available') . " ({$available})",
-                __('Out of Stock') . " ({$outOfStock})",
-                __('Inactive') . " ({$inactive})",
+                __('lang.available') . " ({$available})",
+                __('lang.out_of_stock') . " ({$outOfStock})",
+                __('lang.inactive') . " ({$inactive})",
             ],
         ];
     }

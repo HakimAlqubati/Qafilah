@@ -6,24 +6,28 @@ use App\Models\ProductVendorSku;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Support\Htmlable;
 
 class MerchantProductsChart extends ChartWidget
 {
-    protected ?string $heading = 'Products Added Over Time';
-
     protected static ?int $sort = 2;
 
     protected ?string $maxHeight = '300px';
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('lang.products_added_over_time');
+    }
 
     protected function getData(): array
     {
         $vendorId = Auth::user()->vendor_id;
 
-        // Get data for last 12 months
+        // Get data for last 12 months - count distinct products
         $data = ProductVendorSku::where('vendor_id', $vendorId)
             ->select(
                 DB::raw('MONTH(created_at) as month'),
-                DB::raw('COUNT(*) as count')
+                DB::raw('COUNT(DISTINCT product_id) as count')
             )
             ->whereYear('created_at', date('Y'))
             ->groupBy('month')
@@ -40,7 +44,7 @@ class MerchantProductsChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => __('Products Added'),
+                    'label' => __('lang.products_added'),
                     'data' => $monthlyData,
                     'borderColor' => '#f59e0b',
                     'backgroundColor' => 'rgba(245, 158, 11, 0.1)',
@@ -49,18 +53,18 @@ class MerchantProductsChart extends ChartWidget
                 ],
             ],
             'labels' => [
-                __('Jan'),
-                __('Feb'),
-                __('Mar'),
-                __('Apr'),
-                __('May'),
-                __('Jun'),
-                __('Jul'),
-                __('Aug'),
-                __('Sep'),
-                __('Oct'),
-                __('Nov'),
-                __('Dec')
+                __('lang.jan'),
+                __('lang.feb'),
+                __('lang.mar'),
+                __('lang.apr'),
+                __('lang.may'),
+                __('lang.jun'),
+                __('lang.jul'),
+                __('lang.aug'),
+                __('lang.sep'),
+                __('lang.oct'),
+                __('lang.nov'),
+                __('lang.dec')
             ],
         ];
     }

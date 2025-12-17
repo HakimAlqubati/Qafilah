@@ -362,4 +362,33 @@ return [
     'user_status_permissions_description' => 'Define user status and permissions',
     'vendor_assignment' => 'Vendor Assignment',
     'vendor_assignment_description' => 'Link user to a specific vendor (optional)',
+
+    // Months (for charts)
+    'jan' => 'January',
+    'feb' => 'February',
+    'mar' => 'March',
+    'apr' => 'April',
+    'may' => 'May',
+    'jun' => 'June',
+    'jul' => 'July',
+    'aug' => 'August',
+    'sep' => 'September',
+    'oct' => 'October',
+    'nov' => 'November',
+    'dec' => 'December',
+
+    // Merchant Panel - Widget Statistics
+    'total_products' => 'Total Products',
+    'total_skus_variants' => 'Total SKUs/Variants',
+    'available' => 'Available',
+    'products_in_stock' => 'Products in stock',
+    'out_of_stock' => 'Out of Stock',
+    'need_restocking' => 'Need restocking',
+    'stock_value' => 'Stock Value',
+    'total_inventory_value' => 'Total inventory value',
+    'products_added' => 'Products Added',
+
+    // Merchant Panel - Chart Headings
+    'products_added_over_time' => 'Products Added Over Time',
+    'stock_status_distribution' => 'Stock Status Distribution',
 ];

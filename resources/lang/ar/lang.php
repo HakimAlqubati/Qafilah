@@ -363,4 +363,33 @@ return [
     'user_status_permissions_description' => 'تحديد حالة المستخدم وصلاحياته',
     'vendor_assignment' => 'ربط بتاجر',
     'vendor_assignment_description' => 'ربط المستخدم بتاجر معين (اختياري)',
+
+    // Months (for charts)
+    'jan' => 'يناير',
+    'feb' => 'فبراير',
+    'mar' => 'مارس',
+    'apr' => 'أبريل',
+    'may' => 'مايو',
+    'jun' => 'يونيو',
+    'jul' => 'يوليو',
+    'aug' => 'أغسطس',
+    'sep' => 'سبتمبر',
+    'oct' => 'أكتوبر',
+    'nov' => 'نوفمبر',
+    'dec' => 'ديسمبر',
+
+    // Merchant Panel - Widget Statistics
+    'total_products' => 'إجمالي المنتجات',
+    'total_skus_variants' => 'المتغيرات / SKUs',
+    'available' => 'متوفر',
+    'products_in_stock' => 'المنتجات المتوفرة',
+    'out_of_stock' => 'نفذت الكمية',
+    'need_restocking' => 'يحتاج إعادة توفير',
+    'stock_value' => 'قيمة المخزون',
+    'total_inventory_value' => 'إجمالي قيمة المخزون',
+    'products_added' => 'المنتجات المضافة',
+
+    // Merchant Panel - Chart Headings
+    'products_added_over_time' => 'المنتجات المضافة خلال الوقت',
+    'stock_status_distribution' => 'توزيع حالة المخزون',
 ];

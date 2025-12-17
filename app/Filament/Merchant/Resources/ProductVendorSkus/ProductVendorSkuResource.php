@@ -70,7 +70,7 @@ class ProductVendorSkuResource extends Resource
     }
     public static function getNavigationBadge(): ?string
     {
-        return static::getEloquentQuery()->count();
+        return static::getEloquentQuery()->distinct('product_id')->count('product_id');
     }
     public static function getEloquentQuery(): Builder
     {
