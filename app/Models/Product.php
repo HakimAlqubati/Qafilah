@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Viewable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Product extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia;
+    use HasFactory, SoftDeletes, InteractsWithMedia, Viewable;
 
     /* ============================================================
      | 🔹 الحقول القابلة للتعبئة
@@ -26,6 +27,7 @@ class Product extends Model implements HasMedia
         'description',
         'status',
         'is_featured',
+        'views',
         'created_by',
         'updated_by',
     ];

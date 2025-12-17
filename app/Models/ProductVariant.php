@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Viewable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,16 +11,17 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class ProductVariant extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia;
+    use HasFactory, SoftDeletes, InteractsWithMedia, Viewable;
 
     protected $fillable = [
         'product_id',
         'master_sku',
         'barcode',
-        'weight',   
+        'weight',
         'dimensions',
         'status',
         'is_default',
+        'views',
         'created_by',
         'updated_by',
     ];
@@ -66,7 +68,7 @@ class ProductVariant extends Model implements HasMedia
         return $this->hasMany(ProductVendorSku::class, 'variant_id');
     }
 
-   
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
