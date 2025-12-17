@@ -11,6 +11,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -61,7 +62,19 @@ class MerchantPanelProvider extends PanelProvider
                 Authenticate::class,
                 CustomFilamentAuthenticate::class
             ])
+
             ->topNavigation()
+            ->globalSearchKeyBindings([])
+            ->renderHook(
+                PanelsRenderHook::TOPBAR_START,
+                fn(): string =>
+                view('filament.partials.current-time')->render()
+            )
+            ->renderHook(
+                PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+                fn(): string =>
+                view('filament.partials.welcome')->render()
+            )
         ;
     }
 }
