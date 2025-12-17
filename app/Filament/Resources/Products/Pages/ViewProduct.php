@@ -10,6 +10,12 @@ class ViewProduct extends ViewRecord
 {
     protected static string $resource = ProductResource::class;
 
+     protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $this->record->recordView();
+        return $data;
+    }
+    
     protected function getHeaderActions(): array
     {
         return [
