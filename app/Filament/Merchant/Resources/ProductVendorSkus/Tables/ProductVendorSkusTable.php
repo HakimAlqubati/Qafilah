@@ -22,7 +22,7 @@ class ProductVendorSkusTable
         return $table->striped()->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('product.name')
-                    ->label('Product')
+                    ->label(__('lang.product'))
                     ->searchable()
                     ->sortable()
                     ->color('primary')
@@ -30,7 +30,7 @@ class ProductVendorSkusTable
                     ->weight(FontWeight::Bold),
 
                 TextColumn::make('variant_details')
-                    ->label('')
+                    ->label(__('lang.variant'))
                     ->state(function ($record) {
                         return $record->variant?->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(', ');
                     })
@@ -49,20 +49,21 @@ class ProductVendorSkusTable
                     ->alignCenter(),
 
                 TextColumn::make('vendor_sku')
-                    ->label('SKU')
+                    ->label(__('lang.sku'))
                     ->searchable(),
                 TextColumn::make('selling_price')
-                    ->label('Price')
+                    ->label(__('lang.selling_price'))
                     ->money(fn($record) => $record->currency->code ?? 'USD')
                     ->sortable()
                     ->color(Color::Green)
                     ->fontFamily(FontFamily::Mono)
                     ->weight(FontWeight::Bold),
                 TextColumn::make('stock')
-                    ->label('Stock')
+                    ->label(__('lang.stock'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('status')
+                    ->label(__('lang.status'))
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
                         'available' => 'success',
@@ -71,6 +72,7 @@ class ProductVendorSkusTable
                         default => 'gray',
                     }),
                 TextColumn::make('created_at')
+                    ->label(__('lang.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

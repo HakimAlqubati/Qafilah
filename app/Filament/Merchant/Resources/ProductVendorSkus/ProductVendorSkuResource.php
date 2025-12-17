@@ -34,6 +34,10 @@ class ProductVendorSkuResource extends Resource
         return __('lang.product');
     }
 
+    public static function getPluralModelLabel(): string
+    {
+        return __('lang.products');
+    }
 
     public static function form(Schema $schema): Schema
     {

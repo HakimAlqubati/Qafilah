@@ -19,6 +19,20 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ProductVendorSkuForm
 {
+    /**
+     * Generate a unique vendor SKU
+     * Format: VND{vendorId}-PRD{productId}-{randomSuffix}
+     */
+    public static function generateUniqueVendorSku(int $productId, int $vendorId): string
+    {
+        do {
+            $randomSuffix = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 6));
+            $sku = "VND{$vendorId}-PRD{$productId}-{$randomSuffix}";
+        } while (\App\Models\ProductVendorSku::where('vendor_sku', $sku)->exists());
+
+        return $sku;
+    }
+
     public static function configure(Schema $form): Schema
     {
         return $form
@@ -98,13 +112,17 @@ class ProductVendorSkuForm
                                             $product = \App\Models\Product::with(['attributesDirect', 'units.unit'])->find($productId);
                                             $hasVariantAttributes = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
 
+                                            // Generate unique vendor_sku
+                                            $vendorId = auth()->user()->vendor_id ?? 0;
+                                            $uniqueSku = self::generateUniqueVendorSku($productId, $vendorId);
+                                            $set('vendor_sku', $uniqueSku);
+
                                             // إذا المنتج بسيط (بدون متغيرات)
                                             if (!$hasVariantAttributes) {
                                                 // Find the default/single variant if exists
                                                 $variant = \App\Models\ProductVariant::where('product_id', $productId)->active()->first();
                                                 if ($variant) {
                                                     $set('variant_id', $variant->id);
-                                                    $set('vendor_sku', $variant->master_sku);
                                                 }
                                             }
 
@@ -216,7 +234,7 @@ class ProductVendorSkuForm
                                                         $variant = $query->first();
                                                         if ($variant) {
                                                             $set('variant_id', $variant->id);
-                                                            $set('vendor_sku', $variant->master_sku);
+                                                            // SKU is already generated when product is selected, don't override
                                                         }
                                                     }
                                                 });
