@@ -392,4 +392,18 @@ return [
     // Merchant Panel - Chart Headings
     'products_added_over_time' => 'المنتجات المضافة خلال الوقت',
     'stock_status_distribution' => 'توزيع حالة المخزون',
+
+    // Multi-variant selection
+    'select_variants' => 'اختر المتغيرات',
+    'select_variants_helper' => 'حدد المتغيرات التي تريد إضافتها لمنتجاتك',
+    'already_added' => 'تمت إضافته مسبقاً',
+    'products_added_successfully' => 'تمت إضافة المنتجات بنجاح',
+    'variants_added_count' => 'تم إضافة :count متغيرات',
+
+    // Table columns
+    'prices' => 'الأسعار',
+    'no_units' => 'لا توجد وحدات',
+    'view_units' => 'عرض الوحدات',
+    'unit_details' => 'تفاصيل الوحدات',
+    'close' => 'إغلاق',
 ];

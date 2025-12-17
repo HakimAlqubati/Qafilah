@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Wizard\Step;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Schemas\Schema;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Filament\Forms\Components\CheckboxList;
 
 class ProductVendorSkuForm
 {
@@ -143,8 +144,22 @@ class ProductVendorSkuForm
                                     })
                                     ->required(),
 
-                                // 4. Dynamic Attributes
+                                // 4. Dynamic Attributes - فقط في وضع التعديل
                                 Grid::make(2)
+                                    ->visible(function ($get, $operation) {
+                                        // إخفاء في وضع الإنشاء إذا كان المنتج له متغيرات
+                                        // لأننا نستخدم CheckboxList بدلاً منها
+                                        if ($operation === 'create') {
+                                            $productId = $get('product_id');
+                                            if (!$productId) {
+                                                return false;
+                                            }
+                                            $product = \App\Models\Product::with(['attributesDirect'])->find($productId);
+                                            $hasVariantAttributes = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
+                                            return !$hasVariantAttributes; // أخفي إذا كان له متغيرات
+                                        }
+                                        return true; // أظهر في وضع التعديل
+                                    })
                                     ->schema(function ($get, $set) {
                                         $productId = $get('product_id');
                                         if (!$productId) {
@@ -199,6 +214,7 @@ class ProductVendorSkuForm
                                                         ->pluck('value', 'id');
                                                 })
                                                 ->required()
+                                                ->disabled(fn($operation) => $operation === 'edit') // تعطيل في وضع التعديل
                                                 ->live()
                                                 ->afterStateUpdated(function ($set, $get) use ($variantAttributes, $index, $productId) {
                                                     // Reset subsequent attributes
@@ -240,6 +256,60 @@ class ProductVendorSkuForm
                                                 });
                                         }
                                         return $components;
+                                    }),
+
+                                // متغيرات متعددة - للمنتجات ذات المتغيرات (وضع الإنشاء فقط)
+                                CheckboxList::make('selected_variants')
+                                    ->label(__('lang.select_variants'))
+                                    ->helperText(__('lang.select_variants_helper'))
+                                    ->options(function ($get) {
+                                        $productId = $get('product_id');
+                                        if (!$productId) {
+                                            return [];
+                                        }
+
+                                        $product = \App\Models\Product::with(['attributesDirect'])->find($productId);
+                                        $hasVariantAttributes = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
+
+                                        if (!$hasVariantAttributes) {
+                                            return [];
+                                        }
+
+                                        // Get all variants with their attribute values
+                                        $variants = \App\Models\ProductVariant::with(['values.attribute', 'values.attributeValue'])
+                                            ->where('product_id', $productId)
+                                            ->active()
+                                            ->get();
+
+                                        // Get already added variants for this vendor
+                                        $vendorId = auth()->user()->vendor_id ?? 0;
+                                        $existingVariantIds = \App\Models\ProductVendorSku::where('vendor_id', $vendorId)
+                                            ->where('product_id', $productId)
+                                            ->whereNotNull('variant_id')
+                                            ->pluck('variant_id')
+                                            ->toArray();
+
+                                        return $variants->mapWithKeys(function ($variant) use ($existingVariantIds) {
+                                            $label = $variant->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(' | ');
+                                            $isAdded = in_array($variant->id, $existingVariantIds);
+                                            if ($isAdded) {
+                                                $label .= ' ✓ (' . __('lang.already_added') . ')';
+                                            }
+                                            return [$variant->id => $label];
+                                        })->toArray();
+                                    })
+                                    ->columns(2)
+                                    ->gridDirection('row')
+                                    ->visible(function ($get, $operation) {
+                                        if ($operation !== 'create') {
+                                            return false;
+                                        }
+                                        $productId = $get('product_id');
+                                        if (!$productId) {
+                                            return false;
+                                        }
+                                        $product = \App\Models\Product::with(['attributesDirect'])->find($productId);
+                                        return $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
                                     }),
 
                                 // Variant Selection (Hidden) - اختياري للمنتجات البسيطة

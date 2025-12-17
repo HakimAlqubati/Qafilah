@@ -391,4 +391,18 @@ return [
     // Merchant Panel - Chart Headings
     'products_added_over_time' => 'Products Added Over Time',
     'stock_status_distribution' => 'Stock Status Distribution',
+
+    // Multi-variant selection
+    'select_variants' => 'Select Variants',
+    'select_variants_helper' => 'Select the variants you want to add to your products',
+    'already_added' => 'Already added',
+    'products_added_successfully' => 'Products added successfully',
+    'variants_added_count' => ':count variants added',
+
+    // Table columns
+    'prices' => 'Prices',
+    'no_units' => 'No units',
+    'view_units' => 'View Units',
+    'unit_details' => 'Unit Details',
+    'close' => 'Close',
 ];
