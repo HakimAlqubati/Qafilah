@@ -14,6 +14,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\User;
+use Filament\Tables\Enums\FiltersLayout;
 
 class UsersTable
 {
@@ -24,7 +25,7 @@ class UsersTable
                 // ID Column
                 TextColumn::make('id')->alignCenter()
                     ->label(__('lang.id'))
-                    ->sortable(),
+                    ->sortable()->toggleable(isToggledHiddenByDefault: true),
 
                 // Avatar Column
                 ImageColumn::make('avatar')
@@ -132,7 +133,8 @@ class UsersTable
                 SelectFilter::make('roles')
                     ->label(__('lang.roles'))
                     ->relationship('roles', 'name'),
-            ])
+            ], FiltersLayout::Modal)
+            ->filtersFormColumns(4)
             ->actions([
                 // Row Actions
                 EditAction::make(),
