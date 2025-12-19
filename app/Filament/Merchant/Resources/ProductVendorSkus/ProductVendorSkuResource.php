@@ -8,6 +8,8 @@ use App\Filament\Merchant\Resources\ProductVendorSkus\Pages\ListProductVendorSku
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\ProductVendorSkuForm;
 use App\Filament\Merchant\Resources\ProductVendorSkus\Tables\ProductVendorSkusTable;
 use BackedEnum;
+use Filament\Pages\Enums\SubNavigationPosition;
+use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -23,6 +25,8 @@ class ProductVendorSkuResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     protected static ?string $recordTitleAttribute = 'vendor_id';
+
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getLabel(): ?string
     {
@@ -63,6 +67,15 @@ class ProductVendorSkuResource extends Resource
             'create' => CreateProductVendorSku::route('/create'),
             'edit' => EditProductVendorSku::route('/{record}/edit'),
         ];
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ListProductVendorSkus::class,
+            CreateProductVendorSku::class,
+            EditProductVendorSku::class,
+        ]);
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder

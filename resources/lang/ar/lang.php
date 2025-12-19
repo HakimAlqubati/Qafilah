@@ -415,4 +415,9 @@ return [
     'merchant_panel' => 'لوحة تحكم التاجر',
     'merchant_panel_desc' => 'إدارة منتجاتك ومخزونك وطلباتك من خلال لوحة التحكم المخصصة للتجار.',
     'go_to_panel' => 'الذهاب للوحة التحكم',
+
+    // Duplicate Product
+    'duplicate_product' => 'منتج مكرر',
+    'product_already_exists' => 'هذا المنتج مضاف مسبقاً بنفس العملة.',
+    'all_variants_already_exist' => 'جميع المتغيرات المحددة مضافة مسبقاً.',
 ];

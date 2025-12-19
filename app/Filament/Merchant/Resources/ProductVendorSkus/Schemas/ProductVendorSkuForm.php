@@ -83,8 +83,7 @@ class ProductVendorSkuForm
                                         $set('product_id', null);
                                         $set('variant_id', null);
                                         $set('attributes', []);
-                                    })
-                                    ->required(),
+                                    }),
 
                                 // 3. Product
                                 Select::make('product_id')

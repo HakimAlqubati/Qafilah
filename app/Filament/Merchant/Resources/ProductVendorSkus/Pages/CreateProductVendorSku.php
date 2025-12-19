@@ -33,8 +33,12 @@ class CreateProductVendorSku extends CreateRecord
             $createdRecords = [];
             $vendorId = $data['vendor_id'];
             $productId = $data['product_id'];
+            $skippedCount = 0;
 
             foreach ($selectedVariants as $variantId) {
+                // Cast to int for proper comparison
+                $variantId = (int) $variantId;
+
                 // Check if already exists
                 $exists = ProductVendorSku::where('vendor_id', $vendorId)
                     ->where('product_id', $productId)
@@ -43,6 +47,7 @@ class CreateProductVendorSku extends CreateRecord
                     ->exists();
 
                 if ($exists) {
+                    $skippedCount++;
                     continue;
                 }
 
@@ -57,24 +62,41 @@ class CreateProductVendorSku extends CreateRecord
                 // Remove units from main data as we'll handle it separately
                 unset($recordData['units']);
 
-                $record = static::getModel()::create($recordData);
+                try {
+                    $record = static::getModel()::create($recordData);
 
-                // Create units for each record
-                foreach ($units as $unitData) {
-                    $record->units()->create([
-                        'unit_id' => $unitData['unit_id'],
-                        'package_size' => $unitData['package_size'] ?? 1,
-                        'cost_price' => $unitData['cost_price'] ?? null,
-                        'selling_price' => $unitData['selling_price'],
-                        'stock' => $unitData['stock'] ?? 0,
-                        'moq' => $unitData['moq'] ?? 1,
-                        'is_default' => $unitData['is_default'] ?? false,
-                        'status' => $unitData['status'] ?? 'active',
-                        'sort_order' => $unitData['sort_order'] ?? 0,
-                    ]);
+                    // Create units for each record
+                    foreach ($units as $unitData) {
+                        $record->units()->create([
+                            'unit_id' => $unitData['unit_id'],
+                            'package_size' => $unitData['package_size'] ?? 1,
+                            'cost_price' => $unitData['cost_price'] ?? null,
+                            'selling_price' => $unitData['selling_price'],
+                            'stock' => $unitData['stock'] ?? 0,
+                            'moq' => $unitData['moq'] ?? 1,
+                            'is_default' => $unitData['is_default'] ?? false,
+                            'status' => $unitData['status'] ?? 'active',
+                            'sort_order' => $unitData['sort_order'] ?? 0,
+                        ]);
+                    }
+
+                    $createdRecords[] = $record;
+                } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+                    // Skip duplicate entries silently
+                    $skippedCount++;
+                    continue;
                 }
+            }
 
-                $createdRecords[] = $record;
+            // If all variants were skipped (already exist)
+            if (empty($createdRecords)) {
+                Notification::make()
+                    ->title(__('lang.duplicate_product'))
+                    ->body(__('lang.all_variants_already_exist'))
+                    ->warning()
+                    ->send();
+
+                $this->halt();
             }
 
             // Notification for bulk creation
@@ -91,6 +113,23 @@ class CreateProductVendorSku extends CreateRecord
         }
 
         // حالة المنتج البسيط (بدون متغيرات متعددة)
+        // Check for duplicate before creating
+        $exists = ProductVendorSku::where('vendor_id', $data['vendor_id'])
+            ->where('product_id', $data['product_id'])
+            ->where('variant_id', $data['variant_id'] ?? null)
+            ->where('currency_id', $data['currency_id'])
+            ->exists();
+
+        if ($exists) {
+            Notification::make()
+                ->title(__('lang.duplicate_product'))
+                ->body(__('lang.product_already_exists'))
+                ->danger()
+                ->send();
+
+            $this->halt();
+        }
+
         unset($data['units']);
         $record = static::getModel()::create($data);
 

@@ -414,4 +414,9 @@ return [
     'merchant_panel' => 'Merchant Panel',
     'merchant_panel_desc' => 'Manage your products, inventory, and orders through the dedicated merchant dashboard.',
     'go_to_panel' => 'Go to Panel',
+
+    // Duplicate Product
+    'duplicate_product' => 'Duplicate Product',
+    'product_already_exists' => 'This product is already added with the same currency.',
+    'all_variants_already_exist' => 'All selected variants are already added.',
 ];
