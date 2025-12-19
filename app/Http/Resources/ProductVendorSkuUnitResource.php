@@ -27,7 +27,11 @@ class ProductVendorSkuUnitResource extends JsonResource
             'moq' => $this->moq,
             'is_default' => $this->is_default,
 //            'unit'  => new ProductUnitResource($this->whenLoaded('unit')),
-            'vendor' => new VendorResource($this->whenLoaded('productVendorSku')?->vendor),
+            'vendor' => $this->whenLoaded('productVendorSku', function () {
+                return $this->productVendorSku->vendor 
+                    ? new VendorResource($this->productVendorSku->vendor) 
+                    : null;
+            }),
         ];
 
     }

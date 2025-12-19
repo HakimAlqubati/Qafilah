@@ -48,13 +48,13 @@ class VendorProductController extends ApiController
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'id' => 'required|exists:product_variants,id'
+            'variant_id' => 'nullable|exists:product_variants,id'
         ]);
 
 
         $count = ProductVendorSku::available()
             ->where('product_id', $request->product_id)
-            ->where('variant_id', $request->id)
+            ->where('variant_id', $request->variant_id)
             ->distinct('vendor_id')
             ->count('vendor_id');
 
@@ -65,10 +65,10 @@ class VendorProductController extends ApiController
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'id' => 'required|exists:product_variants,id'
+            'variant_id' => 'nullable|exists:product_variants,id'
         ]);
 
-        $variantId= $request->id;
+        $variantId= $request->variant_id;
         $productId = $request->product_id;
 
         $prices =  ProductVendorSkuUnit::whereHas('productVendorSku', function ($query) use ($variantId, $productId) {
