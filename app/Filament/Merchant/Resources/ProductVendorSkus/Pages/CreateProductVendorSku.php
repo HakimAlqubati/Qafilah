@@ -19,28 +19,27 @@ class CreateProductVendorSku extends CreateRecord
 
     protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
     {
-        $selectedVariants = $data['selected_variants'] ?? [];
+        $variantsUnits = $data['variants_units'] ?? [];
         $units = $data['units'] ?? [];
-
-        // DEBUG: Log units data
-        // dd('Units data:', $units);
 
         // Remove non-model fields
         unset($data['selected_variants']);
+        unset($data['variants_units']);
         unset($data['main_category_id']);
         unset($data['sub_category_id']);
         unset($data['attributes']);
+        unset($data['units']);
 
-        // إذا تم اختيار متغيرات متعددة
-        if (!empty($selectedVariants) && count($selectedVariants) > 0) {
+        // === حالة المنتجات ذات المتغيرات (كل متغير له وحدات مستقلة) ===
+        if (!empty($variantsUnits)) {
             $createdRecords = [];
             $vendorId = $data['vendor_id'];
             $productId = $data['product_id'];
             $skippedCount = 0;
 
-            foreach ($selectedVariants as $variantId) {
-                // Cast to int for proper comparison
-                $variantId = (int) $variantId;
+            foreach ($variantsUnits as $variantData) {
+                $variantId = (int) $variantData['variant_id'];
+                $variantUnits = $variantData['units'] ?? [];
 
                 // Check if already exists
                 $exists = ProductVendorSku::where('vendor_id', $vendorId)
@@ -62,17 +61,13 @@ class CreateProductVendorSku extends CreateRecord
                     'vendor_sku' => $uniqueSku,
                 ]);
 
-                // Remove units from main data as we'll handle it separately
-                unset($recordData['units']);
-
                 try {
                     $record = static::getModel()::create($recordData);
 
-                    // Create units for each record
-                    foreach ($units as $unitData) {
+                    // Create units for this specific variant
+                    foreach ($variantUnits as $unitData) {
                         $record->units()->create([
                             'unit_id' => $unitData['unit_id'],
-                            'variant_id' => $unitData['variant_id'] ?? null,
                             'package_size' => $unitData['package_size'] ?? 1,
                             'cost_price' => $unitData['cost_price'] ?? null,
                             'selling_price' => $unitData['selling_price'],
@@ -86,7 +81,6 @@ class CreateProductVendorSku extends CreateRecord
 
                     $createdRecords[] = $record;
                 } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
-                    // Skip duplicate entries silently
                     $skippedCount++;
                     continue;
                 }
@@ -116,11 +110,11 @@ class CreateProductVendorSku extends CreateRecord
             return $createdRecords[0] ?? static::getModel()::make();
         }
 
-        // حالة المنتج البسيط (بدون متغيرات متعددة)
+        // === حالة المنتج البسيط (بدون متغيرات) ===
         // Check for duplicate before creating
         $exists = ProductVendorSku::where('vendor_id', $data['vendor_id'])
             ->where('product_id', $data['product_id'])
-            ->where('variant_id', $data['variant_id'])
+            ->where('variant_id', $data['variant_id'] ?? null)
             ->where('currency_id', $data['currency_id'])
             ->exists();
 
@@ -134,14 +128,12 @@ class CreateProductVendorSku extends CreateRecord
             $this->halt();
         }
 
-        unset($data['units']);
         $record = static::getModel()::create($data);
 
         // Create units
         foreach ($units as $unitData) {
             $record->units()->create([
                 'unit_id' => $unitData['unit_id'],
-                'variant_id' => $unitData['variant_id'] ?? null,
                 'package_size' => $unitData['package_size'] ?? 1,
                 'cost_price' => $unitData['cost_price'] ?? null,
                 'selling_price' => $unitData['selling_price'],

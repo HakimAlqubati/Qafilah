@@ -403,6 +403,9 @@ return [
     // Multi-variant selection
     'select_variants' => 'اختر المتغيرات',
     'select_variants_helper' => 'حدد المتغيرات التي تريد إضافتها لمنتجاتك',
+    'configure_variants' => 'تكوين المتغيرات',
+    'variant_configuration' => 'إعدادات المتغير',
+    'load_variants' => 'تحميل المتغيرات المختارة',
     'already_added' => 'تمت إضافته مسبقاً',
     'products_added_successfully' => 'تمت إضافة المنتجات بنجاح',
     'variants_added_count' => 'تم إضافة :count متغيرات',

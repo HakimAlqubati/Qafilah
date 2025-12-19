@@ -402,6 +402,9 @@ return [
     // Multi-variant selection
     'select_variants' => 'Select Variants',
     'select_variants_helper' => 'Select the variants you want to add to your products',
+    'configure_variants' => 'Configure Variants',
+    'variant_configuration' => 'Variant Configuration',
+    'load_variants' => 'Load Selected Variants',
     'already_added' => 'Already added',
     'products_added_successfully' => 'Products added successfully',
     'variants_added_count' => ':count variants added',

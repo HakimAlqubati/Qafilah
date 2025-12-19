@@ -301,6 +301,49 @@ class ProductVendorSkuForm
                                     ->columns(2)
                                     ->gridDirection('row')
                                     ->rules([]) // Disable default 'in' validation - we handle validation in handleRecordCreation
+                                    ->live()
+                                    ->afterStateUpdated(function ($state, $set, $get) {
+                                        // تحديث repeater المتغيرات عند تغيير الاختيارات
+                                        $selectedVariantIds = $state ?? [];
+                                        $productId = $get('product_id');
+
+                                        if (empty($selectedVariantIds) || !$productId) {
+                                            $set('variants_units', []);
+                                            return;
+                                        }
+
+                                        // جلب المتغيرات المختارة مع بياناتها
+                                        $variants = \App\Models\ProductVariant::with(['values.attribute', 'values.attributeValue'])
+                                            ->whereIn('id', $selectedVariantIds)
+                                            ->get();
+
+                                        // جلب الوحدات الافتراضية للمنتج
+                                        $product = \App\Models\Product::with(['units.unit'])->find($productId);
+                                        $defaultUnits = $product?->units->map(fn($pu) => [
+                                            'unit_id' => $pu->unit_id,
+                                            'package_size' => $pu->package_size,
+                                            'cost_price' => $pu->cost_price,
+                                            'selling_price' => $pu->selling_price,
+                                            'moq' => 1,
+                                            'stock' => 0,
+                                            'is_default' => $pu->is_base_unit,
+                                            'status' => 'active',
+                                            'sort_order' => $pu->sort_order,
+                                        ])->toArray() ?? [];
+
+                                        // بناء مصفوفة variants_units
+                                        $variantsUnits = [];
+                                        foreach ($variants as $variant) {
+                                            $label = $variant->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(' | ');
+                                            $variantsUnits[] = [
+                                                'variant_id' => $variant->id,
+                                                'variant_label' => $label ?: $variant->sku,
+                                                'units' => $defaultUnits,
+                                            ];
+                                        }
+
+                                        $set('variants_units', $variantsUnits);
+                                    })
                                     ->visible(function ($get, $operation) {
                                         if ($operation !== 'create') {
                                             return false;
@@ -384,6 +427,131 @@ class ProductVendorSkuForm
                             ->icon('heroicon-o-cube')
                             ->columnSpanFull()
                             ->schema([
+                                // === للمنتجات ذات المتغيرات: Repeater متداخل ===
+                                \Filament\Forms\Components\Repeater::make('variants_units')
+                                    ->label(__('lang.configure_variants'))
+                                    ->columnSpanFull()
+                                    ->collapsible()
+                                    ->collapsed(false)
+                                    ->addable(false) // لا يمكن إضافة متغيرات يدوياً - تأتي من الاختيار
+                                    ->deletable(false) // لا يمكن حذف متغيرات
+                                    ->reorderable(false)
+                                    ->itemLabel(fn(array $state): ?string => $state['variant_label'] ?? __('lang.variant'))
+                                    ->visible(function ($get, $operation) {
+                                        if ($operation !== 'create') {
+                                            return false;
+                                        }
+                                        $productId = $get('product_id');
+                                        if (!$productId) {
+                                            return false;
+                                        }
+                                        $product = \App\Models\Product::with(['attributesDirect'])->find($productId);
+                                        $hasVariants = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
+                                        $selectedVariants = $get('selected_variants') ?? [];
+                                        return $hasVariants && !empty($selectedVariants);
+                                    })
+                                    ->schema([
+                                        // معلومات المتغير (للعرض فقط)
+                                        \Filament\Forms\Components\Placeholder::make('variant_display')
+                                            ->label(__('lang.variant'))
+                                            ->content(fn($get) => $get('variant_label') ?? '-')
+                                            ->columnSpanFull(),
+
+                                        Hidden::make('variant_id'),
+                                        Hidden::make('variant_label'),
+
+                                        // Nested Units Repeater لهذا المتغير
+                                        \Filament\Forms\Components\Repeater::make('units')
+                                            ->label(__('lang.unit_prices'))
+                                            ->columnSpanFull()
+                                            ->collapsible()
+                                            ->collapsed(false)
+                                            ->itemLabel(
+                                                fn(array $state): ?string =>
+                                                \App\Models\Unit::find($state['unit_id'])?->name ?? __('lang.add_unit')
+                                            )
+                                            ->defaultItems(0)
+                                            ->addActionLabel(__('lang.add_unit'))
+                                            ->reorderable(true)
+                                            ->reorderableWithButtons()
+                                            ->columns(3)
+                                            ->schema([
+                                                Select::make('unit_id')
+                                                    ->label(__('lang.unit'))
+                                                    ->options(\App\Models\Unit::active()->pluck('name', 'id'))
+                                                    ->required()
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->live()
+                                                    ->columnSpan(1),
+
+                                                TextInput::make('package_size')
+                                                    ->label(__('lang.package_size'))
+                                                    ->helperText(__('lang.package_size_helper'))
+                                                    ->numeric()
+                                                    ->required()
+                                                    ->minValue(1)
+                                                    ->default(1)
+                                                    ->columnSpan(1),
+
+                                                TextInput::make('moq')
+                                                    ->label(__('lang.moq'))
+                                                    ->helperText(__('lang.moq_unit_helper'))
+                                                    ->numeric()
+                                                    ->required()
+                                                    ->minValue(1)
+                                                    ->default(1)
+                                                    ->columnSpan(1),
+
+                                                TextInput::make('cost_price')
+                                                    ->label(__('lang.unit_cost_price'))
+                                                    ->helperText(__('lang.unit_cost_price_helper'))
+                                                    ->numeric()
+                                                    ->nullable()
+                                                    ->columnSpan(1),
+
+                                                TextInput::make('selling_price')
+                                                    ->label(__('lang.unit_selling_price'))
+                                                    ->helperText(__('lang.unit_selling_price_helper'))
+                                                    ->numeric()
+                                                    ->required()
+                                                    ->columnSpan(1),
+
+                                                TextInput::make('stock')
+                                                    ->label(__('lang.unit_stock'))
+                                                    ->helperText(__('lang.unit_stock_helper'))
+                                                    ->numeric()
+                                                    ->required()
+                                                    ->default(0)
+                                                    ->minValue(0)
+                                                    ->columnSpan(1),
+
+                                                \Filament\Forms\Components\Toggle::make('is_default')
+                                                    ->label(__('lang.is_default_unit'))
+                                                    ->helperText(__('lang.is_default_unit_helper'))
+                                                    ->inline(false)
+                                                    ->columnSpan(1),
+
+                                                Select::make('status')
+                                                    ->label(__('lang.status'))
+                                                    ->options([
+                                                        'active' => __('lang.active'),
+                                                        'inactive' => __('lang.inactive'),
+                                                    ])
+                                                    ->default('active')
+                                                    ->required()
+                                                    ->columnSpan(1),
+
+                                                TextInput::make('sort_order')
+                                                    ->label(__('lang.sort_order'))
+                                                    ->helperText(__('lang.sort_order_helper'))
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->columnSpan(1),
+                                            ]),
+                                    ]),
+
+                                // === للمنتجات البسيطة (بدون متغيرات): Units Repeater عادي ===
                                 \Filament\Forms\Components\Repeater::make('units')
                                     ->label(__('lang.unit_prices'))
                                     ->columnSpanFull()
@@ -391,53 +559,25 @@ class ProductVendorSkuForm
                                     ->collapsed(false)
                                     ->itemLabel(
                                         fn(array $state): ?string =>
-                                        \App\Models\Unit::find($state['unit_id'])?->name ?? 'New Unit'
+                                        \App\Models\Unit::find($state['unit_id'])?->name ?? __('lang.add_unit')
                                     )
                                     ->defaultItems(0)
                                     ->addActionLabel(__('lang.add_unit'))
                                     ->reorderable(true)
                                     ->reorderableWithButtons()
                                     ->columns(3)
+                                    ->visible(function ($get, $operation) {
+                                        $productId = $get('product_id');
+                                        if (!$productId) {
+                                            return true; // Show by default when no product selected
+                                        }
+                                        $product = \App\Models\Product::with(['attributesDirect'])->find($productId);
+                                        $hasVariants = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
+
+                                        // Show for simple products (no variants) OR in edit mode
+                                        return !$hasVariants || $operation === 'edit';
+                                    })
                                     ->schema([
-                                        Select::make('variant_id')
-                                            ->label(__('lang.variant'))
-                                            ->options(function ($get) {
-                                                $productId = $get('../../product_id');
-                                                if (!$productId) {
-                                                    return [];
-                                                }
-
-                                                $variants = \App\Models\ProductVariant::with(['values.attribute', 'values.attributeValue'])
-                                                    ->where('product_id', $productId)
-                                                    ->active()
-                                                    ->get();
-
-                                                return $variants->mapWithKeys(function ($variant) {
-                                                    $label = $variant->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(' | ');
-                                                    // Use integer key to ensure proper matching
-                                                    return [(int) $variant->id => $label ?: $variant->sku];
-                                                })->toArray();
-                                            })
-                                            ->searchable()
-                                            ->preload()
-                                            ->live()
-                                            ->dehydrated(true)
-                                            ->afterStateUpdated(function ($state, $set) {
-                                                // Ensure the value is properly set as integer
-                                                if ($state !== null) {
-                                                    $set('variant_id', (int) $state);
-                                                }
-                                            })
-                                            ->visible(function ($get) {
-                                                $productId = $get('../../product_id');
-                                                if (!$productId) {
-                                                    return false;
-                                                }
-                                                $product = \App\Models\Product::with(['attributesDirect'])->find($productId);
-                                                return $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
-                                            })
-                                            ->columnSpan(1),
-
                                         Select::make('unit_id')
                                             ->label(__('lang.unit'))
                                             ->options(\App\Models\Unit::active()->pluck('name', 'id'))
@@ -445,8 +585,6 @@ class ProductVendorSkuForm
                                             ->searchable()
                                             ->preload()
                                             ->live()
-                                            // ->distinct()
-                                            // ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                             ->columnSpan(1),
 
                                         TextInput::make('package_size')
@@ -512,7 +650,7 @@ class ProductVendorSkuForm
                                             ->numeric()
                                             ->default(0)
                                             ->columnSpan(1),
-                                    ])
+                                    ]),
                             ]),
 
                         // Step 3: Images Upload
