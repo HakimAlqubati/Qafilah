@@ -3,6 +3,7 @@
 namespace App\Filament\Merchant\Resources\ProductVendorSkus\Pages;
 
 use App\Filament\Merchant\Resources\ProductVendorSkus\ProductVendorSkuResource;
+use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Helpers\SkuGenerator;
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\ProductVendorSkuForm;
 use App\Models\ProductVendorSku;
 use Filament\Resources\Pages\CreateRecord;
@@ -54,7 +55,7 @@ class CreateProductVendorSku extends CreateRecord
                 }
 
                 // Generate unique SKU for each variant
-                $uniqueSku = ProductVendorSkuForm::generateUniqueVendorSku($productId, $vendorId);
+                $uniqueSku = SkuGenerator::generate($productId, $vendorId);
 
                 $recordData = array_merge($data, [
                     'variant_id' => $variantId,
