@@ -28,6 +28,9 @@ return [
     'unit' => 'Unit',
     'currency' => 'Currency',
     'category' => 'Category',
+    'category_icon' => 'Category Icon',
+    'category_icon_helper' => 'Square icon image (200×200 pixels)',
+    'category_details' => 'Category Details',
     'product' => 'Product',
 
     // Common Table Columns

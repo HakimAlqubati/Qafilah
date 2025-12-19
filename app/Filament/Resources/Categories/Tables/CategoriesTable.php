@@ -18,8 +18,16 @@ class CategoriesTable
 
                 Tables\Columns\TextColumn::make('id')
                     ->label(__('lang.id'))
-                    ->searchable()->toggleable()->alignCenter()
+                    ->searchable()->toggleable(isToggledHiddenByDefault: true)->alignCenter()
                     ->sortable(),
+
+                Tables\Columns\ImageColumn::make('icon_url')
+                    ->label(__('lang.category_icon'))
+                    ->disk('public')
+                    // ->size(40)
+                    ->circular()->alignCenter()
+                    ->defaultImageUrl(fn() => asset('images/placeholder-category.png')),
+
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('lang.name'))->toggleable()
                     ->searchable()

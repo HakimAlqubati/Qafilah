@@ -44,6 +44,21 @@ class CategoryForm
                                 ->inline(false),
                         ]),
 
+                    // Category Icon
+                    FileUpload::make('icon')
+                        ->label(__('lang.category_icon'))
+                        ->helperText(__('lang.category_icon_helper'))
+                        ->image()
+                        ->imageEditor()
+                        ->directory('categories/icons')
+                        ->disk('public')
+                        ->maxSize(1024)
+                        ->imageResizeMode('cover')
+                        ->imageCropAspectRatio('1:1')
+                        ->imageResizeTargetWidth('200')
+                        ->imageResizeTargetHeight('200')
+                        ->columnSpan(1),
+
 
 
                     // Description (full width)

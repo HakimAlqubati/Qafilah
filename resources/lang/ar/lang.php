@@ -28,6 +28,9 @@ return [
     'unit' => 'وحدة',
     'currency' => 'عملة',
     'category' => 'فئة',
+    'category_icon' => 'أيقونة الفئة',
+    'category_icon_helper' => 'صورة مربعة للأيقونة (200×200 بكسل)',
+    'category_details' => 'تفاصيل الفئة',
     'product' => 'منتج',
 
     // Common Table Columns

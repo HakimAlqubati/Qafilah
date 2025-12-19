@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,6 +12,7 @@ class Category extends Model
 
     protected $fillable = [
         'name',
+        'icon',
         'parent_id',
         'attribute_set_id',
         'active',
@@ -23,6 +25,18 @@ class Category extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('active', 1);
+    }
+
+    /**
+     * Get the icon URL with fallback to default logo
+     */
+    public function getIconUrlAttribute(): string
+    {
+        if ($this->icon) {
+            return asset('storage/' . $this->icon);
+        }
+
+        return asset('imgs/logo.png');
     }
 
     public function parent()
