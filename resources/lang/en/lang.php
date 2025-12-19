@@ -405,4 +405,13 @@ return [
     'view_units' => 'View Units',
     'unit_details' => 'Unit Details',
     'close' => 'Close',
+
+    // Landing Page
+    'welcome_to_qafilah' => 'Welcome to Qafilah',
+    'choose_panel' => 'Choose your control panel',
+    'admin_panel' => 'Admin Panel',
+    'admin_panel_desc' => 'Access the full administrative dashboard to manage the system, users, and settings.',
+    'merchant_panel' => 'Merchant Panel',
+    'merchant_panel_desc' => 'Manage your products, inventory, and orders through the dedicated merchant dashboard.',
+    'go_to_panel' => 'Go to Panel',
 ];
