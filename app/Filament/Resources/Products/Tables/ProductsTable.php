@@ -27,13 +27,14 @@ class ProductsTable
                 // 1. Name & SKU (Primary identifiers)
                 TextColumn::make('id')
                     ->label(__('lang.id'))
-                    ->searchable()
+                    ->searchable()->alignCenter()
                     ->sortable(),
                 TextColumn::make('name')
                     ->label(__('lang.product_name'))
                     ->searchable()
                     ->sortable()
-                    ->description(fn(Product $record): string => __('lang.sku') . ": {$record->sku}"), // Display SKU beneath the name
+                    // ->description(fn(Product $record): string => __('lang.sku') . ": {$record->sku}")
+                    , // Display SKU beneath the name
                 SpatieMediaLibraryImageColumn::make('default')->label(__('lang.image'))->size(50)
                     ->circular()->alignCenter(true)->getStateUsing(function () {
                         return null;
