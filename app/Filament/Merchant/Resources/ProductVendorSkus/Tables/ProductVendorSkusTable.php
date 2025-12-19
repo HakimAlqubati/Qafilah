@@ -18,6 +18,7 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
@@ -56,7 +57,14 @@ class ProductVendorSkusTable
 
                 TextColumn::make('vendor_sku')
                     ->label(__('lang.sku'))
-                    ->searchable(),
+                    ->searchable()
+                    ->hidden(),
+
+                TextColumn::make('currency.code')
+                    ->label(__('lang.currency'))
+                    ->badge()
+                    ->color('primary')
+                    ->sortable(),
 
                 // عمود الأسعار - ملخص مع عدد الوحدات
                 TextColumn::make('units_count')
@@ -90,6 +98,7 @@ class ProductVendorSkusTable
                 TextColumn::make('status')
                     ->label(__('lang.status'))
                     ->badge()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->color(fn(string $state): string => match ($state) {
                         'available' => 'success',
                         'out_of_stock' => 'warning',
@@ -103,8 +112,40 @@ class ProductVendorSkusTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                \Filament\Tables\Filters\SelectFilter::make('product_id')
+                    ->label(__('lang.product'))
+                    ->relationship('product', 'name')
+                    ->searchable()
+                    ->preload(),
+
+                \Filament\Tables\Filters\SelectFilter::make('category')
+                    ->label(__('lang.category'))
+                    ->options(fn() => \App\Models\Category::whereNull('parent_id')->active()->pluck('name', 'id'))
+                    ->query(function ($query, array $data) {
+                        if (filled($data['value'])) {
+                            $categoryIds = \App\Models\Category::where('id', $data['value'])
+                                ->orWhere('parent_id', $data['value'])
+                                ->pluck('id');
+                            $query->whereHas('product', fn($q) => $q->whereIn('category_id', $categoryIds));
+                        }
+                    }),
+
+                \Filament\Tables\Filters\SelectFilter::make('currency_id')
+                    ->label(__('lang.currency'))
+                    ->relationship('currency', 'code')
+                    ->preload(),
+
+                \Filament\Tables\Filters\SelectFilter::make('status')
+                    ->label(__('lang.status'))
+                    ->options([
+                        'available' => __('lang.available'),
+                        'out_of_stock' => __('lang.out_of_stock'),
+                        'inactive' => __('lang.inactive'),
+                    ]),
+
                 TrashedFilter::make(),
-            ])
+            ], FiltersLayout::Modal)->filtersFormColumns(4)
+
             ->recordActions([
                 // زر عرض تفاصيل الوحدات
                 Action::make('view_units')->button()
