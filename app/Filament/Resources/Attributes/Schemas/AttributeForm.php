@@ -39,6 +39,10 @@ class AttributeForm
                                                 ->label(__('lang.attribute_name_placeholder'))
                                                 ->required()
                                                 ->maxLength(255)
+                                                ->live(onBlur: true)
+                                                ->afterStateUpdated(function ($set, $state) {
+                                                    $set('code', \Illuminate\Support\Str::slug($state, '_'));
+                                                })
                                                 ->columnSpan(2),
 
                                             TextInput::make('code')
@@ -47,6 +51,9 @@ class AttributeForm
                                                 ->unique(ignoreRecord: true)
                                                 ->maxLength(50)
                                                 ->alphaDash()
+                                                ->disabled()
+                                                ->dehydrated()
+                                                ->helperText(__('lang.auto_generated'))
                                                 ->columnSpan(1),
                                         ]),
 
