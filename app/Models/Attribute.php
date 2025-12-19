@@ -47,12 +47,12 @@ class Attribute extends Model
     public static function inputTypeOptions(): array
     {
         return [
-            self::$INPUT_TYPES['TEXT']    => 'Text Field',
-            self::$INPUT_TYPES['NUMBER']  => 'Number Field',
-            self::$INPUT_TYPES['SELECT']  => 'Dropdown (Select)',
-            self::$INPUT_TYPES['RADIO']   => 'Radio Buttons',
-            self::$INPUT_TYPES['BOOLEAN'] => 'Toggle (Yes/No)',
-            self::$INPUT_TYPES['DATE']    => 'Date Picker',
+            self::$INPUT_TYPES['TEXT']    => __('lang.input_type_text'),
+            self::$INPUT_TYPES['NUMBER']  => __('lang.input_type_number'),
+            self::$INPUT_TYPES['SELECT']  => __('lang.input_type_select'),
+            self::$INPUT_TYPES['RADIO']   => __('lang.input_type_radio'),
+            self::$INPUT_TYPES['BOOLEAN'] => __('lang.input_type_boolean'),
+            self::$INPUT_TYPES['DATE']    => __('lang.input_type_date'),
         ];
     }
 
@@ -62,13 +62,13 @@ class Attribute extends Model
     public function getInputTypeLabel(): string
     {
         return match ($this->input_type) {
-            self::$INPUT_TYPES['TEXT']    => 'Text Field',
-            self::$INPUT_TYPES['NUMBER']  => 'Number Field',
-            self::$INPUT_TYPES['SELECT']  => 'Dropdown',
-            self::$INPUT_TYPES['RADIO']   => 'Radio Buttons',
-            self::$INPUT_TYPES['BOOLEAN'] => 'Boolean Switch',
-            self::$INPUT_TYPES['DATE']    => 'Date Picker',
-            default => 'Unknown',
+            self::$INPUT_TYPES['TEXT']    => __('lang.input_type_text'),
+            self::$INPUT_TYPES['NUMBER']  => __('lang.input_type_number'),
+            self::$INPUT_TYPES['SELECT']  => __('lang.input_type_select'),
+            self::$INPUT_TYPES['RADIO']   => __('lang.input_type_radio'),
+            self::$INPUT_TYPES['BOOLEAN'] => __('lang.input_type_boolean'),
+            self::$INPUT_TYPES['DATE']    => __('lang.input_type_date'),
+            default => __('lang.unknown'),
         };
     }
 

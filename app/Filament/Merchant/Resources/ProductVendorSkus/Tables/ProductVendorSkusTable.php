@@ -52,7 +52,7 @@ class ProductVendorSkusTable
                     ->limit(2)
                     ->limitedRemainingText()
                     ->size(40)
-                    ->alignCenter(),
+                    ->alignCenter()->hidden(),
 
                 TextColumn::make('vendor_sku')
                     ->label(__('lang.sku'))

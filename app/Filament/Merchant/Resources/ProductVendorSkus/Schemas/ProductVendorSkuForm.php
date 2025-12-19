@@ -516,7 +516,7 @@ class ProductVendorSkuForm
                             ]),
 
                         // Step 3: Images Upload
-                        Step::make('images')
+                        Step::make('images')->hidden()
                             ->label(__('lang.images'))
                             ->icon('heroicon-o-photo')
                             ->columnSpanFull()
