@@ -128,6 +128,7 @@ class ProductVendorSkuForm
 
                                             // تحميل الوحدات الافتراضية من المنتج
                                             $defaultUnits = $product->units->map(fn($pu) => [
+                                                'variant_id' => null, // Initialize variant_id first
                                                 'unit_id' => $pu->unit_id,
                                                 'package_size' => $pu->package_size,
                                                 'cost_price' => $pu->cost_price,
@@ -299,6 +300,7 @@ class ProductVendorSkuForm
                                     })
                                     ->columns(2)
                                     ->gridDirection('row')
+                                    ->rules([]) // Disable default 'in' validation - we handle validation in handleRecordCreation
                                     ->visible(function ($get, $operation) {
                                         if ($operation !== 'create') {
                                             return false;
@@ -397,6 +399,45 @@ class ProductVendorSkuForm
                                     ->reorderableWithButtons()
                                     ->columns(3)
                                     ->schema([
+                                        Select::make('variant_id')
+                                            ->label(__('lang.variant'))
+                                            ->options(function ($get) {
+                                                $productId = $get('../../product_id');
+                                                if (!$productId) {
+                                                    return [];
+                                                }
+
+                                                $variants = \App\Models\ProductVariant::with(['values.attribute', 'values.attributeValue'])
+                                                    ->where('product_id', $productId)
+                                                    ->active()
+                                                    ->get();
+
+                                                return $variants->mapWithKeys(function ($variant) {
+                                                    $label = $variant->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(' | ');
+                                                    // Use integer key to ensure proper matching
+                                                    return [(int) $variant->id => $label ?: $variant->sku];
+                                                })->toArray();
+                                            })
+                                            ->searchable()
+                                            ->preload()
+                                            ->live()
+                                            ->dehydrated(true)
+                                            ->afterStateUpdated(function ($state, $set) {
+                                                // Ensure the value is properly set as integer
+                                                if ($state !== null) {
+                                                    $set('variant_id', (int) $state);
+                                                }
+                                            })
+                                            ->visible(function ($get) {
+                                                $productId = $get('../../product_id');
+                                                if (!$productId) {
+                                                    return false;
+                                                }
+                                                $product = \App\Models\Product::with(['attributesDirect'])->find($productId);
+                                                return $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
+                                            })
+                                            ->columnSpan(1),
+
                                         Select::make('unit_id')
                                             ->label(__('lang.unit'))
                                             ->options(\App\Models\Unit::active()->pluck('name', 'id'))
@@ -404,8 +445,8 @@ class ProductVendorSkuForm
                                             ->searchable()
                                             ->preload()
                                             ->live()
-                                            ->distinct()
-                                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                            // ->distinct()
+                                            // ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                             ->columnSpan(1),
 
                                         TextInput::make('package_size')

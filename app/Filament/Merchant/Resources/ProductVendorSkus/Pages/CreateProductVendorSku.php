@@ -22,6 +22,9 @@ class CreateProductVendorSku extends CreateRecord
         $selectedVariants = $data['selected_variants'] ?? [];
         $units = $data['units'] ?? [];
 
+        // DEBUG: Log units data
+        // dd('Units data:', $units);
+
         // Remove non-model fields
         unset($data['selected_variants']);
         unset($data['main_category_id']);
@@ -69,6 +72,7 @@ class CreateProductVendorSku extends CreateRecord
                     foreach ($units as $unitData) {
                         $record->units()->create([
                             'unit_id' => $unitData['unit_id'],
+                            'variant_id' => $unitData['variant_id'] ?? null,
                             'package_size' => $unitData['package_size'] ?? 1,
                             'cost_price' => $unitData['cost_price'] ?? null,
                             'selling_price' => $unitData['selling_price'],
@@ -116,7 +120,7 @@ class CreateProductVendorSku extends CreateRecord
         // Check for duplicate before creating
         $exists = ProductVendorSku::where('vendor_id', $data['vendor_id'])
             ->where('product_id', $data['product_id'])
-            ->where('variant_id', $data['variant_id'] ?? null)
+            ->where('variant_id', $data['variant_id'])
             ->where('currency_id', $data['currency_id'])
             ->exists();
 
@@ -137,6 +141,7 @@ class CreateProductVendorSku extends CreateRecord
         foreach ($units as $unitData) {
             $record->units()->create([
                 'unit_id' => $unitData['unit_id'],
+                'variant_id' => $unitData['variant_id'] ?? null,
                 'package_size' => $unitData['package_size'] ?? 1,
                 'cost_price' => $unitData['cost_price'] ?? null,
                 'selling_price' => $unitData['selling_price'],

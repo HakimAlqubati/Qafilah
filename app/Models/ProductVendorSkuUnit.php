@@ -14,6 +14,7 @@ class ProductVendorSkuUnit extends Model
         'product_vendor_sku_id',
         'unit_id',
         'product_unit_id', // ✅ جديد
+        'variant_id', // ✅ ربط بالمتغير
         'package_size',
         'cost_price',
         'selling_price',
@@ -91,6 +92,14 @@ class ProductVendorSkuUnit extends Model
     public function productUnit()
     {
         return $this->belongsTo(ProductUnit::class);
+    }
+
+    /**
+     * المتغير المرتبط
+     */
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class);
     }
 
     /**
