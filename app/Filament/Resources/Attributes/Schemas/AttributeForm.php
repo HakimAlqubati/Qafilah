@@ -106,9 +106,12 @@ class AttributeForm
                                 ->visible(fn(Get $get) => in_array($get('input_type'), ['select', 'radio']))
                                 ->table([
                                     TableColumn::make(__('lang.value')),
-                                    TableColumn::make(__('lang.sort_order')),
-                                    TableColumn::make(__('lang.is_active')),
+                                    TableColumn::make(__('lang.code')),
+                                    TableColumn::make(__('lang.code')),
+                                    // TableColumn::make(__('lang.sort_order')),
+                                    // TableColumn::make(__('lang.is_active')),
                                 ])
+                                ->orderColumn('sort_order')
                                 ->schema([
 
                                     TextInput::make('value')
@@ -122,19 +125,26 @@ class AttributeForm
                                         ->maxLength(100)
                                         ->placeholder(__('lang.code_placeholder'))
                                         ->helperText(__('lang.code_helper'))
-                                        ->columnSpan(2),
+                                        ->columnSpan(2)
+                                        ->visible(fn(Get $get) => $get('../../code') !== 'color'),
 
-                                    TextInput::make('sort_order')
-                                        ->label(__('lang.sort_order'))
-                                        ->numeric()
-                                        ->default(0)
-                                        ->columnSpan(1),
+                                    \Filament\Forms\Components\ColorPicker::make('code')
+                                        ->label(__('lang.color_code'))
+                                        ->helperText(__('lang.select_color'))
+                                        ->columnSpan(2)
+                                        ->visible(fn(Get $get) => $get('../../code') === 'color'),
+
+                                    // TextInput::make('sort_order')
+                                    //     ->label(__('lang.sort_order'))
+                                    //     ->numeric()
+                                    //     ->default(0)
+                                    //     ->columnSpan(1),
 
                                     Toggle::make('is_active')
                                         ->label(__('lang.active'))
                                         ->default(true)
                                         ->inline(false)
-                                        ->columnSpan(1),
+                                        ->columnSpan(1)->hidden(),
 
                                 ])
                                 ->defaultItems(1)

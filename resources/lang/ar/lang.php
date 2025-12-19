@@ -433,4 +433,8 @@ return [
     'duplicate_product' => 'منتج مكرر',
     'product_already_exists' => 'هذا المنتج مضاف مسبقاً بنفس العملة.',
     'all_variants_already_exist' => 'جميع المتغيرات المحددة مضافة مسبقاً.',
+
+    // Color Picker
+    'select_color' => 'اختر اللون',
+    'color_code' => 'كود اللون',
 ];

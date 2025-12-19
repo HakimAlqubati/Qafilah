@@ -432,4 +432,8 @@ return [
     'duplicate_product' => 'Duplicate Product',
     'product_already_exists' => 'This product is already added with the same currency.',
     'all_variants_already_exist' => 'All selected variants are already added.',
+
+    // Color Picker
+    'select_color' => 'Select Color',
+    'color_code' => 'Color Code',
 ];
