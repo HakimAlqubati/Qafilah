@@ -55,6 +55,16 @@ class ProductController extends  ApiController
                 },
                 'variants.media',
                 'variants.variantValues',
+                'offers' => function ($query) {
+                    $query->whereNull('variant_id')
+                        ->available()
+                        ->with([
+                            'units' => function ($q) {
+                                $q->active()->orderBy('sort_order');
+                            },
+                            'units.unit'
+                        ]);
+                },
             ])
                 ->active()
                 ->findOrFail($productId);
@@ -73,7 +83,20 @@ class ProductController extends  ApiController
             ->unique()
             ->toArray();
 
-        $product = Product::with(['media'])
+        $product = Product::with([
+            'media',
+            'offers' => function ($query) use ($vendorId) {
+                $query->whereNull('variant_id')
+                    ->where('vendor_id', $vendorId)
+                    ->available()
+                    ->with([
+                        'units' => function ($q) {
+                            $q->active()->orderBy('sort_order');
+                        },
+                        'units.unit'
+                    ]);
+            },
+        ])
             ->active()
             ->findOrFail($productId);
 

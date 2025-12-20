@@ -26,8 +26,13 @@ class ProductDetailsResource extends JsonResource
 
             'attributes' => AttributeResource::collection($this->whenLoaded('attributesDirect')),
 
-
             'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
+
+            // إرجاع عروض البائعين المباشرة فقط إذا كانت المتغيرات فارغة
+            'vendor_offers' => $this->when(
+                $this->relationLoaded('variants') && $this->variants->isEmpty() && $this->relationLoaded('offers'),
+                fn() => ProductVendorSkuResource::collection($this->offers)
+            ),
         ];
     }
 }
