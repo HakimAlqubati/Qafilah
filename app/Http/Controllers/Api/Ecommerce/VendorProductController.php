@@ -68,20 +68,23 @@ class VendorProductController extends ApiController
             'variant_id' => 'nullable|exists:product_variants,id'
         ]);
 
-        $variantId= $request->variant_id;
+        $variantId = $request->variant_id;
         $productId = $request->product_id;
 
-        $prices =  ProductVendorSkuUnit::whereHas('productVendorSku', function ($query) use ($variantId, $productId) {
-            $query->where('variant_id', $variantId)
-                  ->where('product_id', $productId);
-        })
+        $vendorSkus = ProductVendorSku::where('product_id', $productId)
+            ->where('variant_id', $variantId)
+            ->available()
             ->with([
-                'unit',
-                'productVendorSku.vendor',
+                'vendor',
+                'units' => function ($q) {
+                    $q->active()->orderBy('sort_order')->with('unit');
+                },
             ])
             ->paginate(10);
 
-
-        return $this->successResponse(\App\Http\Resources\ProductVendorSkuUnitResource::collection($prices)->response()->getData(true), "Vendor prices retrieved successfully");
+        return $this->successResponse(
+            \App\Http\Resources\VendorPriceResource::collection($vendorSkus)->response()->getData(true),
+            "Vendor prices retrieved successfully"
+        );
     }
 }

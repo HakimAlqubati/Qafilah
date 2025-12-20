@@ -39,6 +39,7 @@ class ProductController extends  ApiController
 
     public function productDetails(Request $request)
     {
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'vendor_id'  => 'nullable|exists:vendors,id',
@@ -55,16 +56,6 @@ class ProductController extends  ApiController
                 },
                 'variants.media',
                 'variants.variantValues',
-                'offers' => function ($query) {
-                    $query->whereNull('variant_id')
-                        ->available()
-                        ->with([
-                            'units' => function ($q) {
-                                $q->active()->orderBy('sort_order');
-                            },
-                            'units.unit'
-                        ]);
-                },
             ])
                 ->active()
                 ->findOrFail($productId);

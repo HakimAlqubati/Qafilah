@@ -17,8 +17,8 @@ class ProductVendorSkuUnitResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'unit_name' => $this->unit_name,
             'unit_id' => $this->unit_id,
+            'unit_name' => $this->unit?->name,
             'package_size' => $this->package_size,
             'selling_price' => $this->selling_price,
             'cost_price' => $this->cost_price,
@@ -26,12 +26,11 @@ class ProductVendorSkuUnitResource extends JsonResource
             'sort_order' => $this->sort_order,
             'moq' => $this->moq,
             'is_default' => $this->is_default,
-//            'unit'  => new ProductUnitResource($this->whenLoaded('unit')),
-            'vendor' => $this->whenLoaded('productVendorSku', function () {
-                return $this->productVendorSku->vendor 
-                    ? new VendorResource($this->productVendorSku->vendor) 
-                    : null;
-            }),
+            'unit' => $this->whenLoaded('unit', fn() => [
+                'id' => $this->unit->id,
+                'name' => $this->unit->name,
+                'symbol' => $this->unit->symbol ?? null,
+            ]),
         ];
 
     }
