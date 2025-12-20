@@ -31,13 +31,11 @@ Route::prefix('v1/ecommerce')->group(function () {
         Route::post('currencies',            [BasicDataController::class, 'currencies']);
     });
     Route::post('/products', [ProductController::class, 'index']);
-    Route::get('/products/{id}', [ProductController::class, 'show']);
-    Route::get('/products/{id}/details', [ProductController::class, 'details']);
     Route::get('/products/{id}/vendor/{vendor_id}/prices', [ProductController::class, 'vendorPrices']);
     Route::get('/vendor-products/{id}', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'show']);
     Route::post('/vendors', [\App\Http\Controllers\Api\Ecommerce\VendorController::class, 'index']);
     Route::get('/vendors/{vendor_id}/products', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'index']);
     Route::post('/products/vendor-count', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'getVendorCount']);
     Route::post('/products/vendor-prices', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'getVendorProductPrices']);
-    Route::post('/products/vendor-details', [ProductController::class, 'vendorProductDetails']);
+    Route::post('/products/details', [ProductController::class, 'productDetails']);
 });
