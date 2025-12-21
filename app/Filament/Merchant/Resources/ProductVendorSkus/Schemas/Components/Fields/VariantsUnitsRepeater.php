@@ -28,17 +28,24 @@ class VariantsUnitsRepeater
             ->reorderable(false)
             ->itemLabel(fn(array $state): ?string => $state['variant_label'] ?? __('lang.variant'))
             ->visible(function ($get, $operation) {
-                if ($operation !== 'create') {
-                    return false;
-                }
                 $productId = $get('product_id');
                 if (!$productId) {
                     return false;
                 }
                 $product = Product::with(['attributesDirect'])->find($productId);
                 $hasVariants = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
-                $selectedVariants = $get('selected_variants') ?? [];
-                return $hasVariants && !empty($selectedVariants);
+
+                if ($operation === 'create') {
+                    $selectedVariants = $get('selected_variants') ?? [];
+                    return $hasVariants && !empty($selectedVariants);
+                }
+
+                if ($operation === 'edit') {
+                    $variantsUnits = $get('variants_units') ?? [];
+                    return $hasVariants && !empty($variantsUnits);
+                }
+
+                return false;
             })
             ->schema([
                 // معلومات المتغير (للعرض فقط)
@@ -49,6 +56,7 @@ class VariantsUnitsRepeater
 
                 Hidden::make('variant_id'),
                 Hidden::make('variant_label'),
+                Hidden::make('sku_id'),
 
                 // Nested Units Repeater لهذا المتغير
                 self::nestedUnitsRepeater(),

@@ -36,14 +36,17 @@ class ProductVendorSkusTable
                     ->fontFamily(FontFamily::Mono)
                     ->weight(FontWeight::Bold),
 
-                TextColumn::make('variant_details')
-                    ->label(__('lang.variant'))
+                TextColumn::make('variants_count')
+                    ->label(__('lang.variants'))
                     ->state(function ($record) {
-                        return $record->variant?->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(', ');
+                        $count = \App\Models\ProductVendorSku::where('vendor_id', $record->vendor_id)
+                            ->where('product_id', $record->product_id)
+                            ->whereNotNull('variant_id')
+                            ->count();
+                        return $count > 0 ? $count . ' ' . __('lang.variants') : __('lang.simple_product');
                     })
-                    ->color('primary')
-                    ->fontFamily(FontFamily::Mono)
-                    ->weight(FontWeight::Bold),
+                    ->badge()
+                    ->color(fn($state) => str_contains($state, __('lang.simple_product')) ? 'gray' : 'info'),
 
                 SpatieMediaLibraryImageColumn::make('images')
                     ->label(__('lang.images'))

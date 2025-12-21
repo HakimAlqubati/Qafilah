@@ -48,7 +48,51 @@ class EditProductVendorSku extends EditRecord
             }
         }
 
-        // تحميل الخصائص إذا كان هناك متغير مرتبط
+        // Get all ProductVendorSku records for this product and vendor
+        $allSkus = \App\Models\ProductVendorSku::with(['variant.values.attribute', 'variant.values.attributeValue', 'units'])
+            ->where('vendor_id', $record->vendor_id)
+            ->where('product_id', $record->product_id)
+            ->get();
+
+        $hasVariants = $allSkus->filter(fn($sku) => $sku->variant_id !== null)->isNotEmpty();
+
+        if ($hasVariants) {
+            $variantsUnits = [];
+            foreach ($allSkus->filter(fn($sku) => $sku->variant_id !== null) as $sku) {
+                $label = $sku->variant?->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(' | ');
+                $variantsUnits[] = [
+                    'variant_id' => $sku->variant_id,
+                    'variant_label' => $label ?: $sku->variant?->sku,
+                    'sku_id' => $sku->id, // Store the SKU id for update
+                    'units' => $sku->units->map(fn($unit) => [
+                        'unit_id' => $unit->unit_id,
+                        'package_size' => $unit->package_size,
+                        'cost_price' => $unit->cost_price,
+                        'selling_price' => $unit->selling_price,
+                        'stock' => $unit->stock,
+                        'moq' => $unit->moq,
+                        'is_default' => $unit->is_default,
+                        'status' => $unit->status,
+                        'sort_order' => $unit->sort_order,
+                    ])->toArray(),
+                ];
+            }
+            $data['variants_units'] = $variantsUnits;
+            $data['units'] = []; // Clear simple units
+        } else {
+            // Simple product - load units from the first SKU
+            $data['units'] = $record->units->map(fn($unit) => [
+                'unit_id' => $unit->unit_id,
+                'package_size' => $unit->package_size,
+                'cost_price' => $unit->cost_price,
+                'selling_price' => $unit->selling_price,
+                'stock' => $unit->stock,
+                'moq' => $unit->moq,
+                'is_default' => $unit->is_default,
+                'status' => $unit->status,
+                'sort_order' => $unit->sort_order,
+            ])->toArray();
+        }
         if ($record->variant_id && $record->variant) {
             $attributes = [];
             foreach ($record->variant->values as $value) {
@@ -57,41 +101,56 @@ class EditProductVendorSku extends EditRecord
             $data['attributes'] = $attributes;
         }
 
-        // تحميل الوحدات الموجودة
-        $data['units'] = $record->units->map(fn($unit) => [
-            'unit_id' => $unit->unit_id,
-            'package_size' => $unit->package_size,
-            'cost_price' => $unit->cost_price,
-            'selling_price' => $unit->selling_price,
-            'stock' => $unit->stock,
-            'moq' => $unit->moq,
-            'is_default' => $unit->is_default,
-            'status' => $unit->status,
-            'sort_order' => $unit->sort_order,
-        ])->toArray();
-
         return $data;
     }
 
     protected function afterSave(): void
     {
-        // حذف الوحدات القديمة نهائياً (forceDelete لتجنب مشكلة unique constraint مع soft delete)
-        $this->record->units()->forceDelete();
-
+        $variantsUnits = $this->data['variants_units'] ?? [];
         $units = $this->data['units'] ?? [];
 
-        foreach ($units as $unitData) {
-            $this->record->units()->create([
-                'unit_id' => $unitData['unit_id'],
-                'package_size' => $unitData['package_size'] ?? 1,
-                'cost_price' => $unitData['cost_price'] ?? null,
-                'selling_price' => $unitData['selling_price'],
-                'stock' => $unitData['stock'] ?? 0,
-                'moq' => $unitData['moq'] ?? 1,
-                'is_default' => $unitData['is_default'] ?? false,
-                'status' => $unitData['status'] ?? 'active',
-                'sort_order' => $unitData['sort_order'] ?? 0,
-            ]);
+        if (!empty($variantsUnits)) {
+            foreach ($variantsUnits as $variantData) {
+                $skuId = $variantData['sku_id'] ?? null;
+                $variantUnits = $variantData['units'] ?? [];
+
+                if ($skuId) {
+                    $sku = \App\Models\ProductVendorSku::find($skuId);
+                    if ($sku) {
+                        $sku->units()->forceDelete();
+
+                        foreach ($variantUnits as $unitData) {
+                            $sku->units()->create([
+                                'unit_id' => $unitData['unit_id'],
+                                'package_size' => $unitData['package_size'] ?? 1,
+                                'cost_price' => $unitData['cost_price'] ?? null,
+                                'selling_price' => $unitData['selling_price'],
+                                'stock' => $unitData['stock'] ?? 0,
+                                'moq' => $unitData['moq'] ?? 1,
+                                'is_default' => $unitData['is_default'] ?? false,
+                                'status' => $unitData['status'] ?? 'active',
+                                'sort_order' => $unitData['sort_order'] ?? 0,
+                            ]);
+                        }
+                    }
+                }
+            }
+        } else {
+            $this->record->units()->forceDelete();
+
+            foreach ($units as $unitData) {
+                $this->record->units()->create([
+                    'unit_id' => $unitData['unit_id'],
+                    'package_size' => $unitData['package_size'] ?? 1,
+                    'cost_price' => $unitData['cost_price'] ?? null,
+                    'selling_price' => $unitData['selling_price'],
+                    'stock' => $unitData['stock'] ?? 0,
+                    'moq' => $unitData['moq'] ?? 1,
+                    'is_default' => $unitData['is_default'] ?? false,
+                    'status' => $unitData['status'] ?? 'active',
+                    'sort_order' => $unitData['sort_order'] ?? 0,
+                ]);
+            }
         }
     }
 

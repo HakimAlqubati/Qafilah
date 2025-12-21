@@ -91,6 +91,15 @@ class ProductVendorSkuResource extends Resource
     }
     public static function getEloquentQuery(): Builder
     {
-        return static::getModel()::query()->where('vendor_id', auth()->user()->vendor_id);
+        $vendorId = auth()->user()->vendor_id;
+        return static::getModel()::query()
+            ->where('vendor_id', $vendorId)
+            ->whereIn('id', function ($query) use ($vendorId) {
+                $query->selectRaw('MIN(id)')
+                    ->from('product_vendor_skus')
+                    ->where('vendor_id', $vendorId)
+                    ->whereNull('deleted_at')
+                    ->groupBy('product_id');
+            });
     }
 }
