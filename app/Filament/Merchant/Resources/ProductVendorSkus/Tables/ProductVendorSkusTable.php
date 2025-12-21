@@ -2,6 +2,8 @@
 
 namespace App\Filament\Merchant\Resources\ProductVendorSkus\Tables;
 
+use App\Models\ProductVendorSku;
+use App\Models\Unit;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -12,6 +14,7 @@ use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\FontFamily;
 use Filament\Support\Enums\FontWeight;
@@ -39,11 +42,11 @@ class ProductVendorSkusTable
                 TextColumn::make('variants_count')
                     ->label(__('lang.variants'))
                     ->state(function ($record) {
-                        $count = \App\Models\ProductVendorSku::where('vendor_id', $record->vendor_id)
+                        $count = ProductVendorSku::where('vendor_id', $record->vendor_id)
                             ->where('product_id', $record->product_id)
                             ->whereNotNull('variant_id')
                             ->count();
-                        return $count > 0 ? $count . ' ' . __('lang.variants') : __('lang.simple_product');
+                        return $count > 0 ? $count . ' ' . __('lang.variants') : __('lang.not_variants');
                     })
                     ->badge()
                     ->color(fn($state) => str_contains($state, __('lang.simple_product')) ? 'gray' : 'info'),
@@ -159,46 +162,52 @@ class ProductVendorSkusTable
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel(__('lang.close'))
                     ->schema(function ($record) {
-                        return [
-                            TextEntry::make('currency')
-                                ->label(__('lang.currency'))
-                                ->state(fn() => $record->currency->code ?? 'SAR')
-                                ->badge()
-                                ->color('primary'),
+                        $allSkus = ProductVendorSku::with(['variant.values.attribute', 'units.unit', 'currency'])
+                            ->where('vendor_id', $record->vendor_id)
+                            ->where('product_id', $record->product_id)
+                            ->get();
 
-                            RepeatableEntry::make('units')
-                                ->label(__('lang.units'))
-                                ->table([
-                                    TableColumn::make(__('lang.unit')),
-                                    TableColumn::make(__('lang.selling_price')),
-                                    TableColumn::make(__('lang.stock')),
-                                    TableColumn::make(__('lang.package_size')),
-                                ])
-                                ->schema([
-
-                                    TextEntry::make('unit.name')
-                                        ->label(__('lang.unit'))
-                                        ->weight(FontWeight::Bold)
-                                        ->alignCenter(),
-                                    TextEntry::make('selling_price')
-                                        ->label(__('lang.selling_price'))
-                                        ->money(fn() => $record->currency->code ?? 'SAR')
-                                        ->color(Color::Green)
-                                        ->weight(FontWeight::Bold)
-                                        ->alignCenter(),
-                                    TextEntry::make('stock')
-                                        ->label(__('lang.stock'))
-                                        ->numeric()
-                                        ->badge()
-                                        ->color(fn($state) => $state > 0 ? 'success' : 'danger')
-                                        ->alignCenter(),
-                                    TextEntry::make('package_size')
-                                        ->label(__('lang.package_size'))
-                                        ->alignCenter(),
-
-                                ])
-                                ->columns(1),
+                        $currencyCode = $record->currency->code ?? 'SAR';
+                        $schemas = [
                         ];
+
+                        foreach ($allSkus as $sku) {
+                            $variantLabel = $sku->variant
+                                ? $sku->variant->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(' | ')
+                                : __('lang.simple_product');
+
+                            // Build units info as simple text entries
+                            $unitEntries = [];
+                            foreach ($sku->units as $unitIndex => $unit) {
+                                $unitName = $unit->unit?->name ?? '-';
+                                $unitEntries[] = Grid::make(4)->schema([
+                                    TextEntry::make("unit_name_{$sku->id}_{$unitIndex}")
+                                        ->label(__('lang.unit'))
+                                        ->default($unitName)
+                                        ->weight(FontWeight::Bold),
+                                    TextEntry::make("selling_price_{$sku->id}_{$unitIndex}")
+                                        ->label(__('lang.selling_price'))
+                                        ->default(number_format($unit->selling_price, 2) . ' ' . $currencyCode)
+                                        ->color(Color::Green)
+                                        ->weight(FontWeight::Bold),
+                                    TextEntry::make("stock_{$sku->id}_{$unitIndex}")
+                                        ->label(__('lang.stock'))
+                                        ->default($unit->stock)
+                                        ->badge()
+                                        ->color($unit->stock > 0 ? 'success' : 'danger'),
+                                    TextEntry::make("package_size_{$sku->id}_{$unitIndex}")
+                                        ->label(__('lang.package_size'))
+                                        ->default($unit->package_size ?? 1),
+                                ]);
+                            }
+
+                            $schemas[] = Section::make($variantLabel)
+                                ->schema($unitEntries)
+                                ->collapsible()
+                                ->collapsed(false);
+                        }
+
+                        return $schemas;
                     }),
                 EditAction::make(),
             ])

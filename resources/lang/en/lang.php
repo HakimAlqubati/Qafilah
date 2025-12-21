@@ -66,6 +66,7 @@ return [
     'sku' => 'SKU',
     'brand' => 'Brand',
     'variants' => 'Variants',
+    'not_variants' => 'Not Variants',
     'featured' => 'Featured',
     'attributes_count' => 'Attributes Count',
     'image' => 'Image',

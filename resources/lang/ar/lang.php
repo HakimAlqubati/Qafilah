@@ -66,6 +66,7 @@ return [
     'sku' => 'رمز المنتج',
     'brand' => 'العلامة التجارية',
     'variants' => 'المتغيرات',
+    'not_variants' => 'لايوجد متغيرات',
     'featured' => 'مميز',
     'attributes_count' => 'عدد الخصائص',
     'image' => 'الصورة',
