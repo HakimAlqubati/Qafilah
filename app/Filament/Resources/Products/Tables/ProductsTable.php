@@ -33,8 +33,8 @@ class ProductsTable
                     ->label(__('lang.product_name'))
                     ->searchable()
                     ->sortable()
-                    // ->description(fn(Product $record): string => __('lang.sku') . ": {$record->sku}")
-                    , // Display SKU beneath the name
+                // ->description(fn(Product $record): string => __('lang.sku') . ": {$record->sku}")
+                , // Display SKU beneath the name
                 SpatieMediaLibraryImageColumn::make('default')->label(__('lang.image'))->size(50)
                     ->circular()->alignCenter(true)->getStateUsing(function () {
                         return null;
@@ -88,6 +88,14 @@ class ProductsTable
                     ->counts('attributesDirect')
                     ->sortable()
                     ->toggleable(),
+
+                // عدد الوحدات (Units)
+                TextColumn::make('units_count')
+                    ->label(__('lang.units_count'))
+                    ->alignCenter()
+                    ->counts('units')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 // 6. Featured Status
                 IconColumn::make('is_featured')

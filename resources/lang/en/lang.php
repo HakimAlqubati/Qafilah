@@ -69,6 +69,7 @@ return [
     'not_variants' => 'Not Variants',
     'featured' => 'Featured',
     'attributes_count' => 'Attributes Count',
+    'units_count' => 'Units Count',
     'image' => 'Image',
 
     // Category Table Columns

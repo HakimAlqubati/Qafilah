@@ -69,6 +69,7 @@ return [
     'not_variants' => 'لايوجد متغيرات',
     'featured' => 'مميز',
     'attributes_count' => 'عدد الخصائص',
+    'units_count' => 'عدد الوحدات',
     'image' => 'الصورة',
 
     // Category Table Columns
