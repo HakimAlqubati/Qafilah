@@ -53,6 +53,26 @@ class UnitsRepeater
             Select::make('unit_id')
                 ->label(__('lang.unit'))
                 ->options(Unit::active()->pluck('name', 'id'))
+                // ->options(function ($get) {
+                //     // Get product_id from parent form
+                //     $productId = $get('../../product_id');
+                //     if (!$productId) {
+                //         return [];
+                //     }
+
+                //     // Get only units associated with this product
+                //     $product = Product::with(['units.unit'])->find($productId);
+                //     if (!$product || $product->units->isEmpty()) {
+                //         // Fallback to all active units if no product units defined
+                //         return Unit::active()->pluck('name', 'id');
+                //     }
+
+                //     return $product->units
+                //         ->where('status', 'active')
+                //         ->mapWithKeys(fn($pu) => [$pu->unit_id => $pu->unit?->name ?? '-'])
+                //         ->filter()
+                //         ->toArray();
+                // })
                 ->required()
                 ->searchable()
                 ->preload()
