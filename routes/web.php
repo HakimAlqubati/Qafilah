@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProductShowController;
+use App\Http\Controllers\DocsReports\BranchProposalsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -9,6 +10,11 @@ Route::get('/', function () {
 
 
 Route::get('/products/{slug}', [ProductShowController::class, 'show'])->name('products.show');
+
+// Documentation Pages
+Route::prefix('docs')->name('docs.')->group(function () {
+    Route::get('/branch-proposals', [BranchProposalsController::class, 'index'])->name('branch-proposals');
+});
 
 // Language Switcher
 Route::post('/locale/switch', function (Illuminate\Http\Request $request) {
