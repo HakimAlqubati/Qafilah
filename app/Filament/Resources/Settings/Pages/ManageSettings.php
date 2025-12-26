@@ -1,0 +1,206 @@
+<?php
+
+namespace App\Filament\Resources\Settings\Pages;
+
+use App\Filament\Resources\Settings\SettingResource;
+use App\Models\Setting;
+use BackedEnum;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\Page;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+
+class ManageSettings extends Page
+{
+    protected static string $resource = SettingResource::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
+
+    protected  string $view = 'filament.resources.settings.pages.manage-settings';
+
+    public ?array $data = [];
+
+    public static function getNavigationLabel(): string
+    {
+        return __('lang.settings');
+    }
+
+    public function getTitle(): string
+    {
+        return __('lang.settings');
+    }
+
+    public function mount(): void
+    {
+        $settings = Setting::all()->pluck('value', 'key')->toArray();
+        $this->data = $settings;
+    }
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Tabs::make('settings_tabs')
+                    ->tabs([
+                        Tab::make(__('lang.general_settings'))
+                            ->icon(Heroicon::OutlinedCog6Tooth)
+                            ->schema([
+                                Section::make(__('lang.site_information'))
+                                    ->schema([
+                                        TextInput::make('data.site_name')
+                                            ->label(__('lang.site_name'))
+
+                                            ->required()->columnSpanFull()
+                                            ->prefixIcon(Heroicon::OutlinedBuildingOffice)
+                                            ->maxLength(255),
+
+
+                                        Grid::make()->columns(2)->schema([
+                                            TextInput::make('data.site_email')
+                                                ->label(__('lang.site_email'))
+                                                ->email()
+                                                ->prefixIcon(Heroicon::Inbox),
+
+                                            TextInput::make('data.site_phone')
+                                                ->label(__('lang.site_phone'))
+                                                ->tel()
+                                                ->prefixIcon(Heroicon::OutlinedPhone),
+                                        ]),
+                                        Textarea::make('data.site_description')
+                                            ->label(__('lang.site_description'))
+                                            ->columnSpanFull()
+
+                                            ->rows(3),
+                                    ]),
+
+                                Section::make(__('lang.regional_settings'))
+                                    ->hidden()
+                                    ->schema([
+                                        TextInput::make('data.default_timezone')
+                                            ->label(__('lang.default_timezone'))
+                                            ->default('Asia/Riyadh'),
+
+                                        TextInput::make('data.default_locale')
+                                            ->label(__('lang.default_locale'))
+                                            ->default('ar'),
+                                    ])
+                                    ->columns(2),
+                            ]),
+
+                        Tab::make(__('lang.business_settings'))
+                            ->hidden()
+                            ->icon(Heroicon::OutlinedBuildingOffice)
+                            ->schema([
+                                Section::make(__('lang.tax_settings'))
+                                    ->schema([
+                                        Toggle::make('data.enable_tax')
+                                            ->label(__('lang.enable_tax')),
+
+                                        TextInput::make('data.default_tax_rate')
+                                            ->label(__('lang.default_tax_rate'))
+                                            ->numeric()
+                                            ->suffix('%')
+                                            ->default(15),
+
+                                        TextInput::make('data.tax_number')
+                                            ->label(__('lang.tax_number')),
+                                    ])
+                                    ->columns(3),
+
+                                Section::make(__('lang.order_settings'))
+                                    ->schema([
+                                        TextInput::make('data.min_order_amount')
+                                            ->label(__('lang.min_order_amount'))
+                                            ->numeric()
+                                            ->prefix('SAR'),
+
+                                        Toggle::make('data.allow_guest_checkout')
+                                            ->label(__('lang.allow_guest_checkout')),
+
+                                        Toggle::make('data.enable_stock_management')
+                                            ->label(__('lang.enable_stock_management'))
+                                            ->default(true),
+                                    ])
+                                    ->columns(3),
+                            ]),
+
+                        Tab::make(__('lang.notification_settings'))
+                            ->hidden()
+                            ->icon(Heroicon::OutlinedBell)
+                            ->schema([
+                                Section::make(__('lang.email_notifications'))
+                                    ->schema([
+                                        Toggle::make('data.notify_on_new_order')
+                                            ->label(__('lang.notify_on_new_order'))
+                                            ->default(true),
+
+                                        Toggle::make('data.notify_on_new_customer')
+                                            ->label(__('lang.notify_on_new_customer'))
+                                            ->default(true),
+
+                                        Toggle::make('data.notify_on_low_stock')
+                                            ->label(__('lang.notify_on_low_stock'))
+                                            ->default(true),
+
+                                        TextInput::make('data.low_stock_threshold')
+                                            ->label(__('lang.low_stock_threshold'))
+                                            ->numeric()
+                                            ->default(10),
+                                    ])
+                                    ->columns(2),
+                            ]),
+
+                        Tab::make(__('lang.social_media'))
+                            ->icon(Heroicon::OutlinedGlobeAlt)
+                            ->schema([
+                                Section::make(__('lang.social_links'))
+                                    ->schema([
+                                        TextInput::make('data.facebook_url')
+                                            ->label(__('lang.facebook_url'))
+                                            ->url()
+                                            ->prefixIcon(Heroicon::GlobeAlt)
+                                            ->prefix('https://'),
+
+                                        TextInput::make('data.twitter_url')
+                                            ->label(__('lang.twitter_url'))
+                                            ->url()
+                                            ->prefixIcon(Heroicon::GlobeAlt)
+                                            ->prefix('https://'),
+
+                                        TextInput::make('data.instagram_url')
+                                            ->label(__('lang.instagram_url'))
+                                            ->url()
+                                            ->prefixIcon(Heroicon::FaceFrown)
+                                            ->prefix('https://'),
+
+                                        TextInput::make('data.whatsapp_number')
+                                            ->label(__('lang.whatsapp_number'))
+                                            ->tel()
+                                            ->prefixIcon(Heroicon::GlobeAlt),
+                                    ])
+                                    ->columns(2),
+                            ]),
+                    ])
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    public function save(): void
+    {
+        foreach ($this->data as $key => $value) {
+            Setting::setSetting($key, $value);
+        }
+
+        Notification::make()
+            ->title(__('lang.settings_saved'))
+            ->success()
+            ->send();
+    }
+}
