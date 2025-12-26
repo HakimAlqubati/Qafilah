@@ -14,6 +14,7 @@ use App\Filament\Resources\Customers\CustomerResource;
 use App\Filament\Resources\Districts\DistrictResource;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Products\ProductResource;
+use App\Filament\Resources\Settings\SettingResource;
 use App\Filament\Resources\Units\UnitResource;
 use App\Filament\Resources\Users\UserResource;
 use App\Filament\Resources\Vendors\VendorResource;
@@ -112,6 +113,10 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make(__('lang.users_management'))
                         ->items([
                             ...UserResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make(__('lang.settings'))
+                        ->items([
+                            ...SettingResource::getNavigationItems(),
                         ]),
                 ]);
             })
