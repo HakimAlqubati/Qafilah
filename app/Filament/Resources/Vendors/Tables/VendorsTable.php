@@ -44,6 +44,14 @@ class VendorsTable
                     ->alignCenter()
                     ->sortable(),
 
+                TextColumn::make('branches_count')
+                    ->label(__('lang.branches_count'))
+                    ->counts('branches')
+                    ->default(0)
+                    ->alignCenter()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 // 3. Status Column (Visual filtering/status check)
                 IconColumn::make('status')
                     ->label(__('lang.status'))

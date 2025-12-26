@@ -2,11 +2,16 @@
 
 namespace App\Filament\Resources\Vendors\Schemas\Components\Tabs;
 
+use App\Models\City;
+use App\Models\Country;
+use App\Models\District;
+use App\Models\Setting;
 use App\Models\Vendor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
 
 class LocationDeliveryTab
 {
@@ -18,7 +23,34 @@ class LocationDeliveryTab
         return Tab::make(__('lang.location_delivery'))
             ->icon('heroicon-o-map-pin')
             ->schema([
-                // Location
+                // Address Location (Country > City > District)
+                Grid::make(3)
+                    ->schema([
+                        Select::make('country_id')
+                            ->label(__('lang.country'))
+                            ->options(Country::pluck('name', 'id'))
+                            ->default(fn() => Setting::getSetting('default_country_id'))
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn(\Filament\Schemas\Components\Utilities\Set $set) => $set('city_id', null)),
+
+                        Select::make('city_id')
+                            ->label(__('lang.city'))
+                            ->options(fn(Get $get) => City::where('country_id', $get('country_id'))->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(fn(\Filament\Schemas\Components\Utilities\Set $set) => $set('district_id', null)),
+
+                        Select::make('district_id')
+                            ->label(__('lang.district'))
+                            ->options(fn(Get $get) => District::where('city_id', $get('city_id'))->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload(),
+                    ]),
+
+                // GPS Location
                 Grid::make(2)
                     ->schema([
                         TextInput::make('latitude')

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Vendors;
 
+use App\Filament\Resources\Vendors\RelationManagers\BranchesRelationManager;
 use App\Filament\Resources\Vendors\Pages\CreateVendor;
 use App\Filament\Resources\Vendors\Pages\EditVendor;
 use App\Filament\Resources\Vendors\Pages\ListVendors;
@@ -54,9 +55,16 @@ class VendorResource extends Resource
         return VendorsTable::configure($table);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereNull('parent_id');
+    }
+
     public static function getRelations(): array
     {
         return [
+            BranchesRelationManager::class,
             // RelationManagers\OffersRelationManager::class,
         ];
     }
@@ -73,6 +81,7 @@ class VendorResource extends Resource
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()
+            // ->whereNull('parent_id')
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);

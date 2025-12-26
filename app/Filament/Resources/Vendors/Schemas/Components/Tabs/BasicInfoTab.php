@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Vendors\Schemas\Components\Tabs;
 
+use App\Models\Vendor;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -19,6 +21,15 @@ class BasicInfoTab
         return Tab::make(__('lang.basic_info'))
             ->icon('heroicon-o-building-storefront')
             ->schema([
+                Select::make('parent_id')
+                    ->label(__('lang.main_vendor'))
+                    ->relationship('parent', 'name', fn($query) => $query->whereNull('parent_id'))
+                    ->searchable()
+                    ->preload()
+                    ->placeholder(__('lang.select_main_vendor'))
+                    ->helperText(__('lang.main_vendor_helper'))
+                    ->columnSpanFull(),
+
                 Grid::make(3)
                     ->schema([
                         // 1. Name & Slug (Required)

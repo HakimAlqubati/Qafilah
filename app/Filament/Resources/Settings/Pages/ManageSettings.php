@@ -10,6 +10,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -81,8 +82,14 @@ class ManageSettings extends Page
                                     ]),
 
                                 Section::make(__('lang.regional_settings'))
-                                    ->hidden()
                                     ->schema([
+                                        Select::make('data.default_country_id')
+                                            ->label(__('lang.default_country'))
+                                            ->options(\App\Models\Country::pluck('name', 'id'))
+                                            ->searchable()
+                                            ->preload()
+                                            ->helperText(__('lang.default_country_helper')),
+
                                         TextInput::make('data.default_timezone')
                                             ->label(__('lang.default_timezone'))
                                             ->default('Asia/Riyadh'),
@@ -91,7 +98,7 @@ class ManageSettings extends Page
                                             ->label(__('lang.default_locale'))
                                             ->default('ar'),
                                     ])
-                                    ->columns(2),
+                                    ->columns(3),
                             ]),
 
                         Tab::make(__('lang.business_settings'))
