@@ -43,6 +43,10 @@ class Vendor extends Model
         'delivery_time_unit',
         'default_currency_id',
         'referrer_id',
+        'parent_id',
+        'country_id',
+        'city_id',
+        'district_id',
     ];
 
     protected $casts = [
@@ -186,6 +190,41 @@ class Vendor extends Model
         });
     }
 
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class, 'parent_id');
+    }
+
+    public function branches(): HasMany
+    {
+        return $this->hasMany(Vendor::class, 'parent_id');
+    }
+
+    public function isBranch(): bool
+    {
+        return !is_null($this->parent_id);
+    }
+
+    public function isMainOffice(): bool
+    {
+        return is_null($this->parent_id);
+    }
+
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function city(): BelongsTo
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function district(): BelongsTo
+    {
+        return $this->belongsTo(District::class);
+    }
+
     public function offers()
     {
         return $this->hasMany(ProductVendorSku::class);
@@ -212,10 +251,34 @@ class Vendor extends Model
     }
     public function getLogoUrlAttribute(): ?string
     {
-        if (! $this->logo_path) {
+        $path = $this->logo_path;
+
+        // Inheritance: If logo is null, try to get it from parent
+        if (!$path && $this->parent_id) {
+            $path = $this->parent->logo_path ?? null;
+        }
+
+        if (!$path) {
             return null;
         }
-        return Storage::disk('public')->url($this->logo_path);
+
+        return Storage::disk('public')->url($path);
+    }
+
+    /**
+     * الحصول على الوصف (مع الوراثة)
+     */
+    public function getDescriptionInheritedAttribute(): ?string
+    {
+        if ($this->description) {
+            return $this->description;
+        }
+
+        if ($this->parent_id) {
+            return $this->parent->description ?? null;
+        }
+
+        return null;
     }
 
     /**
@@ -266,5 +329,4 @@ class Vendor extends Model
             self::DELIVERY_TIME_UNIT_DAYS => __('lang.days'),
         ];
     }
-
 }
