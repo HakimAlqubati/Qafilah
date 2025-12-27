@@ -3,6 +3,7 @@
 namespace App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields;
 
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\Unit;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -52,27 +53,39 @@ class UnitsRepeater
         return [
             Select::make('unit_id')
                 ->label(__('lang.unit'))
-                ->options(Unit::active()->pluck('name', 'id'))
-                // ->options(function ($get) {
-                //     // Get product_id from parent form
-                //     $productId = $get('../../product_id');
-                //     if (!$productId) {
-                //         return [];
-                //     }
+                ->options(function ($get) {
+                    // Check if we should show only product-related units
+                    // getSetting returns string '1' or '0' from DB, default to false (show all units)
+                    $showProductUnitsOnly = filter_var(
+                        Setting::getSetting('merchant_show_product_units_only', false),
+                        FILTER_VALIDATE_BOOLEAN
+                    );
 
-                //     // Get only units associated with this product
-                //     $product = Product::with(['units.unit'])->find($productId);
-                //     if (!$product || $product->units->isEmpty()) {
-                //         // Fallback to all active units if no product units defined
-                //         return Unit::active()->pluck('name', 'id');
-                //     }
+                    // If setting is disabled (false), show all active units
+                    if (!$showProductUnitsOnly) {
+                        return Unit::active()->pluck('name', 'id');
+                    }
 
-                //     return $product->units
-                //         ->where('status', 'active')
-                //         ->mapWithKeys(fn($pu) => [$pu->unit_id => $pu->unit?->name ?? '-'])
-                //         ->filter()
-                //         ->toArray();
-                // })
+                    // Setting is enabled - show only product-related units
+                    // Get product_id from parent form
+                    $productId = $get('../../product_id');
+                    if (!$productId) {
+                        return Unit::active()->pluck('name', 'id');
+                    }
+
+                    // Get only units associated with this product
+                    $product = Product::with(['units.unit'])->find($productId);
+                    if (!$product || $product->units->isEmpty()) {
+                        // Fallback to all active units if no product units defined
+                        return Unit::active()->pluck('name', 'id');
+                    }
+
+                    return $product->units
+                        ->where('status', 'active')
+                        ->mapWithKeys(fn($pu) => [$pu->unit_id => $pu->unit?->name ?? '-'])
+                        ->filter()
+                        ->toArray();
+                })
                 ->required()
                 ->searchable()
                 ->preload()

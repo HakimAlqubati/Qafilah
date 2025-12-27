@@ -2,6 +2,7 @@
 
 namespace App\Filament\Merchant\Widgets;
 
+use App\Filament\Merchant\Resources\ProductVendorSkus\Pages\ListProductVendorSkus;
 use App\Models\ProductVendorSku;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -47,6 +48,7 @@ class MerchantStatsOverview extends BaseWidget
                 ->description($totalSkus . ' ' . __('lang.total_skus_variants'))
                 ->descriptionIcon('heroicon-m-cube')
                 ->color('primary')
+                ->url(ListProductVendorSkus::getUrl())
                 ->chart([7, 12, 15, 18, 22, 25, $totalProducts]),
 
             Stat::make(__('lang.available'), $availableProducts)

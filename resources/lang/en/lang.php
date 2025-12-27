@@ -483,4 +483,10 @@ return [
     'whatsapp_number' => 'WhatsApp Number',
     'save_settings' => 'Save Settings',
     'settings_saved' => 'Settings saved successfully',
+
+    // Merchant Settings
+    'merchant_settings' => 'Merchant Settings',
+    'product_form_settings' => 'Product Form Settings',
+    'merchant_show_product_units_only' => 'Show Product Units Only',
+    'merchant_show_product_units_only_helper' => 'When enabled, only product-related units will be shown in the merchant product form. When disabled, all available units in the system will be displayed.',
 ];
