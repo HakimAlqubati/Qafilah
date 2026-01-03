@@ -14,10 +14,15 @@ class Unit extends Model
 
     protected $fillable = [
         'name',
+        'is_default',
         'description',
         'active',
         'sort_order',
     ];
+    protected $casts = [
+        'is_default' => 'boolean',
+    ];
+
 
     public function productVendorSkuUnits()
     {

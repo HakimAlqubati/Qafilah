@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Filament\Resources\Units\UnitResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,11 +25,13 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'status' => $this->status,
             'is_featured' => $this->is_featured,
+            'label_attribute' => $this->label_attribute,
             'images' => $this->getMedia()->map(function ($media) {
                 return $media->getUrl();
             }),
-            'attributes' => AttributeResource::collection($this->whenLoaded('attributesDirect')),
-            'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
+            'units' => UnitResource::collection($this->whenLoaded('units')),
+//            'attributes' => AttributeResource::collection($this->whenLoaded('attributesDirect')),
+//            'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
         ];
     }
 }

@@ -28,6 +28,7 @@ class Product extends Model implements HasMedia
         'status',
         'is_featured',
         'views',
+        'label_attribute',
         'created_by',
         'updated_by',
     ];
@@ -37,6 +38,7 @@ class Product extends Model implements HasMedia
      |============================================================ */
     protected $casts = [
         'is_featured' => 'boolean',
+        'label_attribute' => 'array',
     ];
 
     /* ============================================================

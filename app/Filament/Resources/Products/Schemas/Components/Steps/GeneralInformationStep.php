@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Schemas\Components\Steps;
 
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -41,11 +42,21 @@ class GeneralInformationStep
                             ->helperText(__('lang.auto_generated')),
                     ]),
 
+                Repeater::make('label_attribute')
+                    ->label(__('lang.attribute_label'))
+                    ->schema([
+                        TextInput::make('value')->label(__('lang.value'))->required(),
+                    ])
+                    ->columnSpanFull(),
+
+
+
                 Textarea::make('short_description')
                     ->label(__('lang.short_description'))
                     ->maxLength(500)
                     ->rows(3)
                     ->columnSpanFull(),
+
 
                 RichEditor::make('description')
                     ->label(__('lang.detailed_description'))

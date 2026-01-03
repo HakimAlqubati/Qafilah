@@ -15,21 +15,32 @@ class ProductVendorSkuForm
      */
     public static function configure(Schema $form): Schema
     {
-        return $form
-            ->schema([
-                Wizard::make()
-                    ->columnSpanFull()
-                    ->skippable()
-                    ->schema([
-                        // Step 1: Product Information
-                        ProductInfoStep::make(),
+        return $form->schema([
+            ProductInfoStep::make(),
 
-                        // Step 2: Units & Pricing
-                        UnitsPricingStep::make(),
+            UnitsPricingStep::make(),
 
-                        // Step 3: Images Upload (hidden)
-                        ImagesStep::make(),
-                    ])
-            ]);
+//            ImagesStep::make(),
+        ]);
     }
+
+//    public static function configure(Schema $form): Schema
+//    {
+//        return $form
+//            ->schema([
+//                Wizard::make()
+//                    ->columnSpanFull()
+//                    ->skippable()
+//                    ->schema([
+//                        // Step 1: Product Information
+//                        ProductInfoStep::make(),
+//
+//                        // Step 2: Units & Pricing
+//                        UnitsPricingStep::make(),
+//
+//                        // Step 3: Images Upload (hidden)
+//                        ImagesStep::make(),
+//                    ])
+//            ]);
+//    }
 }

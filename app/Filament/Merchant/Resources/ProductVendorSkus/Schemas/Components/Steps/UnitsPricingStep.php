@@ -4,6 +4,7 @@ namespace App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\S
 
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields\UnitsRepeater;
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields\VariantsUnitsRepeater;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Wizard\Step;
 
 class UnitsPricingStep
@@ -11,15 +12,17 @@ class UnitsPricingStep
     /**
      * Create the Units & Pricing step
      */
-    public static function make(): Step
+    public static function make(): Section
     {
-        return Step::make('units')
-            ->label(__('lang.units_pricing'))
+        return Section::make(__('lang.units_pricing'))
             ->icon('heroicon-o-cube')
-            ->columnSpanFull()
-            ->schema(self::getSchema());
+            ->schema([
+                VariantsUnitsRepeater::make()->columnSpanFull(),
+                UnitsRepeater::make()->columnSpanFull(),
+            ])
+            ->columns(1)
+            ->columnSpanFull();
     }
-
     /**
      * Get the step schema
      */

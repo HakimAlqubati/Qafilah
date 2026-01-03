@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\Ecommerce;
 
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Models\ProductVendorSkuUnit;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\ApiController;
 
@@ -13,7 +16,7 @@ class ProductController extends  ApiController
         $perPage = $request->integer('per_page', 10);
 
         $products = Product::query()
-            ->with(['media', 'variants.media'])
+            ->with(['media'])
             ->active()
             ->paginate($perPage);
 
@@ -48,21 +51,62 @@ class ProductController extends  ApiController
         $productId = $request->product_id;
         $vendorId  = $request->vendor_id;
 
+        $product = Product::findOrFail($productId);
+
+        $units = Unit::query()
+            ->join('product_vendor_sku_units as pvsu', 'pvsu.unit_id', '=', 'units.id')
+            ->join('product_vendor_skus as pvs', 'pvs.id', '=', 'pvsu.product_vendor_sku_id')
+            ->where('pvs.product_id', $productId)
+            ->select([
+                'units.id',
+                'units.name', // عدّل حسب أعمدة units عندك
+            ])
+            ->selectRaw('COUNT(DISTINCT pvs.vendor_id) as vendors_count')
+            ->groupBy('units.id', 'units.name')
+            ->orderBy('units.id')
+            ->get();
+
+        // نربط الوحدات بالمنتج كـ relation جاهزة للـ Resource
+        $product->setRelation('units', $units);
+
+        return new ProductResource($product);
+
+
+
+
+
+
+
         if (empty($vendorId)) {
-            $product = Product::with([
+                        $product = Product::with([
                 'media',
-                'attributesDirect' => function ($query) {
-                    $query->with('values')->orderByPivot('sort_order');
-                },
-                'variants.media',
-                'variants.variantValues',
+                'units.unit'
             ])
                 ->active()
                 ->findOrFail($productId);
 
+            $unitsBreakdown = $product->units->map(function ($unit) {
+                // Count unique vendors selling this unit
+                $vendorsCount = \App\Models\ProductVendorSkuUnit::where('product_unit_id', $unit->id)
+                    ->whereHas('productVendorSku', function ($q) {
+                        $q->available()->simpleProducts();
+                    })
+                    ->distinct('vendor_id')
+                    ->count('vendor_id');
+
+                return [
+                    'id'            => $unit->id,
+                    'unit_name'     => $unit->unit->name ?? '',
+                    'package_size'  => $unit->package_size,
+                    'vendors_count' => $vendorsCount,
+                ];
+            });
+
+            $product->units_breakdown = $unitsBreakdown;
+
             return $this->successResponse(
                 new \App\Http\Resources\ProductDetailsResource($product),
-                ""
+                "Product details retrieved successfully"
             );
         }
 

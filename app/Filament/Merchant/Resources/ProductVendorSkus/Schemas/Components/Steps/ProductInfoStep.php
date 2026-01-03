@@ -6,6 +6,7 @@ use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields\
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields\CategoryFields;
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields\ProductFields;
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields\VariantsCheckboxList;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Wizard\Step;
 
 class ProductInfoStep
@@ -13,10 +14,9 @@ class ProductInfoStep
     /**
      * Create the Product Information step
      */
-    public static function make(): Step
+    public static function make(): Section
     {
-        return Step::make('info')
-            ->label(__('lang.product_information'))
+        return Section::make(__('lang.product_information'))
             ->icon('heroicon-o-information-circle')
             ->columnSpanFull()
             ->columns(2)

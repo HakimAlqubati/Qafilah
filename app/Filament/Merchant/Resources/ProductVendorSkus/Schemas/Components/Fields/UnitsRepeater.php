@@ -3,6 +3,7 @@
 namespace App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields;
 
 use App\Models\Product;
+use App\Models\ProductUnit;
 use App\Models\Setting;
 use App\Models\Unit;
 use Filament\Forms\Components\Repeater;
@@ -24,12 +25,24 @@ class UnitsRepeater
             ->collapsed(false)
             ->itemLabel(
                 fn(array $state): ?string =>
-                Unit::find($state['unit_id'])?->name ?? __('lang.add_unit')
+                Unit::find($state['unit_id'] ?? null)?->name ?? __('lang.add_unit')
             )
-            ->defaultItems(0)
+            ->defaultItems(function ($get) {
+                $productId = $get('product_id');
+                if (!$productId) return 0;
+                return !self::isNotDefaultUnitOnly($productId) ? 1 : 0;
+            })
             ->addActionLabel(__('lang.add_unit'))
-            ->reorderable(true)
-            ->reorderableWithButtons()
+            ->reorderable(function ($get) {
+                $productId = $get('product_id');
+                if (!$productId) return true;
+                return self::isNotDefaultUnitOnly($productId);
+            })
+            ->reorderableWithButtons(function ($get) {
+                $productId = $get('product_id');
+                if (!$productId) return true;
+                return self::isNotDefaultUnitOnly($productId);
+            })
             ->columns(3)
             ->visible(function ($get, $operation) {
                 $productId = $get('product_id');
@@ -41,6 +54,23 @@ class UnitsRepeater
 
                 // Show for simple products (no variants) OR in edit mode
                 return !$hasVariants || $operation === 'edit';
+            })
+            // Force re-render when product changes to ensure minItems/maxItems logic re-evaluates
+            ->key(fn ($get) => 'units_' . ($get('product_id') ?? 'new'))
+            ->minItems(function ($get) {
+                $productId = $get('product_id');
+                if (!$productId) return 0;
+                return !self::isNotDefaultUnitOnly($productId) ? 1 : 0;
+            })
+            ->maxItems(function ($get) {
+                $productId = $get('product_id');
+                if (!$productId) return null;
+                return !self::isNotDefaultUnitOnly($productId) ? 1 : null;
+            })
+            ->deletable(function ($get) {
+                $productId = $get('product_id');
+                if (!$productId) return true;
+                return self::isNotDefaultUnitOnly($productId);
             })
             ->schema(self::getUnitFields());
     }
@@ -56,35 +86,34 @@ class UnitsRepeater
                 ->options(function ($get) {
                     // Check if we should show only product-related units
                     // getSetting returns string '1' or '0' from DB, default to false (show all units)
-                    $showProductUnitsOnly = filter_var(
-                        Setting::getSetting('merchant_show_product_units_only', false),
-                        FILTER_VALIDATE_BOOLEAN
-                    );
-
-                    // If setting is disabled (false), show all active units
-                    if (!$showProductUnitsOnly) {
-                        return Unit::active()->pluck('name', 'id');
-                    }
+                    // $showProductUnitsOnly = filter_var(
+                    //     Setting::getSetting('merchant_show_product_units_only', false),
+                    //     FILTER_VALIDATE_BOOLEAN
+                    // );
+                    //
+                    // // If setting is disabled (false), show all active units
+                    // if (!$showProductUnitsOnly) {
+                    //     return Unit::active()->pluck('name', 'id');
+                    // }
 
                     // Setting is enabled - show only product-related units
                     // Get product_id from parent form
                     $productId = $get('../../product_id');
-                    if (!$productId) {
-                        return Unit::active()->pluck('name', 'id');
-                    }
 
-                    // Get only units associated with this product
-                    $product = Product::with(['units.unit'])->find($productId);
-                    if (!$product || $product->units->isEmpty()) {
-                        // Fallback to all active units if no product units defined
-                        return Unit::active()->pluck('name', 'id');
-                    }
+                    // استخدام الدالة الجديدة من الموديل
+                    $units =  ProductUnit::getAvailableUnitsForProduct($productId);
 
-                    return $product->units
-                        ->where('status', 'active')
-                        ->mapWithKeys(fn($pu) => [$pu->unit_id => $pu->unit?->name ?? '-'])
-                        ->filter()
-                        ->toArray();
+                    return $units->pluck('name', 'id')->toArray();
+                })
+                ->default(function ($get) {
+                    $productId = $get('../../product_id');
+                    if (!$productId) return null;
+
+                    // If no specific units exist, return the default unit ID
+                    if (!ProductUnit::where('product_id', $productId)->exists()) {
+                        return Unit::active()->where('is_default', true)->value('id');
+                    }
+                    return null;
                 })
                 ->required()
                 ->searchable()
@@ -156,5 +185,28 @@ class UnitsRepeater
                 ->default(0)
                 ->columnSpan(1),
         ];
+    }
+
+    /**
+     * Check if proper non-default units exist
+     */
+    protected static function isNotDefaultUnitOnly($productId): bool
+    {
+        $units = ProductUnit::where('product_id', $productId)->with('unit')->get();
+
+        if ($units->isEmpty()) {
+            return false;
+        }
+
+        if ($units->count() > 1) {
+            return true;
+        }
+
+        $unit = $units->first()->unit;
+        if ($unit && $unit->is_default) {
+            return false;
+        }
+
+        return true;
     }
 }

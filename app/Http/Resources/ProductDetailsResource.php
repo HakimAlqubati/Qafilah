@@ -24,16 +24,19 @@ class ProductDetailsResource extends JsonResource
 
             // Attributes (Static values assigned to the product)
 
-            'attributes' => AttributeResource::collection($this->whenLoaded('attributesDirect')),
-
-            'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
+//            'attributes' => AttributeResource::collection($this->whenLoaded('attributesDirect')),
+//
+//            'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
 
             // إرجاع عروض البائعين المباشرة فقط إذا كانت المتغيرات فارغة و offers محملة
-            'vendor_offers' => $this->when(
-                $this->relationLoaded('offers') && 
-                (!$this->relationLoaded('variants') || $this->variants->isEmpty()),
-                fn() => ProductVendorSkuResource::collection($this->offers)
-            ),
+//            'vendor_offers' => $this->when(
+//                $this->relationLoaded('offers') &&
+//                (!$this->relationLoaded('variants') || $this->variants->isEmpty()),
+//                fn() => ProductVendorSkuResource::collection($this->offers)
+//            ),
+            'units_breakdown' => $this->when(isset($this->units_breakdown), function () {
+                return $this->units_breakdown;
+            }),
         ];
     }
 }

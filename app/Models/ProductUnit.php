@@ -155,4 +155,37 @@ class ProductUnit extends Model
             default => 'Unknown',
         };
     }
+    public static function getAvailableUnitsForProduct($productId)
+    {
+        $productUnits = self::where('product_id', $productId)
+            ->whereHas('unit', fn($q) => $q->active())
+            ->with('unit')
+            ->get();
+
+        if ($productUnits->isNotEmpty()) {
+            return $productUnits->pluck('unit');
+        }
+
+        $defaultUnit = Unit::active()->where('is_default', true)->first();
+
+        if (! $defaultUnit) {
+            return collect();
+        }
+
+        self::firstOrCreate(
+            ['product_id' => $productId, 'unit_id' => $defaultUnit->id],
+            [
+                'package_size'      => 1,
+                'conversion_factor' => 1,
+                'selling_price'     => 0,
+                'cost_price'        => 0,
+                'is_base_unit'      => true,
+                'is_sellable'       => true,
+                'status'            => self::STATUS_ACTIVE,
+                'sort_order'        => 0,
+            ]
+        );
+
+        return collect([$defaultUnit]);
+    }
 }
