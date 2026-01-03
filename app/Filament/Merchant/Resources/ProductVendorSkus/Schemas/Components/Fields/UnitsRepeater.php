@@ -23,57 +23,59 @@ class UnitsRepeater
             ->columnSpanFull()
             ->collapsible()
             ->collapsed(false)
-            ->itemLabel(
-                fn(array $state): ?string =>
+
+            // ✅ default state (مهم جدًا حتى يظهر بدون ضغط في أول عرض)
+            ->default(function (callable $get) {
+                $productId = $get('product_id');
+                if (! $productId) return [];
+
+                $units = ProductUnit::getAvailableUnitsForProduct((int) $productId);
+
+                if ($units->count() === 1 && ($units->first()?->is_default ?? false)) {
+                    return [[
+                        'unit_id'    => $units->first()->id,
+                        'is_default' => true,
+                    ]];
+                }
+
+                return [];
+            })
+
+            // ✅ إذا صار state فارغ لأي سبب (خصوصًا بعد تغيير المنتج) عبّئه
+            ->afterStateHydrated(function (Repeater $component, $state, callable $get) {
+                $productId = $get('product_id');
+                if (! $productId) return;
+
+                if (! empty($state)) return;
+
+                $units = ProductUnit::getAvailableUnitsForProduct((int) $productId);
+
+                if ($units->count() === 1 && ($units->first()?->is_default ?? false)) {
+                    $component->state([[
+                        'unit_id'    => $units->first()->id,
+                        'is_default' => true,
+                    ]]);
+                }
+            })
+
+            ->itemLabel(fn (array $state): ?string =>
                 Unit::find($state['unit_id'] ?? null)?->name ?? __('lang.add_unit')
             )
-            ->defaultItems(function ($get) {
-                $productId = $get('product_id');
-                if (!$productId) return 0;
-                return !self::isNotDefaultUnitOnly($productId) ? 1 : 0;
-            })
-            ->addActionLabel(__('lang.add_unit'))
-            ->reorderable(function ($get) {
-                $productId = $get('product_id');
-                if (!$productId) return true;
-                return self::isNotDefaultUnitOnly($productId);
-            })
-            ->reorderableWithButtons(function ($get) {
-                $productId = $get('product_id');
-                if (!$productId) return true;
-                return self::isNotDefaultUnitOnly($productId);
-            })
-            ->columns(3)
-            ->visible(function ($get, $operation) {
-                $productId = $get('product_id');
-                if (!$productId) {
-                    return true; // Show by default when no product selected
-                }
-                $product = Product::with(['attributesDirect'])->find($productId);
-                $hasVariants = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
 
-                // Show for simple products (no variants) OR in edit mode
-                return !$hasVariants || $operation === 'edit';
-            })
-            // Force re-render when product changes to ensure minItems/maxItems logic re-evaluates
+            // ✅ لا تعتمد على defaultItems هنا
+            ->defaultItems(0)
+
+            ->addActionLabel(__('lang.add_unit'))
+            ->reorderable(fn ($get) => ($pid = $get('product_id')) ? self::canManageMultipleUnits($pid) : true)
+            ->reorderableWithButtons(fn ($get) => ($pid = $get('product_id')) ? self::canManageMultipleUnits($pid) : true)
+            ->columns(3)
             ->key(fn ($get) => 'units_' . ($get('product_id') ?? 'new'))
-            ->minItems(function ($get) {
-                $productId = $get('product_id');
-                if (!$productId) return 0;
-                return !self::isNotDefaultUnitOnly($productId) ? 1 : 0;
-            })
-            ->maxItems(function ($get) {
-                $productId = $get('product_id');
-                if (!$productId) return null;
-                return !self::isNotDefaultUnitOnly($productId) ? 1 : null;
-            })
-            ->deletable(function ($get) {
-                $productId = $get('product_id');
-                if (!$productId) return true;
-                return self::isNotDefaultUnitOnly($productId);
-            })
+            ->minItems(fn ($get) => ($pid = $get('product_id')) ? (self::isDefaultOnlyByAvailableUnits($pid) ? 1 : 0) : 0)
+            ->maxItems(fn ($get) => ($pid = $get('product_id')) ? (self::isDefaultOnlyByAvailableUnits($pid) ? 1 : null) : null)
+            ->deletable(fn ($get) => ($pid = $get('product_id')) ? self::canManageMultipleUnits($pid) : true)
             ->schema(self::getUnitFields());
     }
+
 
     /**
      * Get the unit fields schema
@@ -107,13 +109,13 @@ class UnitsRepeater
                 })
                 ->default(function ($get) {
                     $productId = $get('../../product_id');
-                    if (!$productId) return null;
+                    if (! $productId) return null;
 
-                    // If no specific units exist, return the default unit ID
-                    if (!ProductUnit::where('product_id', $productId)->exists()) {
-                        return Unit::active()->where('is_default', true)->value('id');
-                    }
-                    return null;
+                    $units = ProductUnit::getAvailableUnitsForProduct((int) $productId);
+
+                    return ($units->count() === 1 && ($units->first()?->is_default ?? false))
+                        ? $units->first()->id
+                        : null;
                 })
                 ->required()
                 ->searchable()
@@ -209,4 +211,19 @@ class UnitsRepeater
 
         return true;
     }
+
+    protected static function isDefaultOnlyByAvailableUnits($productId): bool
+    {
+        $units = ProductUnit::getAvailableUnitsForProduct((int) $productId);
+
+        return $units->count() === 1 && (bool) ($units->first()?->is_default ?? false);
+    }
+
+    protected static function canManageMultipleUnits($productId): bool
+    {
+        // إذا default-only => لا إضافة/حذف/ترتيب
+        return ! self::isDefaultOnlyByAvailableUnits($productId);
+    }
 }
+
+

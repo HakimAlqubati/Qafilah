@@ -5,6 +5,7 @@ namespace App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\F
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Helpers\SkuGenerator;
 use App\Models\Currency;
 use App\Models\Product;
+use App\Models\ProductUnit;
 use App\Models\ProductVariant;
 use App\Models\ProductVendorSku;
 use Filament\Forms\Components\Hidden;
@@ -38,40 +39,46 @@ class ProductFields
                 $set('attributes', []);
 
                 $productId = $get('product_id');
-                if ($productId) {
-                    $product = Product::with(['attributesDirect', 'units.unit'])->find($productId);
-                    $hasVariantAttributes = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
-
-                    // Generate unique vendor_sku
-                    $vendorId = auth()->user()->vendor_id ?? 0;
-                    $uniqueSku = SkuGenerator::generate($productId, $vendorId);
-                    $set('vendor_sku', $uniqueSku);
-
-                    // إذا المنتج بسيط (بدون متغيرات)
-                    if (!$hasVariantAttributes) {
-                        // Find the default/single variant if exists
-                        $variant = ProductVariant::where('product_id', $productId)->active()->first();
-                        if ($variant) {
-                            $set('variant_id', $variant->id);
-                        }
-                    }
-
-                    // تحميل الوحدات الافتراضية من المنتج
-                    $defaultUnits = $product->units->map(fn($pu) => [
-                        'variant_id' => null,
-                        'unit_id' => $pu->unit_id,
-                        'package_size' => $pu->package_size,
-                        'cost_price' => $pu->cost_price,
-                        'selling_price' => $pu->selling_price,
-                        'moq' => 1,
-                        'stock' => 0,
-                        'is_default' => $pu->is_base_unit,
-                        'status' => 'active',
-                        'sort_order' => $pu->sort_order,
-                    ])->toArray();
-                    $set('units', $defaultUnits);
+                if (! $productId) {
+                    $set('units', []);
+                    return;
                 }
+
+                $product = Product::with(['attributesDirect'])->find($productId);
+                $hasVariantAttributes = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
+
+                // Generate unique vendor_sku
+                $vendorId = auth()->user()->vendor_id ?? 0;
+                $uniqueSku = SkuGenerator::generate($productId, $vendorId);
+                $set('vendor_sku', $uniqueSku);
+
+                if (! $hasVariantAttributes) {
+                    $variant = ProductVariant::where('product_id', $productId)->active()->first();
+                    if ($variant) {
+                        $set('variant_id', $variant->id);
+                    }
+                }
+
+                $availableUnits = ProductUnit::getAvailableUnitsForProduct((int) $productId); // Collection<Unit>
+
+                $defaultUnits = $availableUnits->map(function ($unit) {
+                    return [
+                        'variant_id'     => null,
+                        'unit_id'        => $unit->id,
+                        'package_size'   => 1,
+                        'cost_price'     => null,
+                        'selling_price'  => null,
+                        'moq'            => 1,
+                        'stock'          => 0,
+                        'is_default'     => (bool) ($unit->is_default ?? false),
+                        'status'         => 'active',
+                        'sort_order'     => 0,
+                    ];
+                })->toArray();
+
+                $set('units', $defaultUnits);
             })
+
             ->required();
     }
 
