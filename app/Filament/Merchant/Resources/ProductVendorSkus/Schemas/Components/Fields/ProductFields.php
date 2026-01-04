@@ -98,54 +98,62 @@ class ProductFields
     /**
      * Get the currency select field
      */
-    public static function currencySelect(): Select
+
+    public static function currencySelect(): Hidden
     {
-        return Select::make('currency_id')
-            ->label(__('lang.currency'))
-            ->options(Currency::active()->pluck('code', 'id'))
-            ->default(fn() => Currency::default()->first()?->id)
-            ->searchable()
-            ->preload()
-            ->required()
-            ->visible(fn($get) => filled($get('product_id')))
-            ->validationMessages([
-                'unique' => __('This product variant is already added with this currency.'),
-            ])
-            ->rules([
-                function (Get $get, Component $component) {
-                    return function (string $attribute, $value, \Closure $fail) use ($get, $component) {
-                        $productId = $get('product_id');
-                        $variantId = $get('variant_id');
-                        $vendorId = $get('vendor_id');
-
-                        if (!$productId || !$vendorId) {
-                            return;
-                        }
-
-                        $query = ProductVendorSku::where('product_id', $productId)
-                            ->where('vendor_id', $vendorId)
-                            ->where('currency_id', $value);
-
-                        // إذا كان هناك متغير محدد، نتحقق منه أيضاً
-                        if ($variantId) {
-                            $query->where('variant_id', $variantId);
-                        } else {
-                            $query->whereNull('variant_id');
-                        }
-
-                        // Ignore current record if editing
-                        $record = $component->getRecord();
-                        if ($record) {
-                            $query->where('id', '!=', $record->id);
-                        }
-
-                        if ($query->exists()) {
-                            $fail(__('This product is already added with this currency.'));
-                        }
-                    };
-                },
-            ]);
+        return Hidden::make('currency_id')
+            ->default(fn () => Currency::default()->value('id'))
+            ->dehydrated(true)
+            ->required();
     }
+//    public static function currencySelect(): Select
+//    {
+//        return Select::make('currency_id')
+//            ->label(__('lang.currency'))
+//            ->options(Currency::active()->pluck('code', 'id'))
+//            ->default(fn() => Currency::default()->first()?->id)
+//            ->searchable()
+//            ->preload()
+//            ->required()
+//            ->visible(fn($get) => filled($get('product_id')))
+//            ->validationMessages([
+//                'unique' => __('This product variant is already added with this currency.'),
+//            ])
+//            ->rules([
+//                function (Get $get, Component $component) {
+//                    return function (string $attribute, $value, \Closure $fail) use ($get, $component) {
+//                        $productId = $get('product_id');
+//                        $variantId = $get('variant_id');
+//                        $vendorId = $get('vendor_id');
+//
+//                        if (!$productId || !$vendorId) {
+//                            return;
+//                        }
+//
+//                        $query = ProductVendorSku::where('product_id', $productId)
+//                            ->where('vendor_id', $vendorId)
+//                            ->where('currency_id', $value);
+//
+//                        // إذا كان هناك متغير محدد، نتحقق منه أيضاً
+//                        if ($variantId) {
+//                            $query->where('variant_id', $variantId);
+//                        } else {
+//                            $query->whereNull('variant_id');
+//                        }
+//
+//                        // Ignore current record if editing
+//                        $record = $component->getRecord();
+//                        if ($record) {
+//                            $query->where('id', '!=', $record->id);
+//                        }
+//
+//                        if ($query->exists()) {
+//                            $fail(__('This product is already added with this currency.'));
+//                        }
+//                    };
+//                },
+//            ]);
+//    }
 
     /**
      * Get the hidden vendor_id field

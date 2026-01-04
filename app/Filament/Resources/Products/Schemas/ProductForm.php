@@ -28,15 +28,16 @@ class ProductForm
                     GeneralInformationStep::make(),
 
                     // Step 2: Media
-                    MediaStep::make(),
+//                    MediaStep::make(),
 
                     // Step 3: Attributes (Direct Attributes without Set)
-                    AttributesStep::make(),
+//                    AttributesStep::make(),
 
                     // Step 4: Catalog
-                    CatalogStep::make(),
+//                    CatalogStep::make(),
 
                     // Step 5: Product Units
+//                    VisibilityStatusStep::make(),
                     ProductUnitsStep::make(),
 
                     // Step 6: Attribute Values (Custom Attributes)
@@ -46,7 +47,7 @@ class ProductForm
                     VariantsStep::make(),
 
                     // Step 8: Visibility & Status
-                    VisibilityStatusStep::make(),
+
                 ])
                 ->skippable(),
         ]);

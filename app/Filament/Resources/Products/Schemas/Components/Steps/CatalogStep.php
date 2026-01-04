@@ -11,9 +11,9 @@ class CatalogStep
     /**
      * Create the Catalog step
      */
-    public static function make(): Step
+    public static function make(): Section
     {
-        return Step::make(__('lang.catalog'))
+        return Section::make(__('lang.catalog'))
             ->icon('heroicon-o-tag')
             ->schema([
                 Section::make(__('lang.categorization'))

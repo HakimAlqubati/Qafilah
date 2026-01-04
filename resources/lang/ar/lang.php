@@ -490,5 +490,5 @@ return [
     'product_form_settings' => 'إعدادات نموذج المنتج',
     'merchant_show_product_units_only' => 'عرض وحدات المنتج فقط',
     'merchant_show_product_units_only_helper' => 'عند التفعيل، سيتم عرض الوحدات المرتبطة بالمنتج فقط في نموذج إضافة المنتج للتاجر. عند الإيقاف، سيتم عرض جميع الوحدات المتاحة في النظام.',
-    'attribute_label' => 'اسم الخاصية',
+    'attribute_label' => 'عنوان خصائص المنتج (مثل: 1 × 24 حبة)',
 ];

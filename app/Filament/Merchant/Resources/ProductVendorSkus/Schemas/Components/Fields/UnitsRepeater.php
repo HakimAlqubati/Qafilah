@@ -164,28 +164,28 @@ class UnitsRepeater
                 ->minValue(0)
                 ->columnSpan(1),
 
-            Toggle::make('is_default')
-                ->label(__('lang.is_default_unit'))
-                ->helperText(__('lang.is_default_unit_helper'))
-                ->inline(false)
-                ->columnSpan(1),
+//            Toggle::make('is_default')
+//                ->label(__('lang.is_default_unit'))
+//                ->helperText(__('lang.is_default_unit_helper'))
+//                ->inline(false)
+//                ->columnSpan(1),
 
-            Select::make('status')
-                ->label(__('lang.status'))
-                ->options([
-                    'active' => __('lang.active'),
-                    'inactive' => __('lang.inactive'),
-                ])
-                ->default('active')
-                ->required()
-                ->columnSpan(1),
+//            Select::make('status')
+//                ->label(__('lang.status'))
+//                ->options([
+//                    'active' => __('lang.active'),
+//                    'inactive' => __('lang.inactive'),
+//                ])
+//                ->default('active')
+//                ->required()
+//                ->columnSpan(1),
 
-            TextInput::make('sort_order')
-                ->label(__('lang.sort_order'))
-                ->helperText(__('lang.sort_order_helper'))
-                ->numeric()
-                ->default(0)
-                ->columnSpan(1),
+//            TextInput::make('sort_order')
+//                ->label(__('lang.sort_order'))
+//                ->helperText(__('lang.sort_order_helper'))
+//                ->numeric()
+//                ->default(0)
+//                ->columnSpan(1),
         ];
     }
 

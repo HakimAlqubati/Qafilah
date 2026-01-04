@@ -59,14 +59,13 @@ class ProductController extends  ApiController
             ->where('pvs.product_id', $productId)
             ->select([
                 'units.id',
-                'units.name', // عدّل حسب أعمدة units عندك
+                'units.name',
             ])
             ->selectRaw('COUNT(DISTINCT pvs.vendor_id) as vendors_count')
             ->groupBy('units.id', 'units.name')
             ->orderBy('units.id')
             ->get();
 
-        // نربط الوحدات بالمنتج كـ relation جاهزة للـ Resource
         $product->setRelation('units', $units);
 
         return new ProductResource($product);

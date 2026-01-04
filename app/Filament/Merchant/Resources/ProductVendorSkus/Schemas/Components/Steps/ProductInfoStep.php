@@ -6,6 +6,7 @@ use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields\
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields\CategoryFields;
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields\ProductFields;
 use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields\VariantsCheckboxList;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Wizard\Step;
 
@@ -33,7 +34,11 @@ class ProductInfoStep
             ...CategoryFields::make(),
 
             // 2. Product Selection
-            ProductFields::productSelect(),
+//            ProductFields::productSelect(),
+//            Grid::make(1)->schema([
+                ProductFields::productSelect()->columnSpan(1),
+                ProductFields::vendorSku()->columnSpan(1),
+//            ]),
 
             // 3. Dynamic Attributes Grid
             AttributesFields::make(),
@@ -43,7 +48,7 @@ class ProductInfoStep
 
             // 5. Hidden & Additional Fields
             ProductFields::variantIdHidden(),
-            ProductFields::vendorSku(),
+//            ProductFields::vendorSku(),
             ProductFields::currencySelect(),
             ProductFields::vendorIdHidden(),
             ProductFields::productIdHidden(),

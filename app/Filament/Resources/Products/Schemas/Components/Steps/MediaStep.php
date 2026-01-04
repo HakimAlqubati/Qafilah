@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Schemas\Components\Steps;
 
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Wizard\Step;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -11,9 +12,9 @@ class MediaStep
     /**
      * Create the Media step
      */
-    public static function make(): Step
+    public static function make(): Section
     {
-        return Step::make(__('lang.media'))
+        return Section::make(__('lang.media'))
             ->icon('heroicon-o-photo')
             ->schema([
                 SpatieMediaLibraryFileUpload::make('images')
