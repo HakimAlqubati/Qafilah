@@ -22,8 +22,10 @@ class ProductUnitsStep
                     ->relationship('units')
                     ->label('')
                     ->columnSpanFull()
+                    ->minItems(1)
                     ->columns(4)
-                    ->defaultItems(0)
+                    ->defaultItems(1)
+                    
                     ->table([
                         TableColumn::make(__('lang.unit'))->width('25%'),
                         TableColumn::make(__('lang.package_size'))->width('25%'),
@@ -38,7 +40,8 @@ class ProductUnitsStep
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->distinct(),
+                            ->distinct()
+                            ->default(fn() => \App\Models\Unit::where('is_default', true)->first()?->id),
 
                         TextInput::make('package_size')
                             ->label(__('lang.package_size'))

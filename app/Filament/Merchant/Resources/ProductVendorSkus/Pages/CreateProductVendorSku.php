@@ -131,7 +131,7 @@ class CreateProductVendorSku extends CreateRecord
 
         $record = static::getModel()::create($data);
 
-        // Create units
+        // Create units from repeater
         foreach ($units as $unitData) {
             $record->units()->create([
                 'unit_id' => $unitData['unit_id'],
@@ -140,9 +140,9 @@ class CreateProductVendorSku extends CreateRecord
                 'selling_price' => $unitData['selling_price'],
                 'stock' => $unitData['stock'] ?? 0,
                 'moq' => $unitData['moq'] ?? 1,
-                'is_default' => $unitData['is_default'] ?? false,
-                'status' => $unitData['status'] ?? 'active',
-                'sort_order' => $unitData['sort_order'] ?? 0,
+                'is_default' => true,
+                'status' => 'active',
+                'sort_order' => 0,
             ]);
         }
 

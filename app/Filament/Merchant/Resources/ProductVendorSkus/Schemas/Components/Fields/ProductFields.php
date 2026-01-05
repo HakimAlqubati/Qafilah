@@ -59,24 +59,16 @@ class ProductFields
                     }
                 }
 
-                $availableUnits = ProductUnit::getAvailableUnitsForProduct((int) $productId); // Collection<Unit>
-
-                $defaultUnits = $availableUnits->map(function ($unit) {
-                    return [
-                        'variant_id'     => null,
-                        'unit_id'        => $unit->id,
-                        'package_size'   => 1,
-                        'cost_price'     => null,
-                        'selling_price'  => null,
-                        'moq'            => 1,
-                        'stock'          => 0,
-                        'is_default'     => (bool) ($unit->is_default ?? false),
-                        'status'         => 'active',
-                        'sort_order'     => 0,
-                    ];
-                })->toArray();
-
-                $set('units', $defaultUnits);
+                // Set units with the product's unit
+                $productUnit = ProductUnit::where('product_id', $productId)->first();
+                if ($productUnit) {
+                    $set('units', [[
+                        'unit_id' => $productUnit->unit_id,
+                        'package_size' => 1,
+                        'moq' => 1,
+                        'stock' => 0,
+                    ]]);
+                }
             })
 
             ->required();
@@ -102,7 +94,7 @@ class ProductFields
     public static function currencySelect(): Hidden
     {
         return Hidden::make('currency_id')
-            ->default(fn () => Currency::default()->value('id'))
+            ->default(fn() => Currency::default()->value('id'))
             ->dehydrated(true)
             ->required();
     }

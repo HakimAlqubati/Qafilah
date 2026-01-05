@@ -49,7 +49,8 @@ class ProductVendorSkusTable
                         return $count > 0 ? $count . ' ' . __('lang.variants') : __('lang.not_variants');
                     })
                     ->badge()
-                    ->color(fn($state) => str_contains($state, __('lang.simple_product')) ? 'gray' : 'info'),
+                    ->color(fn($state) => str_contains($state, __('lang.simple_product')) ? 'gray' : 'info')
+                    ->hidden(),
 
                 SpatieMediaLibraryImageColumn::make('images')
                     ->label(__('lang.images'))
@@ -72,34 +73,37 @@ class ProductVendorSkusTable
                     ->color('primary')
                     ->sortable(),
 
-                // عمود الأسعار - ملخص مع عدد الوحدات
-                TextColumn::make('units_count')
-                    ->label(__('lang.prices'))
-                    ->state(function ($record) {
-                        $unitsCount = $record->units->count();
-                        if ($unitsCount === 0) {
-                            return __('lang.no_units');
-                        }
-                        $defaultUnit = $record->units->where('is_default', true)->first()
-                            ?? $record->units->first();
-                        $currencyCode = $record->currency->code ?? 'SAR';
-                        return number_format($defaultUnit->selling_price, 2) . ' ' . $currencyCode . ' (' . $unitsCount . ' ' . __('lang.units') . ')';
-                    })
+                // سعر البيع
+                TextColumn::make('selling_price')
+                    ->label(__('lang.selling_price'))
+                    ->state(fn($record) => $record->units->first()?->selling_price ?? 0)
+                    ->money(fn($record) => $record->currency->code )
                     ->color(Color::Green)
-                    ->fontFamily(FontFamily::Mono)
                     ->weight(FontWeight::Bold)
-                    ->badge()->hidden(),
+                    ->sortable(
+                        query: fn($query, $direction) =>
+                        $query->orderBy(
+                            \App\Models\ProductVendorSkuUnit::select('selling_price')
+                                ->whereColumn('product_vendor_sku_id', 'product_vendor_skus.id')
+                                ->limit(1),
+                            $direction
+                        )
+                    ),
 
-                // عمود المخزون - ملخص
-                TextColumn::make('total_stock')
-                    ->label(__('lang.stock'))
-                    ->state(function ($record) {
-                        $totalStock = $record->units->sum('stock');
-                        return $totalStock;
-                    })
+                // سعر الشراء (التكلفة)
+                TextColumn::make('cost_price')
+                    ->label(__('lang.cost_price'))
+                    ->state(fn($record) => $record->units->first()?->cost_price ?? 0)
+                    ->money(fn($record) => $record->currency->code ?? 'SAR')
+                    ->color(Color::Gray),
+
+                // المخزون
+                TextColumn::make('stock')
+                    ->label(__('lang.stock'))->alignCenter()
+                    ->state(fn($record) => $record->units->first()?->stock ?? 0)
                     ->numeric()
                     ->color(fn($state) => $state > 0 ? Color::Green : Color::Red)
-                    ->badge()->hidden(),
+                    ->badge(),
 
                 TextColumn::make('status')
                     ->label(__('lang.status'))
@@ -168,8 +172,7 @@ class ProductVendorSkusTable
                             ->get();
 
                         $currencyCode = $record->currency->code ?? 'SAR';
-                        $schemas = [
-                        ];
+                        $schemas = [];
 
                         foreach ($allSkus as $sku) {
                             $variantLabel = $sku->variant
@@ -208,7 +211,7 @@ class ProductVendorSkusTable
                         }
 
                         return $schemas;
-                    }),
+                    })->hidden(),
                 EditAction::make(),
             ])
             ->toolbarActions([

@@ -31,6 +31,10 @@ class UnitForm
                             ->label(__('lang.active'))
                             ->default(true)
                             ->columnSpanFull(),
+                        Toggle::make('is_default')
+                            ->label(__('lang.is_default_unit'))
+                            ->default(false)
+                            ->columnSpanFull(),
                     ])
                     ->columns(1)
                     ->columnSpanFull(), // full width

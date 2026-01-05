@@ -3,14 +3,13 @@
 namespace App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\Fields;
 
 use App\Models\Product;
-use App\Models\Setting;
+use App\Models\ProductUnit;
 use App\Models\Unit;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 
 class VariantsUnitsRepeater
 {
@@ -24,8 +23,8 @@ class VariantsUnitsRepeater
             ->columnSpanFull()
             ->collapsible()
             ->collapsed(false)
-            ->addable(false) // لا يمكن إضافة متغيرات يدوياً - تأتي من الاختيار
-            ->deletable(false) // لا يمكن حذف متغيرات
+            ->addable(false)
+            ->deletable(false)
             ->reorderable(false)
             ->itemLabel(fn(array $state): ?string => $state['variant_label'] ?? __('lang.variant'))
             ->visible(function ($get, $operation) {
@@ -49,7 +48,6 @@ class VariantsUnitsRepeater
                 return false;
             })
             ->schema([
-                // معلومات المتغير (للعرض فقط)
                 Placeholder::make('variant_display')
                     ->label(__('lang.variant'))
                     ->content(fn($get) => $get('variant_label') ?? '-')
@@ -59,7 +57,6 @@ class VariantsUnitsRepeater
                 Hidden::make('variant_label'),
                 Hidden::make('sku_id'),
 
-                // Nested Units Repeater لهذا المتغير
                 self::nestedUnitsRepeater(),
             ]);
     }
@@ -74,6 +71,22 @@ class VariantsUnitsRepeater
             ->columnSpanFull()
             ->collapsible()
             ->collapsed(false)
+            ->default(function () {
+                // اختيار الوحدة الافتراضية تلقائياً
+                $defaultUnit = Unit::active()->where('is_default', true)->first();
+
+                if ($defaultUnit) {
+                    return [[
+                        'unit_id' => $defaultUnit->id,
+                        'package_size' => 1,
+                        'moq' => 1,
+                        'stock' => 0,
+                        'status' => 'active',
+                    ]];
+                }
+
+                return [];
+            })
             ->itemLabel(
                 fn(array $state): ?string =>
                 Unit::find($state['unit_id'])?->name ?? __('lang.add_unit')
@@ -87,7 +100,7 @@ class VariantsUnitsRepeater
     }
 
     /**
-     * Get the unit fields schema (same as UnitsRepeater)
+     * Get the unit fields schema
      */
     private static function getUnitFields(): array
     {
@@ -95,38 +108,20 @@ class VariantsUnitsRepeater
             Select::make('unit_id')
                 ->label(__('lang.unit'))
                 ->options(function ($get) {
-                    // Check if we should show only product-related units
-                    // getSetting returns string '1' or '0' from DB, default to false (show all units)
-                    $showProductUnitsOnly = filter_var(
-                        Setting::getSetting('merchant_show_product_units_only', false),
-                        FILTER_VALIDATE_BOOLEAN
-                    );
-
-                    // If setting is disabled (false), show all active units
-                    if (!$showProductUnitsOnly) {
-                        return Unit::active()->pluck('name', 'id');
-                    }
-
-                    // Setting is enabled - show only product-related units
-                    // Get product_id from parent form (need to traverse up repeater hierarchy)
                     $productId = $get('../../../../product_id');
-                    if (!$productId) {
-                        return Unit::active()->pluck('name', 'id');
+
+                    // إذا المنتج له وحدات محددة، اعرضها
+                    if ($productId) {
+                        $productUnits = ProductUnit::getAvailableUnitsForProduct($productId);
+                        if ($productUnits->isNotEmpty()) {
+                            return $productUnits->pluck('name', 'id')->toArray();
+                        }
                     }
 
-                    // Get only units associated with this product
-                    $product = Product::with(['units.unit'])->find($productId);
-                    if (!$product || $product->units->isEmpty()) {
-                        // Fallback to all active units if no product units defined
-                        return Unit::active()->pluck('name', 'id');
-                    }
-
-                    return $product->units
-                        ->where('status', 'active')
-                        ->mapWithKeys(fn($pu) => [$pu->unit_id => $pu->unit?->name ?? '-'])
-                        ->filter()
-                        ->toArray();
+                    // وإلا اعرض جميع الوحدات النشطة
+                    return Unit::active()->pluck('name', 'id')->toArray();
                 })
+                ->default(fn() => Unit::active()->where('is_default', true)->first()?->id)
                 ->required()
                 ->searchable()
                 ->preload()
@@ -172,12 +167,6 @@ class VariantsUnitsRepeater
                 ->required()
                 ->default(0)
                 ->minValue(0)
-                ->columnSpan(1),
-
-            Toggle::make('is_default')
-                ->label(__('lang.is_default_unit'))
-                ->helperText(__('lang.is_default_unit_helper'))
-                ->inline(false)
                 ->columnSpan(1),
 
             Select::make('status')

@@ -31,6 +31,9 @@ class UnitsTable
                 \Filament\Tables\Columns\IconColumn::make('active')->alignCenter()
                     ->label(__('lang.active'))
                     ->boolean(),
+                \Filament\Tables\Columns\IconColumn::make('is_default')->alignCenter()
+                    ->label(__('lang.is_default_unit'))
+                    ->boolean(),
 
                 \Filament\Tables\Columns\TextColumn::make('created_at')
                     ->label(__('lang.created'))
