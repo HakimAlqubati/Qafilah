@@ -71,6 +71,11 @@ class ProductVendorSku extends Model implements HasMedia
         return $this->hasMany(ProductVendorSkuUnit::class, 'product_vendor_sku_id');
     }
 
+    public function productVendorSkuUnits()
+    {
+        return $this->hasMany(ProductVendorSkuUnit::class, 'product_vendor_sku_id');
+    }
+
     // المستخدم الذي أنشأ العرض
     public function creator()
     {
@@ -121,6 +126,7 @@ class ProductVendorSku extends Model implements HasMedia
     {
         return $this->status === self::$STATUSES['AVAILABLE'];
     }
+
 
     public function isOutOfStock(): bool
     {

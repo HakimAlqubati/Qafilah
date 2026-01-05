@@ -26,11 +26,19 @@ class ProductVendorSkuUnitResource extends JsonResource
             'sort_order' => $this->sort_order,
             'moq' => $this->moq,
             'is_default' => $this->is_default,
-            'unit' => $this->whenLoaded('unit', fn() => [
-                'id' => $this->unit->id,
-                'name' => $this->unit->name,
-                'symbol' => $this->unit->symbol ?? null,
-            ]),
+//            'unit' => $this->whenLoaded('unit', fn() => [
+//                'id' => $this->unit->id,
+//                'name' => $this->unit->name,
+//                'symbol' => $this->unit->symbol ?? null,
+//            ]),
+//            'units' => $this->whenLoaded('unit', function () {
+//                return $this->unit->map(fn ($u) => [
+//                    'id'            => $u->id,
+//                    'name'          => $u->name,
+//                    'is_default'     => $u->is_default,
+//                    'vendors_count' => $u->vendors_count,
+//                ]);
+//            }),
         ];
 
     }

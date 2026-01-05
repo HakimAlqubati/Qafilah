@@ -37,4 +37,13 @@ class Unit extends Model
     {
         return $query->where('active', 1);
     }
+    public function scopeDefault(Builder $query): Builder
+    {
+        return $query->where('is_default', 1);
+    }
+
+    public function scopeDefaultActive(Builder $query): Builder
+    {
+        return $query->active()->where('is_default', 1);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Ecommerce;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\ProductVendorSku;
 use App\Models\ProductVendorSkuUnit;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 
 class VendorProductController extends ApiController
@@ -65,26 +66,29 @@ class VendorProductController extends ApiController
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'variant_id' => 'nullable|exists:product_variants,id'
+            'unit_id'    => 'nullable|exists:units,id',
         ]);
 
-        $variantId = $request->variant_id;
+        $unitId = $request->unit_id
+            ?? Unit::defaultActive()->value('id');
+
         $productId = $request->product_id;
 
         $vendorSkus = ProductVendorSku::where('product_id', $productId)
-            ->where('variant_id', $variantId)
             ->available()
+            ->when($unitId, function ($q) use ($unitId) {
+                $q->whereHas('productVendorSkuUnits', function ($subQ) use ($unitId) {
+                    $subQ->where('unit_id', $unitId)->active();
+                });
+            })
             ->with([
                 'vendor',
-                'units' => function ($q) {
-                    $q->active()->orderBy('sort_order')->with('unit');
+                'productVendorSkuUnits' => function ($q) {
+                    $q->active()->orderBy('sort_order')->with('unit')->limit(1);
                 },
             ])
             ->paginate(10);
 
-        return $this->successResponse(
-            \App\Http\Resources\VendorPriceResource::collection($vendorSkus)->response()->getData(true),
-            "Vendor prices retrieved successfully"
-        );
+        return \App\Http\Resources\VendorProductPriceResource::collection($vendorSkus)->response()->getData(true);
     }
 }

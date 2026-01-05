@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProductVendorSkuResource extends JsonResource
+class VendorProductPriceResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,7 +20,6 @@ class ProductVendorSkuResource extends JsonResource
             'status' => $this->status,
             'is_default_offer' => $this->is_default_offer,
             'product' => new ProductResource($this->whenLoaded('product')),
-//            'variant' => new ProductVariantResource($this->whenLoaded('variant')),
             'vendor' => $this->whenLoaded('vendor', function () {
                 return [
                     'id' => $this->vendor->id,
@@ -42,13 +41,13 @@ class ProductVendorSkuResource extends JsonResource
                     'max_delivery_distance' => $this->vendor->max_delivery_distance,
                     'delivery_time_value' => $this->vendor->delivery_time_value,
                     'delivery_time_unit' => $this->vendor->delivery_time_unit,
-
                 ];
             }),
 
-            'product_vendor_sku_unit' => ProductVendorSkuUnitResource::collection(
-                $this->whenLoaded('productVendorSkuUnits')
-            ),
+            'product_vendor_sku_unit' => $this->whenLoaded('productVendorSkuUnits', function () {
+                $productVendorSkuUnits = $this->productVendorSkuUnits->first();
+                return $productVendorSkuUnits ? new ProductVendorSkuUnitResource($productVendorSkuUnits) : null;
+            }),
         ];
     }
 }

@@ -29,7 +29,15 @@ class ProductResource extends JsonResource
             'images' => $this->getMedia()->map(function ($media) {
                 return $media->getUrl();
             }),
-            'units' => UnitResource::collection($this->whenLoaded('units')),
+            'units' => $this->whenLoaded('units', function () {
+                return $this->units->map(fn ($u) => [
+                    'id'            => $u->id,
+                    'name'          => $u->name,
+                    'is_default'     => $u->is_default,
+                    'vendors_count' => $u->vendors_count,
+                ]);
+            }),
+//            'units' => UnitResource::collection($this->whenLoaded('units')),
 //            'attributes' => AttributeResource::collection($this->whenLoaded('attributesDirect')),
 //            'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
         ];
