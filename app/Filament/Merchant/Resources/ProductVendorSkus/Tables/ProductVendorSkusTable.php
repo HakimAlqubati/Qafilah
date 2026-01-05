@@ -39,27 +39,37 @@ class ProductVendorSkusTable
                     ->fontFamily(FontFamily::Mono)
                     ->weight(FontWeight::Bold),
 
-                TextColumn::make('variants_count')
-                    ->label(__('lang.variants'))
-                    ->state(function ($record) {
-                        $count = ProductVendorSku::where('vendor_id', $record->vendor_id)
-                            ->where('product_id', $record->product_id)
-                            ->whereNotNull('variant_id')
-                            ->count();
-                        return $count > 0 ? $count . ' ' . __('lang.variants') : __('lang.not_variants');
-                    })
-                    ->badge()
-                    ->color(fn($state) => str_contains($state, __('lang.simple_product')) ? 'gray' : 'info'),
+//                TextColumn::make('variants_count')
+//                    ->label(__('lang.variants'))
+//                    ->state(function ($record) {
+//                        $count = ProductVendorSku::where('vendor_id', $record->vendor_id)
+//                            ->where('product_id', $record->product_id)
+//                            ->whereNotNull('variant_id')
+//                            ->count();
+//                        return $count > 0 ? $count . ' ' . __('lang.variants') : __('lang.not_variants');
+//                    })
+//                    ->badge()
+//                    ->color(fn($state) => str_contains($state, __('lang.simple_product')) ? 'gray' : 'info'),
 
-                SpatieMediaLibraryImageColumn::make('images')
-                    ->label(__('lang.images'))
+                TextColumn::make('product.category.name')
+                    ->label(__('lang.category'))
+                    ->color('primary')
+                    ->fontFamily(FontFamily::Mono)
+                    ->weight(FontWeight::Bold),
+
+
+
+                SpatieMediaLibraryImageColumn::make('product.images')
+                    ->label(__('lang.image'))
                     ->collection('default')
                     ->circular()
                     ->stacked()
-                    ->limit(2)
+                    ->limit(1)
                     ->limitedRemainingText()
                     ->size(40)
-                    ->alignCenter()->hidden(),
+                    ->alignCenter() ,
+
+
 
                 TextColumn::make('vendor_sku')
                     ->label(__('lang.sku'))
@@ -70,7 +80,7 @@ class ProductVendorSkusTable
                     ->label(__('lang.currency'))
                     ->badge()
                     ->color('primary')
-                    ->sortable(),
+                    ->sortable()->hidden(),
 
                 // عمود الأسعار - ملخص مع عدد الوحدات
                 TextColumn::make('units_count')
