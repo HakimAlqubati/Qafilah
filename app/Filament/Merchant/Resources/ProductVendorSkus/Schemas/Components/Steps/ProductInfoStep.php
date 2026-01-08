@@ -41,7 +41,7 @@ class ProductInfoStep
             AttributesFields::make(),
 
             // 4. Hidden Fields
-            ProductFields::currencySelect(),
+
             ProductFields::vendorIdHidden(),
             ProductFields::productIdHidden(),
         ];

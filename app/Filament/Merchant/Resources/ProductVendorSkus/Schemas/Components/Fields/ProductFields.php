@@ -170,7 +170,21 @@ class ProductFields
     /**
      * Get the currency select field
      */
-    public static function currencySelect(): Hidden
+    public static function currencyVisibleSelect(): Select
+    {
+        return Select::make('currency_id')
+            ->label(__('lang.currency'))
+            ->options(Currency::active()->pluck('name', 'id'))
+            ->default(fn() => Currency::default()->value('id'))
+            ->required()
+            ->searchable()
+            ->preload();
+    }
+
+    /**
+     * Get the hidden currency field (Deprecated in favor of visible select)
+     */
+    public static function currencyHidden(): Hidden
     {
         return Hidden::make('currency_id')
             ->default(fn() => Currency::default()->value('id'))
