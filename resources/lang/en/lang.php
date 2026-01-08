@@ -495,5 +495,7 @@ return [
     'error' => 'Error',
     'success' => 'Success',
     'done' => 'Done',
+    'search_product' => 'Search Product',
+    'search_product_placeholder' => 'Search by name...',
 
 ];

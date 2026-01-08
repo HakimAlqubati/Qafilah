@@ -496,4 +496,6 @@ return [
     'error' => 'خطأ',
     'success' => 'تم بنجاح',
     'done' => 'تم',
+    'search_product' => 'بحث عن منتج',
+    'search_product_placeholder' => 'ابحث بالاسم...',
 ];

@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Filament\Resources\Units\UnitResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,9 +28,9 @@ class ProductResource extends JsonResource
             'images' => $this->getMedia()->map(function ($media) {
                 return $media->getUrl();
             }),
-            'units' => UnitResource::collection($this->whenLoaded('units')),
-//            'attributes' => AttributeResource::collection($this->whenLoaded('attributesDirect')),
-//            'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
+            'units' => ProductUnitResource::collection($this->whenLoaded('units')),
+            //            'attributes' => AttributeResource::collection($this->whenLoaded('attributesDirect')),
+            //            'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
         ];
     }
 }

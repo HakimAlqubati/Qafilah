@@ -39,18 +39,6 @@ class ProductVendorSkusTable
                     ->fontFamily(FontFamily::Mono)
                     ->weight(FontWeight::Bold),
 
-                TextColumn::make('variants_count')
-                    ->label(__('lang.variants'))
-                    ->state(function ($record) {
-                        $count = ProductVendorSku::where('vendor_id', $record->vendor_id)
-                            ->where('product_id', $record->product_id)
-                            ->whereNotNull('variant_id')
-                            ->count();
-                        return $count > 0 ? $count . ' ' . __('lang.variants') : __('lang.not_variants');
-                    })
-                    ->badge()
-                    ->color(fn($state) => str_contains($state, __('lang.simple_product')) ? 'gray' : 'info')
-                    ->hidden(),
 
                 SpatieMediaLibraryImageColumn::make('images')
                     ->label(__('lang.images'))
@@ -77,7 +65,7 @@ class ProductVendorSkusTable
                 TextColumn::make('selling_price')
                     ->label(__('lang.selling_price'))
                     ->state(fn($record) => $record->units->first()?->selling_price ?? 0)
-                    ->money(fn($record) => $record->currency->code )
+                    ->money(fn($record) => $record->currency->code)
                     ->color(Color::Green)
                     ->weight(FontWeight::Bold)
                     ->sortable(
@@ -166,51 +154,33 @@ class ProductVendorSkusTable
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel(__('lang.close'))
                     ->schema(function ($record) {
-                        $allSkus = ProductVendorSku::with(['variant.values.attribute', 'units.unit', 'currency'])
-                            ->where('vendor_id', $record->vendor_id)
-                            ->where('product_id', $record->product_id)
-                            ->get();
-
                         $currencyCode = $record->currency->code ?? 'SAR';
-                        $schemas = [];
+                        $unitEntries = [];
 
-                        foreach ($allSkus as $sku) {
-                            $variantLabel = $sku->variant
-                                ? $sku->variant->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(' | ')
-                                : __('lang.simple_product');
-
-                            // Build units info as simple text entries
-                            $unitEntries = [];
-                            foreach ($sku->units as $unitIndex => $unit) {
-                                $unitName = $unit->unit?->name ?? '-';
-                                $unitEntries[] = Grid::make(4)->schema([
-                                    TextEntry::make("unit_name_{$sku->id}_{$unitIndex}")
-                                        ->label(__('lang.unit'))
-                                        ->default($unitName)
-                                        ->weight(FontWeight::Bold),
-                                    TextEntry::make("selling_price_{$sku->id}_{$unitIndex}")
-                                        ->label(__('lang.selling_price'))
-                                        ->default(number_format($unit->selling_price, 2) . ' ' . $currencyCode)
-                                        ->color(Color::Green)
-                                        ->weight(FontWeight::Bold),
-                                    TextEntry::make("stock_{$sku->id}_{$unitIndex}")
-                                        ->label(__('lang.stock'))
-                                        ->default($unit->stock)
-                                        ->badge()
-                                        ->color($unit->stock > 0 ? 'success' : 'danger'),
-                                    TextEntry::make("package_size_{$sku->id}_{$unitIndex}")
-                                        ->label(__('lang.package_size'))
-                                        ->default($unit->package_size ?? 1),
-                                ]);
-                            }
-
-                            $schemas[] = Section::make($variantLabel)
-                                ->schema($unitEntries)
-                                ->collapsible()
-                                ->collapsed(false);
+                        foreach ($record->units as $unitIndex => $unit) {
+                            $unitName = $unit->unit?->name ?? '-';
+                            $unitEntries[] = Grid::make(4)->schema([
+                                TextEntry::make("unit_name_{$record->id}_{$unitIndex}")
+                                    ->label(__('lang.unit'))
+                                    ->default($unitName)
+                                    ->weight(FontWeight::Bold),
+                                TextEntry::make("selling_price_{$record->id}_{$unitIndex}")
+                                    ->label(__('lang.selling_price'))
+                                    ->default(number_format($unit->selling_price, 2) . ' ' . $currencyCode)
+                                    ->color(Color::Green)
+                                    ->weight(FontWeight::Bold),
+                                TextEntry::make("stock_{$record->id}_{$unitIndex}")
+                                    ->label(__('lang.stock'))
+                                    ->default($unit->stock)
+                                    ->badge()
+                                    ->color($unit->stock > 0 ? 'success' : 'danger'),
+                                TextEntry::make("moq_{$record->id}_{$unitIndex}")
+                                    ->label(__('lang.moq'))
+                                    ->default($unit->moq ?? 1),
+                            ]);
                         }
 
-                        return $schemas;
+                        return $unitEntries;
                     })->hidden(),
                 EditAction::make(),
             ])
