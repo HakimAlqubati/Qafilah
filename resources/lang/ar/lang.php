@@ -498,4 +498,10 @@ return [
     'done' => 'تم',
     'search_product' => 'بحث عن منتج',
     'search_product_placeholder' => 'ابحث بالاسم...',
+
+    // 403 Error Page
+    'access_denied' => 'تم رفض الوصول',
+    'no_permission' => 'ليس لديك صلاحية للوصول إلى هذه الصفحة.',
+    'home_page' => 'الصفحة الرئيسية',
+    '403_title' => '403 - تم رفض الوصول',
 ];

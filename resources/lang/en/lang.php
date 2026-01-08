@@ -498,4 +498,9 @@ return [
     'search_product' => 'Search Product',
     'search_product_placeholder' => 'Search by name...',
 
+    // 403 Error Page
+    'access_denied' => 'Access Denied',
+    'no_permission' => 'You do not have permission to access this page.',
+    'home_page' => 'Home Page',
+    '403_title' => '403 - Access Denied',
 ];
