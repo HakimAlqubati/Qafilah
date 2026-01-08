@@ -7,6 +7,7 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
 
 class UnitForm
 {
@@ -15,28 +16,30 @@ class UnitForm
         return $schema
             ->components([
                 Fieldset::make(__('lang.unit_information'))
+                    ->columns(3)
                     ->schema([
-                        TextInput::make('name')
-                            ->label(__('lang.name'))
-                            ->required()
-                            ->maxLength(100)
-                            ->columnSpanFull(),
+                        Grid::make()->columns(4)->columnSpanFull()->schema([
 
+                            TextInput::make('name')
+                                ->label(__('lang.name'))
+                                ->required()->columnSpan(2)
+                                ->maxLength(100),
+                            Toggle::make('active')
+                                ->label(__('lang.active'))
+                                ->default(true)
+                                ->inline(false),
+                            Toggle::make('is_default')
+                                ->label(__('lang.is_default_unit'))
+                                ->default(false)
+                                ->inline(false)
+                        ]),
                         Textarea::make('description')
                             ->label(__('lang.description'))
                             ->rows(3)
                             ->columnSpanFull(),
 
-                        Toggle::make('active')
-                            ->label(__('lang.active'))
-                            ->default(true)
-                            ->columnSpanFull(),
-                        Toggle::make('is_default')
-                            ->label(__('lang.is_default_unit'))
-                            ->default(false)
-                            ->columnSpanFull(),
+
                     ])
-                    ->columns(1)
                     ->columnSpanFull(), // full width
             ]);
     }

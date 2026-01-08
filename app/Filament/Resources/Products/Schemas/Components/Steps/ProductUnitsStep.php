@@ -55,14 +55,14 @@ class ProductUnitsStep
                             ->label(__('lang.selling_price'))
                             ->numeric()
                             ->extraInputAttributes(['style' => 'text-align: center;'])
-                            ->minValue(0)
+                            ->minValue(0)->required()
                             ->step(0.01),
 
                         TextInput::make('cost_price')
                             ->label(__('lang.cost_price'))
                             ->numeric()
                             ->extraInputAttributes(['style' => 'text-align: center;'])
-                            ->minValue(0)
+                            ->minValue(0)->required()
                             ->step(0.01),
                     ])
                     ->reorderable()

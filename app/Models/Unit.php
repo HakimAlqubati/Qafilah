@@ -23,6 +23,38 @@ class Unit extends Model
         'is_default' => 'boolean',
     ];
 
+    /* ============================================================
+     | 🚀 Boot Events
+     |============================================================ */
+
+    protected static function booted(): void
+    {
+        static::saving(function (Unit $unit) {
+            if ($unit->is_default && $unit->isDirty('is_default')) {
+                $existingDefault = static::hasExistingDefault($unit->id);
+
+                if ($existingDefault) {
+                    throw new \Exception(
+                        __('lang.default_unit_already_exists', ['name' => $existingDefault->name])
+                    );
+                }
+            }
+        });
+    }
+
+    /* ============================================================
+     | 🔧 Helper Methods
+     |============================================================ */
+
+    /**
+     * تحقق من وجود وحدة افتراضية أخرى
+     */
+    public static function hasExistingDefault(?int $excludeId = null): ?self
+    {
+        return static::where('is_default', true)
+            ->when($excludeId, fn($q) => $q->where('id', '!=', $excludeId))
+            ->first();
+    }
 
     public function productVendorSkuUnits()
     {
