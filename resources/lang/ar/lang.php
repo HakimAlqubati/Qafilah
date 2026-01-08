@@ -34,7 +34,7 @@ return [
     'product' => 'منتج',
 
     // Common Table Columns
-    'id' => 'المعرف',
+    'id' => 'الرقم',
     'name' => 'الاسم',
     'status' => 'الحالة',
     'email' => 'البريد الإلكتروني',
@@ -491,4 +491,11 @@ return [
     'merchant_show_product_units_only' => 'عرض وحدات المنتج فقط',
     'merchant_show_product_units_only_helper' => 'عند التفعيل، سيتم عرض الوحدات المرتبطة بالمنتج فقط في نموذج إضافة المنتج للتاجر. عند الإيقاف، سيتم عرض جميع الوحدات المتاحة في النظام.',
     'attribute_label' => 'عنوان خصائص المنتج (مثل: 1 × 24 حبة)',
+    'is_default_unit' => 'وحدة افتراضية',
+    'default_unit_already_exists' => 'الوحدة ":name" هي الوحدة الافتراضية حالياً. قم بإلغاء تفعيلها أولاً.',
+    'error' => 'خطأ',
+    'success' => 'تم بنجاح',
+    'done' => 'تم',
+    'search_product' => 'بحث عن منتج',
+    'search_product_placeholder' => 'ابحث بالاسم...',
 ];

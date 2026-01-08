@@ -14,16 +14,17 @@ class CategoryFields
     {
         return Select::make('main_category_id')
             ->label(__('lang.main_category'))
+            ->searchable()
             ->options(function () {
                 return Category::whereNull('parent_id')
                     ->active()
                     ->pluck('name', 'id');
             })
+            ->getOptionLabelUsing(fn($value) => Category::find($value)?->name)
             ->live()
             ->afterStateUpdated(function ($set) {
                 $set('sub_category_id', null);
                 $set('product_id', null);
-                $set('variant_id', null);
                 $set('attributes', []);
             })
             ->required();
@@ -36,19 +37,27 @@ class CategoryFields
     {
         return Select::make('sub_category_id')
             ->label(__('lang.sub_category'))
-            ->options(function ($get) {
+            ->searchable()
+            ->options(function ($get, $state) {
                 $mainCategoryId = $get('main_category_id');
-                if (!$mainCategoryId) {
-                    return [];
+
+                $query = Category::query()->whereNotNull('parent_id');
+
+                if ($mainCategoryId) {
+                    $query->where('parent_id', $mainCategoryId);
                 }
-                return Category::where('parent_id', $mainCategoryId)
-                    ->active()
-                    ->pluck('name', 'id');
+
+                // Include currently selected subcategory
+                if ($state) {
+                    $query->orWhere('id', $state);
+                }
+
+                return $query->active()->pluck('name', 'id');
             })
+            ->getOptionLabelUsing(fn($value) => Category::find($value)?->name)
             ->live()
             ->afterStateUpdated(function ($set) {
                 $set('product_id', null);
-                $set('variant_id', null);
                 $set('attributes', []);
             });
     }

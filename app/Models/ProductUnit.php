@@ -157,54 +157,10 @@ class ProductUnit extends Model
     }
     public static function getAvailableUnitsForProduct($productId)
     {
-        $productUnits = self::where('product_id', $productId)
-            ->whereHas('unit', fn ($q) => $q->active())
+        return self::where('product_id', $productId)
+            ->whereHas('unit', fn($q) => $q->active())
             ->with('unit')
-            ->get();
-
-        // ✅ إذا يوجد وحدات فعلية: رجّع Units
-        if ($productUnits->isNotEmpty()) {
-
-            return $productUnits->pluck('unit');
-        }
-
-        // ✅ إذا لا يوجد: رجّع وحدة افتراضية "وهمية" عبر makeDefaultForProduct بدون حفظ
-        $defaultProductUnit = self::makeDefaultForProduct((int) $productId);
-
-        if (! $defaultProductUnit || ! $defaultProductUnit->unit) {
-            return collect();
-        }
-
-        return collect([$defaultProductUnit->unit]);
+            ->get()
+            ->pluck('unit');
     }
-
-
-
-    public static function makeDefaultForProduct(int $productId): ?self
-    {
-        $defaultUnit = Unit::active()->where('is_default', true)->first();
-
-        if (! $defaultUnit) {
-            return null;
-        }
-
-        $defaultProductUnit = new self([
-            'product_id'        => $productId,
-            'unit_id'           => $defaultUnit->id,
-            'package_size'      => 1,
-            'conversion_factor' => 1,
-            'selling_price'     => 0,
-            'cost_price'        => 0,
-            'is_base_unit'      => true,
-            'is_sellable'       => true,
-            'status'            => self::STATUS_ACTIVE,
-            'sort_order'        => 0,
-        ]);
-
-        // حتى تقدر تستخدم $productUnit->unit مباشرة
-        $defaultProductUnit->setRelation('unit', $defaultUnit);
-
-        return $defaultProductUnit;
-    }
-
 }

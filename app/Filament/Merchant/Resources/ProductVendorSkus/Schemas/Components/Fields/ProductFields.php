@@ -6,37 +6,105 @@ use App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Helpers\SkuGenerat
 use App\Models\Currency;
 use App\Models\Product;
 use App\Models\ProductUnit;
-use App\Models\ProductVariant;
-use App\Models\ProductVendorSku;
+use App\Models\Unit;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Component;
-use Filament\Schemas\Components\Utilities\Get;
 
 class ProductFields
 {
     /**
-     * Get the product select field
+     * Get the product search field (global search)
+     * عند البحث يتم تعبئة: الفئات + المنتج + الأسعار
+     */
+    public static function productSearch(): Select
+    {
+        return Select::make('product_search')
+            ->label(__('lang.search_product'))
+            ->searchable()
+            ->getSearchResultsUsing(function (string $search) {
+                return Product::where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%")
+                    ->limit(20)
+                    ->pluck('name', 'id');
+            })
+            ->getOptionLabelUsing(fn($value) => Product::find($value)?->name)
+            ->live()
+            ->afterStateUpdated(function ($set, $state) {
+                if (! $state) {
+                    return;
+                }
+
+                $product = Product::with('category')->find($state);
+                if (! $product) {
+                    return;
+                }
+
+                // Set product_id
+                $set('product_id', $product->id);
+
+                // Set categories
+                if ($product->category) {
+                    if ($product->category->parent_id) {
+                        $set('main_category_id', $product->category->parent_id);
+                        $set('sub_category_id', $product->category->id);
+                    } else {
+                        $set('main_category_id', $product->category->id);
+                        $set('sub_category_id', null);
+                    }
+                }
+
+                // Generate unique vendor_sku
+                $vendorId = auth()->user()->vendor_id ?? 0;
+                $uniqueSku = SkuGenerator::generate($product->id, $vendorId);
+                $set('vendor_sku', $uniqueSku);
+
+                // Set units with the product's unit and prices
+                self::setProductUnits($set, $product->id);
+
+                // Clear this field after use
+                $set('product_search', null);
+            })
+            ->dehydrated(false)
+            ->columnSpanFull()
+            ->placeholder(__('lang.search_product_placeholder'));
+    }
+
+    /**
+     * Get the product select field (filtered by category)
+     * يظهر المنتجات المفلترة حسب الفئة
      */
     public static function productSelect(): Select
     {
         return Select::make('product_id')
             ->label(__('lang.product'))
-            ->options(function ($get) {
+            ->searchable()
+            ->options(function ($get, $state) {
                 $subCategoryId = $get('sub_category_id');
                 $mainCategoryId = $get('main_category_id');
 
-                return Product::whereIn('category_id', [
-                    $subCategoryId,
-                    $mainCategoryId
-                ])
-                    ->pluck('name', 'id');
+                $categoryIds = array_filter([$subCategoryId, $mainCategoryId]);
+
+                // Get products from selected categories
+                $query = Product::query();
+
+                if (!empty($categoryIds)) {
+                    $query->whereIn('category_id', $categoryIds);
+                }
+
+                // Always include the currently selected product
+                if ($state) {
+                    $query->orWhere('id', $state);
+                }
+
+                return $query->pluck('name', 'id');
             })
+            // يعرض اسم المنتج حتى لو لم يكن في الخيارات المبدئية
+            ->getOptionLabelUsing(fn($value) => Product::find($value)?->name)
             ->live()
             ->afterStateUpdated(function ($set, $get) {
-                $set('variant_id', null);
                 $set('attributes', []);
+                $set('product_search', null); // Clear search field
 
                 $productId = $get('product_id');
                 if (! $productId) {
@@ -44,42 +112,46 @@ class ProductFields
                     return;
                 }
 
-                $product = Product::with(['attributesDirect'])->find($productId);
-                $hasVariantAttributes = $product?->attributesDirect->where('pivot.is_variant_option', true)->isNotEmpty();
-
                 // Generate unique vendor_sku
                 $vendorId = auth()->user()->vendor_id ?? 0;
                 $uniqueSku = SkuGenerator::generate($productId, $vendorId);
                 $set('vendor_sku', $uniqueSku);
 
-                if (! $hasVariantAttributes) {
-                    $variant = ProductVariant::where('product_id', $productId)->active()->first();
-                    if ($variant) {
-                        $set('variant_id', $variant->id);
-                    }
-                }
-
-                $availableUnits = ProductUnit::getAvailableUnitsForProduct((int) $productId); // Collection<Unit>
-
-                $defaultUnits = $availableUnits->map(function ($unit) {
-                    return [
-                        'variant_id'     => null,
-                        'unit_id'        => $unit->id,
-                        'package_size'   => 1,
-                        'cost_price'     => null,
-                        'selling_price'  => null,
-                        'moq'            => 1,
-                        'stock'          => 0,
-                        'is_default'     => (bool) ($unit->is_default ?? false),
-                        'status'         => 'active',
-                        'sort_order'     => 0,
-                    ];
-                })->toArray();
-
-                $set('units', $defaultUnits);
+                // Set units with the product's unit and prices
+                self::setProductUnits($set, $productId);
             })
-
             ->required();
+    }
+
+    /**
+     * Set units for the selected product
+     */
+    private static function setProductUnits($set, int $productId): void
+    {
+        $productUnit = ProductUnit::where('product_id', $productId)->first();
+        if ($productUnit) {
+            $set('units', [[
+                'unit_id' => $productUnit->unit_id,
+                'selling_price' => $productUnit->selling_price,
+                'cost_price' => $productUnit->cost_price,
+                'package_size' => $productUnit->package_size ?? 1,
+                'moq' => 1,
+                'stock' => 0,
+            ]]);
+        } else {
+            // Use system default unit (no prices)
+            $defaultUnit = Unit::active()->where('is_default', true)->first();
+            if ($defaultUnit) {
+                $set('units', [[
+                    'unit_id' => $defaultUnit->id,
+                    'selling_price' => null,
+                    'cost_price' => null,
+                    'package_size' => 1,
+                    'moq' => 1,
+                    'stock' => 0,
+                ]]);
+            }
+        }
     }
 
     /**
@@ -98,62 +170,13 @@ class ProductFields
     /**
      * Get the currency select field
      */
-
     public static function currencySelect(): Hidden
     {
         return Hidden::make('currency_id')
-            ->default(fn () => Currency::default()->value('id'))
+            ->default(fn() => Currency::default()->value('id'))
             ->dehydrated(true)
             ->required();
     }
-//    public static function currencySelect(): Select
-//    {
-//        return Select::make('currency_id')
-//            ->label(__('lang.currency'))
-//            ->options(Currency::active()->pluck('code', 'id'))
-//            ->default(fn() => Currency::default()->first()?->id)
-//            ->searchable()
-//            ->preload()
-//            ->required()
-//            ->visible(fn($get) => filled($get('product_id')))
-//            ->validationMessages([
-//                'unique' => __('This product variant is already added with this currency.'),
-//            ])
-//            ->rules([
-//                function (Get $get, Component $component) {
-//                    return function (string $attribute, $value, \Closure $fail) use ($get, $component) {
-//                        $productId = $get('product_id');
-//                        $variantId = $get('variant_id');
-//                        $vendorId = $get('vendor_id');
-//
-//                        if (!$productId || !$vendorId) {
-//                            return;
-//                        }
-//
-//                        $query = ProductVendorSku::where('product_id', $productId)
-//                            ->where('vendor_id', $vendorId)
-//                            ->where('currency_id', $value);
-//
-//                        // إذا كان هناك متغير محدد، نتحقق منه أيضاً
-//                        if ($variantId) {
-//                            $query->where('variant_id', $variantId);
-//                        } else {
-//                            $query->whereNull('variant_id');
-//                        }
-//
-//                        // Ignore current record if editing
-//                        $record = $component->getRecord();
-//                        if ($record) {
-//                            $query->where('id', '!=', $record->id);
-//                        }
-//
-//                        if ($query->exists()) {
-//                            $fail(__('This product is already added with this currency.'));
-//                        }
-//                    };
-//                },
-//            ]);
-//    }
 
     /**
      * Get the hidden vendor_id field
@@ -162,15 +185,6 @@ class ProductFields
     {
         return Hidden::make('vendor_id')
             ->default(fn() => auth()->user()->vendor_id);
-    }
-
-    /**
-     * Get the hidden variant_id field
-     */
-    public static function variantIdHidden(): Hidden
-    {
-        return Hidden::make('variant_id')
-            ->dehydrated();
     }
 
     /**
@@ -189,7 +203,6 @@ class ProductFields
     {
         return [
             self::productSelect(),
-            self::variantIdHidden(),
             self::vendorSku(),
             self::currencySelect(),
             self::vendorIdHidden(),
