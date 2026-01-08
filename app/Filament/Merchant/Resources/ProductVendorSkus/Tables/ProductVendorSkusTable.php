@@ -56,7 +56,7 @@ class ProductVendorSkusTable
                     ->limit(1)
                     ->limitedRemainingText()
                     ->size(40)
-                    ->alignCenter() ,
+                    ->alignCenter(),
 
 
 
@@ -75,7 +75,10 @@ class ProductVendorSkusTable
                 TextColumn::make('selling_price')
                     ->label(__('lang.selling_price'))
                     ->state(fn($record) => $record->units->first()?->selling_price ?? 0)
-                    ->money(fn($record) => $record->currency->code)
+                    ->formatStateUsing(function ($state, $record) {
+                        $currencyCode = $record->currency?->code ?? 'SAR';
+                        return $currencyCode . ' ' . number_format((float) $state, 2, '.', ',');
+                    })
                     ->color(Color::Green)
                     ->weight(FontWeight::Bold)
                     ->sortable(
@@ -92,7 +95,10 @@ class ProductVendorSkusTable
                 TextColumn::make('cost_price')
                     ->label(__('lang.cost_price'))
                     ->state(fn($record) => $record->units->first()?->cost_price ?? 0)
-                    ->money(fn($record) => $record->currency->code ?? 'SAR')
+                    ->formatStateUsing(function ($state, $record) {
+                        $currencyCode = $record->currency?->code ?? 'SAR';
+                        return $currencyCode . ' ' . number_format((float) $state, 2, '.', ',');
+                    })
                     ->color(Color::Gray),
 
                 // المخزون
