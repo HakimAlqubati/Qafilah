@@ -13,8 +13,6 @@ class ProductVendorSkuUnit extends Model
     protected $fillable = [
         'product_vendor_sku_id',
         'unit_id',
-        'product_unit_id', // ✅ جديد
-        'variant_id', // ✅ ربط بالمتغير
         'package_size',
         'cost_price',
         'selling_price',

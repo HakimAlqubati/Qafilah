@@ -18,6 +18,7 @@ class ProductVendorSkuUnitResource extends JsonResource
         return [
             'id' => $this->id,
             'unit_id' => $this->unit_id,
+            'product_vendor_sku_id'=> $this->product_vendor_sku_id,
             'unit_name' => $this->unit?->name,
             'package_size' => $this->package_size,
             'selling_price' => $this->selling_price,

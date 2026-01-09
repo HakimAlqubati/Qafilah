@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\BasicDataController;
 use App\Http\Controllers\Api\Ecommerce\ProductController;
-
+use App\Http\Controllers\Api\Ecommerce\CartController;
+use App\Http\Controllers\Api\Ecommerce\CheckoutController;
 
 
 Route::get('/user', function (Request $request) {
@@ -38,4 +39,15 @@ Route::prefix('v1/ecommerce')->group(function () {
     Route::post('/products/vendor-count', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'getVendorCount']);
     Route::post('/products/vendor-prices', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'getVendorProductPrices']);
     Route::post('/products/details', [ProductController::class, 'productDetails']);
+    Route::prefix('cart')->group(function () {
+        Route::get('/', [CartController::class, 'show']);         // guest + auth
+        Route::post('/items', [CartController::class, 'addItem']);
+        Route::patch('/items/{itemId}', [CartController::class, 'updateItem']);
+        Route::delete('/items/{itemId}', [CartController::class, 'removeItem']);
+
+        Route::middleware('auth:sanctum')->post('/claim', [CartController::class, 'claim']);
+    });
+    Route::post('/checkout', [CheckoutController::class, 'checkout']);
+
+
 });
