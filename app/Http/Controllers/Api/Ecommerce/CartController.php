@@ -44,13 +44,10 @@ class CartController extends Controller
             'variant_id' => ['nullable','integer'],
             'product_vendor_sku_id' => ['nullable','integer'],
             'product_vendor_sku_unit_id' => ['nullable','integer'],
-            'unit_id' => ['nullable','integer'],
-            'sku' => ['nullable','string','max:191'],
-            'package_size' => ['nullable','integer','min:1'],
+//            'sku' => ['nullable','string','max:191'],
             'quantity' => ['required','integer','min:1'],
-            'unit_price' => ['nullable','numeric','min:0'],
-            'discount' => ['nullable','numeric','min:0'],
-            'tax' => ['nullable','numeric','min:0'],
+//            'discount' => ['nullable','numeric','min:0'],
+//            'tax' => ['nullable','numeric','min:0'],
             'notes' => ['nullable','string'],
         ]);
 
@@ -64,12 +61,12 @@ class CartController extends Controller
     public function updateItem(Request $request, int $itemId)
     {
         $data = $request->validate([
-            'seller_id' => ['nullable','integer'],
+            'cart_id' => 'required|exists:cart_items,cart_id',
             'quantity' => ['required','integer','min:1'],
         ]);
 
         $buyerId = optional($request->user())->id;
-        $cart = $this->cartRepo->getOrCreateActiveCart($buyerId, $this->cartToken($request), $data['seller_id'] ?? null);
+        $cart = $this->cartRepo->getOrCreateActiveCart($buyerId, $this->cartToken($request),null);
         $cart = $this->cartRepo->updateItemQuantity($cart, $itemId, (int)$data['quantity']);
 
         return new CartResource($cart);
@@ -78,11 +75,11 @@ class CartController extends Controller
     public function removeItem(Request $request, int $itemId)
     {
         $data = $request->validate([
-            'seller_id' => ['nullable','integer'],
+            'cart_id' => 'required|exists:cart_items,cart_id',
         ]);
 
         $buyerId = optional($request->user())->id;
-        $cart = $this->cartRepo->getOrCreateActiveCart($buyerId, $this->cartToken($request), $data['seller_id'] ?? null);
+        $cart = $this->cartRepo->getOrCreateActiveCart($buyerId, $this->cartToken($request),null);
         $cart = $this->cartRepo->removeItem($cart, $itemId);
 
         return new CartResource($cart);

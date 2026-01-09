@@ -11,11 +11,14 @@ return new class extends Migration {
             $table->engine = 'InnoDB';
 
             $table->bigIncrements('id');
+
             $table->unsignedBigInteger('cart_id')->index();
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('variant_id')->nullable();
+
             $table->unsignedBigInteger('product_vendor_sku_id')->nullable();
             $table->unsignedBigInteger('product_vendor_sku_unit_id')->nullable();
+
             $table->unsignedBigInteger('unit_id')->nullable();
 
             $table->string('sku', 191)->nullable();
@@ -36,7 +39,27 @@ return new class extends Migration {
                 'product_vendor_sku_unit_id',
             ], 'cart_items_match_index');
 
+            $table->foreign('cart_id', 'cart_items_cart_id_fk')
+                ->references('id')->on('carts')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
+            $table->foreign('product_id', 'cart_items_product_id_fk')
+                ->references('id')->on('products')
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
+
+            $table->foreign('product_vendor_sku_id', 'cart_items_pvsku_id_fk')
+                ->references('id')->on('product_vendor_skus')
+                ->onUpdate('cascade')
+                ->onDelete('set null');
+
+            $table->foreign('product_vendor_sku_unit_id', 'cart_items_pvsku_unit_id_fk')
+                ->references('id')->on('product_vendor_sku_units')
+                ->onUpdate('cascade')
+                ->onDelete('set null');
         });
+
     }
 
     public function down(): void

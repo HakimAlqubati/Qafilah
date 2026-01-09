@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories\order;
+use App\Models\ProductVendorSkuUnit;
 use App\Models\User;
 use App\Repositories\Auth\AuthRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
@@ -26,9 +27,6 @@ class CartRepository
             ]);
         }
 
-        if (!is_null($sellerId)) {
-            $q->where('seller_id', $sellerId);
-        }
 
         $cart = $q->latest('id')->first();
         if ($cart) {
@@ -51,29 +49,29 @@ class CartRepository
     {
         return DB::transaction(function () use ($cart, $data) {
 
-            // Lock cart row to reduce concurrency duplicates
-            Cart::where('id', $cart->id)->lockForUpdate()->first();
+             Cart::where('id', $cart->id)->lockForUpdate()->first();
 
             $qty = (int) $data['quantity'];
-            $unitPrice = (float) ($data['unit_price'] ?? 0);
-            $discount  = (float) ($data['discount'] ?? 0);
-            $tax       = (float) ($data['tax'] ?? 0);
+
+            $discount  =   0;
+            $tax       = 0;
 
             $itemQuery = CartItem::query()
                 ->where('cart_id', $cart->id)
                 ->where('product_id', $data['product_id']);
 
+            $productVendorSkuUnit = ProductVendorSkuUnit::where('id', $data['product_vendor_sku_unit_id'])->first();
+            $unitPrice = (float) ( $productVendorSkuUnit->selling_price ?? 0);
             $itemQuery = $this->whereNullSafe($itemQuery, 'product_vendor_sku_id', $data['product_vendor_sku_id'] ?? null);
             $itemQuery = $this->whereNullSafe($itemQuery, 'product_vendor_sku_unit_id', $data['product_vendor_sku_unit_id'] ?? null);
 
             $item = $itemQuery->lockForUpdate()->first();
-
-            if ($item) {
+             if ($item) {
                 $item->quantity += $qty;
 
-                if (array_key_exists('unit_price', $data)) $item->unit_price = $unitPrice;
-                if (array_key_exists('discount', $data))   $item->discount   = $discount;
-                if (array_key_exists('tax', $data))        $item->tax        = $tax;
+                $item->unit_price = $unitPrice;
+                $item->discount   = $discount;
+                $item->tax        = $tax;
 
                 $item->total = $this->calcLineTotal($item->unit_price, $item->quantity, $item->discount, $item->tax);
                 $item->save();
@@ -83,7 +81,7 @@ class CartRepository
                     'product_id' => $data['product_id'],
 
                     'variant_id' => $data['variant_id'] ?? null,
-                    'unit_id'    => $data['unit_id'] ?? null,
+                    'unit_id'    => $productVendorSkuUnit->unit_id ?? null,
 
                     'product_vendor_sku_id' => $data['product_vendor_sku_id'] ?? null,
                     'product_vendor_sku_unit_id' => $data['product_vendor_sku_unit_id'] ?? null,

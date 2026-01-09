@@ -40,7 +40,7 @@ Route::prefix('v1/ecommerce')->group(function () {
     Route::post('/products/vendor-prices', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'getVendorProductPrices']);
     Route::post('/products/details', [ProductController::class, 'productDetails']);
     Route::prefix('cart')->group(function () {
-        Route::get('/', [CartController::class, 'show']);         // guest + auth
+        Route::get('/', [CartController::class, 'show']);
         Route::post('/items', [CartController::class, 'addItem']);
         Route::patch('/items/{itemId}', [CartController::class, 'updateItem']);
         Route::delete('/items/{itemId}', [CartController::class, 'removeItem']);
