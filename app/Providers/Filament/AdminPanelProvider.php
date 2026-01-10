@@ -14,6 +14,7 @@ use App\Filament\Resources\Customers\CustomerResource;
 use App\Filament\Resources\Districts\DistrictResource;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\PaymentGateways\PaymentGatewayResource;
+use App\Filament\Resources\PaymentTransactions\PaymentTransactionResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Settings\SettingResource;
 use App\Filament\Resources\Units\UnitResource;
@@ -122,6 +123,7 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make(__('lang.payment_gateways'))
                         ->items([
                             ...PaymentGatewayResource::getNavigationItems(),
+                            ...PaymentTransactionResource::getNavigationItems(),
                         ]),
                 ]);
             })

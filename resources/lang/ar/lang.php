@@ -541,4 +541,31 @@ return [
     'gateway_instructions_desc' => 'التعليمات التي تظهر للمستخدم (تظهر في التحويل البنكي والدفع النقدي).',
     'gateway_instructions_placeholder' => 'اكتب تعليمات الدفع بالتفصيل هنا...',
     'gateway_instructions_helper' => 'تستخدم لعرض أرقام الحسابات البنكية أو تعليمات الكاش للعملاء.',
+
+    // Payment Transactions
+    'payment_transaction' => 'معاملة دفع',
+    'payment_transactions' => 'معاملات الدفع',
+    'transaction_uuid' => 'رمز المعاملة (UUID)',
+    'transaction_amount' => 'المبلغ',
+    'transaction_currency' => 'العملة',
+    'transaction_reference' => 'الرقم المرجعي',
+    'transaction_status' => 'حالة المعاملة',
+    'transaction_payable' => 'مرتبط بـ',
+    'transaction_payable_type' => 'نوع الكيان المرتبط',
+    'transaction_payable_id' => 'رقم الكيان المرتبط',
+    'transaction_user' => 'المستخدم',
+    'transaction_proof' => 'إثبات الدفع (إيصال)',
+    'transaction_gateway_response' => 'استجابة البوابة',
+    'transaction_date' => 'تاريخ العملية',
+    'transaction_basic_info' => 'المعلومات الأساسية',
+    'transaction_related_info' => 'الارتباطات والمراجع',
+    'transaction_details_desc' => 'تفاصيل العملية المالية وحالتها الحالية.',
+
+    // Statuses & General
+    'pending' => 'قيد الانتظار',
+    'paid' => 'مدفوع',
+    'failed' => 'فاشل',
+    'refunded' => 'مسترجع',
+    'reviewing' => 'قيد المراجعة',
+    'guest' => 'زائر',
 ];

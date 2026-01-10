@@ -540,4 +540,31 @@ return [
     'gateway_instructions_desc' => 'Instructions displayed to the user (visible for transfer & cash payments).',
     'gateway_instructions_placeholder' => 'Write detailed payment instructions here...',
     'gateway_instructions_helper' => 'Used to display bank account details or cash instructions to customers.',
+
+    // Payment Transactions
+    'payment_transaction' => 'Payment Transaction',
+    'payment_transactions' => 'Payment Transactions',
+    'transaction_uuid' => 'Transaction UUID',
+    'transaction_amount' => 'Amount',
+    'transaction_currency' => 'Currency',
+    'transaction_reference' => 'Reference ID',
+    'transaction_status' => 'Transaction Status',
+    'transaction_payable' => 'Payable Type',
+    'transaction_payable_type' => 'Payable Type',
+    'transaction_payable_id' => 'Payable ID',
+    'transaction_user' => 'User',
+    'transaction_proof' => 'Proof of Payment',
+    'transaction_gateway_response' => 'Gateway Response',
+    'transaction_date' => 'Transaction Date',
+    'transaction_basic_info' => 'Basic Information',
+    'transaction_related_info' => 'Related Entities & References',
+    'transaction_details_desc' => 'Financial transaction details and its current status.',
+
+    // Statuses & General
+    'pending' => 'Pending',
+    'paid' => 'Paid',
+    'failed' => 'Failed',
+    'refunded' => 'Refunded',
+    'reviewing' => 'Reviewing',
+    'guest' => 'Guest',
 ];
