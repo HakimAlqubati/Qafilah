@@ -4,59 +4,117 @@ namespace App\Filament\Merchant\Resources\ProductVendorSkus\Schemas\Components\F
 
 use App\Models\ProductUnit;
 use App\Models\Unit;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 
 class UnitsRepeater
 {
     /**
-     * Repeater يعمل كهيكل داخلي، لكن يظهر كحقول عادية
+     * Repeater للوحدات - يسمح للتاجر بإضافة/حذف الوحدات المرتبطة بالمنتج
      */
     public static function make(): Repeater
     {
         return Repeater::make('units')
-            ->label('  ') // بدون label
+            ->label(__('lang.units'))
             ->columnSpanFull()
 
-            // إخفاء كل أزرار التحكم
-            ->addable(false)
-            ->deletable(false)
+            // تفعيل الإضافة والحذف
+            ->addable(true)
+            ->deletable(true)
             ->reorderable(false)
-            ->collapsible(false)
+            ->collapsible(true)
 
-            // عنصر واحد فقط
+            // الحد الأدنى وحدة واحدة على الأقل
             ->minItems(1)
-            ->maxItems(1)
-            ->defaultItems(1)
+            ->defaultItems(0)
 
-            // الوحدة الافتراضية من المنتج
-            ->default(function ($get) {
-                $productId = $get('product_id');
-                if (!$productId) {
-                    // استخدم الوحدة الافتراضية من النظام
-                    $defaultUnit = Unit::active()->where('is_default', true)->first();
-                    return $defaultUnit ? [['unit_id' => $defaultUnit->id]] : [];
+            // اسم زر الإضافة
+            ->addActionLabel(__('lang.add_unit'))
+
+            // label لكل عنصر
+            ->itemLabel(function (array $state): ?string {
+                if (empty($state['unit_id'])) {
+                    return null;
                 }
-
-                $productUnit = ProductUnit::where('product_id', $productId)->first();
-                return $productUnit ? [['unit_id' => $productUnit->unit_id]] : [];
+                $unit = Unit::find($state['unit_id']);
+                return $unit?->name;
             })
 
-            // بدون label لكل عنصر
-            ->itemLabel(null)
 
-            // تخطيط أفقي للحقول
-            ->columns(2)
 
+            ->table([
+                TableColumn::make(__('lang.unit'))->width('25%'),
+                TableColumn::make(__('lang.selling_price'))->width('15%'),
+                TableColumn::make(__('lang.cost_price'))->width('15%'),
+                TableColumn::make(__('lang.moq_unit_helper'))->width('25%')
+                ,
+                TableColumn::make(__('lang.stock'))->width('15%'),
+            ])
             ->schema([
-                // الوحدة مخفية - تُجلب تلقائياً
-                Hidden::make('unit_id'),
+                // قائمة الوحدات المرتبطة بالمنتج
+                Select::make('unit_id')
+                    ->label(__('lang.unit'))
+                    ->options(function ($get) {
+                        $productId = $get('../../product_id');
+                        if (!$productId) {
+                            // إذا لم يكن هناك منتج، أظهر الوحدة الافتراضية فقط
+                            return Unit::active()
+                                ->where('is_default', true)
+                                ->pluck('name', 'id');
+                        }
+
+                        // جلب الوحدات النشطة المرتبطة بالمنتج
+                        $productUnits = ProductUnit::where('product_id', $productId)
+                            ->active()
+                            ->sellable()
+                            ->with('unit')
+                            ->get();
+
+                        if ($productUnits->isEmpty()) {
+                            // إذا لم توجد وحدات للمنتج، أظهر الوحدة الافتراضية
+                            return Unit::active()
+                                ->where('is_default', true)
+                                ->pluck('name', 'id');
+                        }
+
+                        return $productUnits->pluck('unit.name', 'unit_id');
+                    })
+                    ->required()
+                    ->live()
+                    ->extraAlpineAttributes([ 
+                        'style' => 'text-align: center; border: 2px solid #ccc;'
+                    ])
+                    ->afterStateUpdated(function ($set, $get, $state) {
+                        if (!$state) {
+                            return;
+                        }
+
+                        $productId = $get('../../product_id');
+                        if (!$productId) {
+                            return;
+                        }
+
+                        // جلب الأسعار الافتراضية من ProductUnit
+                        $productUnit = ProductUnit::where('product_id', $productId)
+                            ->where('unit_id', $state)
+                            ->first();
+
+                        if ($productUnit) {
+                            $set('selling_price', $productUnit->selling_price);
+                            $set('cost_price', $productUnit->cost_price);
+                        }
+                    })
+                    ->columnSpan(1),
 
                 TextInput::make('selling_price')
                     ->label(__('lang.selling_price'))
                     ->numeric()
                     ->required()
+                    ->extraAlpineAttributes([ 
+                        'style' => 'text-align: center; border: 2px solid #ccc;'
+                    ])
                     ->minValue(0)
                     ->columnSpan(1),
 
@@ -64,21 +122,34 @@ class UnitsRepeater
                     ->label(__('lang.cost_price'))
                     ->numeric()
                     ->nullable()
+                    ->extraAlpineAttributes([ 
+                        'style' => 'text-align: center; border: 2px solid #ccc;'
+                    ])
                     ->minValue(0)
                     ->columnSpan(1),
 
                 TextInput::make('moq')
                     ->label(__('lang.moq'))
-                    ->helperText(__('lang.moq_unit_helper'))
+                    // ->helperText(__('lang.moq_unit_helper'))
                     ->numeric()
+                    ->extraAlpineAttributes([ 
+                        'style' => 'text-align: center; border: 2px solid #ccc;'
+                    ])
                     ->required()
                     ->minValue(1)
                     ->default(1)
+                     
+                    ->extraAlpineAttributes([ 
+                        'style' => 'text-align: center; border: 2px solid #ccc;'
+                    ])
                     ->columnSpan(1),
 
                 TextInput::make('stock')
                     ->label(__('lang.stock'))
                     ->numeric()
+                    ->extraAlpineAttributes([ 
+                        'style' => 'text-align: center; border: 2px solid #ccc;'
+                    ])
                     ->required()
                     ->default(0)
                     ->minValue(0)

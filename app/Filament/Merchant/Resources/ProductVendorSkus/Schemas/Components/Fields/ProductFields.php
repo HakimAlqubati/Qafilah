@@ -125,19 +125,29 @@ class ProductFields
 
     /**
      * Set units for the selected product
+     * جلب جميع الوحدات القابلة للبيع المرتبطة بالمنتج
      */
     private static function setProductUnits($set, int $productId): void
     {
-        $productUnit = ProductUnit::where('product_id', $productId)->first();
-        if ($productUnit) {
-            $set('units', [[
-                'unit_id' => $productUnit->unit_id,
-                'selling_price' => $productUnit->selling_price,
-                'cost_price' => $productUnit->cost_price,
-                'package_size' => $productUnit->package_size ?? 1,
-                'moq' => 1,
-                'stock' => 0,
-            ]]);
+        // جلب جميع الوحدات النشطة والقابلة للبيع للمنتج
+        $productUnits = ProductUnit::where('product_id', $productId)
+            ->active()
+            ->sellable()
+            ->get();
+
+        if ($productUnits->isNotEmpty()) {
+            $unitsData = $productUnits->map(function ($productUnit) {
+                return [
+                    'unit_id' => $productUnit->unit_id,
+                    'selling_price' => $productUnit->selling_price,
+                    'cost_price' => $productUnit->cost_price,
+                    'package_size' => $productUnit->package_size ?? 1,
+                    'moq' => 1,
+                    'stock' => 0,
+                ];
+            })->toArray();
+
+            $set('units', $unitsData);
         } else {
             // Use system default unit (no prices)
             $defaultUnit = Unit::active()->where('is_default', true)->first();
