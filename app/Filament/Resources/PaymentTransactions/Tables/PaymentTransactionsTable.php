@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PaymentTransactions\Tables;
 
+use App\ValueObjects\Money;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -41,8 +42,7 @@ class PaymentTransactionsTable
                 // 4. Amount
                 TextColumn::make('amount')
                     ->label(__('lang.transaction_amount'))
-                    ->money(fn($record) => $record->currency)
-                    ->sortable()
+                    ->formatStateUsing(fn($state) => Money::make($state))->sortable()
                     ->weight('bold'),
 
                 // 5. Status
