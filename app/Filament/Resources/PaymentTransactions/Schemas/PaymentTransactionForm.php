@@ -95,6 +95,13 @@ class PaymentTransactionForm
                                     ->preload()
                                     ->nullable(),
 
+                                Select::make('created_by')
+                                    ->label(__('lang.created_by'))
+                                    ->relationship('creator', 'name')
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->visible(fn($record) => filled($record)),
+
                                 TextInput::make('reference_id')
                                     ->label(__('lang.transaction_reference'))
                                     ->placeholder('TXN-123456')

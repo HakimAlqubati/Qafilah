@@ -24,6 +24,7 @@ class PaymentTransaction extends Model
         'proof_image',
         'status',
         'gateway_response',
+        'created_by',
     ];
 
     protected $casts = [
@@ -66,6 +67,11 @@ class PaymentTransaction extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     /* ============================================================
@@ -200,6 +206,10 @@ class PaymentTransaction extends Model
         static::creating(function ($transaction) {
             if (empty($transaction->uuid)) {
                 $transaction->uuid = (string) Str::uuid();
+            }
+
+            if (auth()->check() && empty($transaction->created_by)) {
+                $transaction->created_by = auth()->id();
             }
         });
     }

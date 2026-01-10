@@ -567,4 +567,5 @@ return [
     'refunded' => 'Refunded',
     'reviewing' => 'Reviewing',
     'guest' => 'Guest',
+    'created_by' => 'Created By',
 ];

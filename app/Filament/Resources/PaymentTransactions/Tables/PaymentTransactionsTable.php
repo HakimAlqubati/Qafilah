@@ -39,6 +39,14 @@ class PaymentTransactionsTable
                     ->searchable()
                     ->sortable(),
 
+                // 3.5 Creator
+                TextColumn::make('creator.name')
+                    ->label(__('lang.created_by'))
+                    ->placeholder(__('lang.system'))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 // 4. Amount
                 TextColumn::make('amount')
                     ->label(__('lang.transaction_amount'))

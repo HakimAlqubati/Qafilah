@@ -568,4 +568,5 @@ return [
     'refunded' => 'مسترجع',
     'reviewing' => 'قيد المراجعة',
     'guest' => 'زائر',
+    'created_by' => 'تم الإنشاء بواسطة',
 ];
