@@ -4,6 +4,7 @@ namespace App\Filament\Merchant\Resources\ProductVendorSkus\Tables;
 
 use App\Models\ProductVendorSku;
 use App\Models\Unit;
+use App\ValueObjects\Money;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -76,8 +77,7 @@ class ProductVendorSkusTable
                     ->label(__('lang.selling_price'))
                     ->state(fn($record) => $record->units->first()?->selling_price ?? 0)
                     ->formatStateUsing(function ($state, $record) {
-                        $currencyCode = $record->currency?->code ?? 'SAR';
-                        return $currencyCode . ' ' . number_format((float) $state, 2, '.', ',');
+                        return Money::make($state);
                     })
                     ->color(Color::Green)
                     ->weight(FontWeight::Bold)
@@ -96,8 +96,7 @@ class ProductVendorSkusTable
                     ->label(__('lang.cost_price'))
                     ->state(fn($record) => $record->units->first()?->cost_price ?? 0)
                     ->formatStateUsing(function ($state, $record) {
-                        $currencyCode = $record->currency?->code ?? 'SAR';
-                        return $currencyCode . ' ' . number_format((float) $state, 2, '.', ',');
+                        return Money::make($state);
                     })
                     ->color(Color::Gray),
 
@@ -147,7 +146,7 @@ class ProductVendorSkusTable
                 \Filament\Tables\Filters\SelectFilter::make('currency_id')
                     ->label(__('lang.currency'))
                     ->relationship('currency', 'code')
-                    ->preload(),
+                    ->preload()->hidden(),
 
                 \Filament\Tables\Filters\SelectFilter::make('status')
                     ->label(__('lang.status'))
