@@ -72,6 +72,7 @@ return [
     'units_count' => 'عدد الوحدات',
     'image' => 'الصورة',
     'default_image' => 'الصورة الافتراضية',
+    'default_image_description' => 'الصورة الرئيسية المعروضة لهذا المنتج',
 
     // Category Table Columns
     'attribute_set' => 'مجموعة الخصائص',

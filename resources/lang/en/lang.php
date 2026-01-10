@@ -72,6 +72,7 @@ return [
     'units_count' => 'Units Count',
     'image' => 'Image',
     'default_image' => 'Default Image',
+    'default_image_description' => 'The primary image displayed for this product',
 
     // Category Table Columns
     'attribute_set' => 'Attribute Set',

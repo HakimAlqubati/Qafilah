@@ -286,6 +286,7 @@ class Product extends Model implements HasMedia
      */
     public function getDefaultImageAttribute(): ?string
     {
+        return $this->getMedia('default')->last()?->getUrl() ?: null;
         return $this->getFirstMediaUrl('default') ?: null;
     }
 }
