@@ -71,6 +71,7 @@ return [
     'attributes_count' => 'Attributes Count',
     'units_count' => 'Units Count',
     'image' => 'Image',
+    'default_image' => 'Default Image',
 
     // Category Table Columns
     'attribute_set' => 'Attribute Set',

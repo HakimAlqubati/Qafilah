@@ -251,4 +251,41 @@ class Product extends Model implements HasMedia
             ->where('is_variant_option', true)
             ->exists();
     }
+
+    /* ============================================================
+     | 🖼️ Helper Methods - Images
+     |============================================================ */
+
+    /**
+     * الحصول على الصورة الافتراضية للمنتج (الأولى في الترتيب)
+     */
+    public function getDefaultImage(): ?\Spatie\MediaLibrary\MediaCollections\Models\Media
+    {
+        return $this->getFirstMedia('default');
+    }
+
+    /**
+     * الحصول على رابط الصورة الافتراضية للمنتج
+     */
+    public function getDefaultImageUrl(string $conversionName = ''): string
+    {
+        return $this->getFirstMediaUrl('default', $conversionName);
+    }
+
+    /**
+     * التحقق من وجود صورة افتراضية للمنتج
+     */
+    public function hasDefaultImage(): bool
+    {
+        return $this->hasMedia('default');
+    }
+
+    /**
+     * Accessor: جلب رابط الصورة الافتراضية لاستخدامه مع ImageColumn في Filament
+     * يمكن الوصول إليه عبر $product->default_image
+     */
+    public function getDefaultImageAttribute(): ?string
+    {
+        return $this->getFirstMediaUrl('default') ?: null;
+    }
 }

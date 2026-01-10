@@ -16,12 +16,15 @@ use Filament\Tables\Table;
 use App\Models\Product; // Ensure the Product model is imported
 use Filament\Actions\DeleteAction;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class ProductsTable
 {
     public static function configure(Table $table): Table
     {
+        $product = Product::find(22);
+        // dd($product->default_image);
         return $table->striped()
             ->columns([
                 // 1. Name & SKU (Primary identifiers)
@@ -35,10 +38,20 @@ class ProductsTable
                     ->sortable()
                 // ->description(fn(Product $record): string => __('lang.sku') . ": {$record->sku}")
                 , // Display SKU beneath the name
-                SpatieMediaLibraryImageColumn::make('default')->label(__('lang.image'))->size(50)
+                SpatieMediaLibraryImageColumn::make('default')->label(__('lang.images'))->imageSize(50)
                     ->circular()->alignCenter(true)->getStateUsing(function () {
                         return null;
-                    })->limit(3),
+                    })->limit(2)
+                    ->stacked()
+                    ->limitedRemainingText(),
+
+                // الصورة الافتراضية (الأولى في الترتيب)
+                ImageColumn::make('default_image')
+                    ->label(__('lang.default_image'))
+                    ->imageSize(50)
+                    ->circular()
+                    ->alignCenter(true),
+
                 TextColumn::make('slug')
                     ->label(__('lang.slug'))
                     // ->icon(Heroicon::)

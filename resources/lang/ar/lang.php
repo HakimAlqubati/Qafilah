@@ -71,6 +71,7 @@ return [
     'attributes_count' => 'عدد الخصائص',
     'units_count' => 'عدد الوحدات',
     'image' => 'الصورة',
+    'default_image' => 'الصورة الافتراضية',
 
     // Category Table Columns
     'attribute_set' => 'مجموعة الخصائص',
