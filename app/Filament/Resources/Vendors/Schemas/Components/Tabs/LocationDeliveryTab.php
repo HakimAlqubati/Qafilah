@@ -4,12 +4,14 @@ namespace App\Filament\Resources\Vendors\Schemas\Components\Tabs;
 
 use App\Models\City;
 use App\Models\Country;
+use App\Models\Currency;
 use App\Models\District;
 use App\Models\Setting;
 use App\Models\Vendor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 
@@ -23,107 +25,131 @@ class LocationDeliveryTab
         return Tab::make(__('lang.location_delivery'))
             ->icon('heroicon-o-map-pin')
             ->schema([
-                // Address Location (Country > City > District)
-                Grid::make(3)
+                // ═══════════════════════════════════════════════════════════
+                // 📍 قسم الموقع الجغرافي
+                // ═══════════════════════════════════════════════════════════
+                Section::make(__('lang.address_location'))
+                    ->icon('heroicon-o-map')
+                    ->collapsible()
                     ->schema([
-                        Select::make('country_id')
-                            ->label(__('lang.country'))
-                            ->options(Country::pluck('name', 'id'))
-                            ->default(fn() => Setting::getSetting('default_country_id'))
-                            ->searchable()
-                            ->preload()
-                            ->live()
-                            ->afterStateUpdated(fn(\Filament\Schemas\Components\Utilities\Set $set) => $set('city_id', null)),
+                        Grid::make(3)
+                            ->schema([
+                                Select::make('country_id')
+                                    ->label(__('lang.country'))
+                                    ->options(Country::pluck('name', 'id'))
+                                    ->default(fn() => Setting::getSetting('default_country_id'))
+                                    ->searchable()
+                                    ->preload()
+                                    ->live()
+                                    ->afterStateUpdated(fn(\Filament\Schemas\Components\Utilities\Set $set) => $set('city_id', null)),
 
-                        Select::make('city_id')
-                            ->label(__('lang.city'))
-                            ->options(fn(Get $get) => City::where('country_id', $get('country_id'))->pluck('name', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->live()
-                            ->afterStateUpdated(fn(\Filament\Schemas\Components\Utilities\Set $set) => $set('district_id', null)),
+                                Select::make('city_id')
+                                    ->label(__('lang.city'))
+                                    ->options(fn(Get $get) => City::where('country_id', $get('country_id'))->pluck('name', 'id'))
+                                    ->searchable()
+                                    ->preload()
+                                    ->live()
+                                    ->afterStateUpdated(fn(\Filament\Schemas\Components\Utilities\Set $set) => $set('district_id', null)),
 
-                        Select::make('district_id')
-                            ->label(__('lang.district'))
-                            ->options(fn(Get $get) => District::where('city_id', $get('city_id'))->pluck('name', 'id'))
-                            ->searchable()
-                            ->preload(),
+                                Select::make('district_id')
+                                    ->label(__('lang.district'))
+                                    ->options(fn(Get $get) => District::where('city_id', $get('city_id'))->pluck('name', 'id'))
+                                    ->searchable()
+                                    ->preload(),
+                            ]),
+
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('latitude')
+                                    ->numeric()
+                                    ->label(__('lang.latitude'))
+                                    ->minValue(-90)
+                                    ->maxValue(90)
+                                    ->step(0.00000001)
+                                    ->placeholder(__('lang.latitude_placeholder'))
+                                    ->helperText(__('lang.latitude_helper')),
+
+                                TextInput::make('longitude')
+                                    ->numeric()
+                                    ->label(__('lang.longitude'))
+                                    ->minValue(-180)
+                                    ->maxValue(180)
+                                    ->step(0.00000001)
+                                    ->placeholder(__('lang.longitude_placeholder'))
+                                    ->helperText(__('lang.longitude_helper')),
+                            ]),
                     ]),
 
-                // GPS Location
-                Grid::make(2)
+                // ═══════════════════════════════════════════════════════════
+                // 🚚 قسم التوصيل
+                // ═══════════════════════════════════════════════════════════
+                Section::make(__('lang.delivery_settings'))
+                    ->icon('heroicon-o-truck')
+                    ->collapsible()
                     ->schema([
-                        TextInput::make('latitude')
-                            ->numeric()
-                            ->label(__('lang.latitude'))
-                            ->minValue(-90)
-                            ->maxValue(90)
-                            ->step(0.00000001)
-                            ->placeholder(__('lang.latitude_placeholder'))
-                            ->helperText(__('lang.latitude_helper')),
+                        Grid::make(3)
+                            ->schema([
+                                TextInput::make('delivery_rate_per_km')
+                                    ->label(__('lang.delivery_rate_km'))
+                                    ->numeric()
+                                    ->default(0)
+                                    ->prefix(fn() => Currency::default()->first()?->symbol ?? 'SAR'),
 
-                        TextInput::make('longitude')
-                            ->numeric()
-                            ->label(__('lang.longitude'))
-                            ->minValue(-180)
-                            ->maxValue(180)
-                            ->step(0.00000001)
-                            ->placeholder(__('lang.longitude_placeholder'))
-                            ->helperText(__('lang.longitude_helper')),
+                                TextInput::make('min_delivery_charge')
+                                    ->label(__('lang.min_delivery_charge'))
+                                    ->numeric()
+                                    ->default(0)
+                                    ->prefix(fn() => Currency::default()->first()?->symbol ?? 'SAR'),
+
+                                TextInput::make('max_delivery_distance')
+                                    ->label(__('lang.max_distance_km'))
+                                    ->numeric()
+                                    ->suffix('KM'),
+                            ]),
+
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('delivery_time_value')
+                                    ->label(__('lang.delivery_time_value'))
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->placeholder('1, 2, 3, 24, 48...')
+                                    ->helperText(__('lang.delivery_time_helper')),
+
+                                Select::make('delivery_time_unit')
+                                    ->label(__('lang.delivery_time_unit'))
+                                    ->options(Vendor::getDeliveryTimeUnitOptions())
+                                    ->default(Vendor::DELIVERY_TIME_UNIT_HOURS)
+                                    ->native(false),
+                            ]),
                     ]),
 
-                // Delivery Settings
-                Grid::make(3)
+                // ═══════════════════════════════════════════════════════════
+                // 💰 قسم العملة والعمولة
+                // ═══════════════════════════════════════════════════════════
+                Section::make(__('lang.currency_commission'))
+                    ->icon('heroicon-o-currency-dollar')
+                    ->collapsible()
                     ->schema([
-                        TextInput::make('delivery_rate_per_km')
-                            ->label(__('lang.delivery_rate_km'))
-                            ->numeric()
-                            ->default(0),
+                        Grid::make(2)
+                            ->schema([
+                                Select::make('default_currency_id')
+                                    ->label(__('lang.default_currency'))
+                                    ->relationship('defaultCurrency', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->default(fn() => Currency::default()->first()?->id)
+                                    ->disabled()
+                                    ->helperText(__('lang.default_currency_helper')),
 
-                        TextInput::make('min_delivery_charge')
-                            ->label(__('lang.min_delivery_charge'))
-                            ->numeric()
-                            ->default(0),
-
-                        TextInput::make('max_delivery_distance')
-                            ->label(__('lang.max_distance_km'))
-                            ->numeric()
-                            ->suffix('KM'),
-                    ]),
-
-                // Delivery Time
-                Grid::make(2)
-                    ->schema([
-                        TextInput::make('delivery_time_value')
-                            ->label(__('lang.delivery_time_value'))
-                            ->numeric()
-                            ->minValue(1)
-                            ->placeholder('1, 2, 3, 24, 48...')
-                            ->helperText(__('lang.delivery_time_helper')),
-
-                        Select::make('delivery_time_unit')
-                            ->label(__('lang.delivery_time_unit'))
-                            ->options(Vendor::getDeliveryTimeUnitOptions())
-                            ->default(Vendor::DELIVERY_TIME_UNIT_HOURS)
-                            ->native(false),
-                    ]),
-
-                // Currency & Commission
-                Grid::make(2)
-                    ->schema([
-                        Select::make('default_currency_id')
-                            ->label(__('lang.default_currency'))
-                            ->relationship('defaultCurrency', 'name')
-                            ->searchable()
-                            ->preload(),
-
-                        Select::make('referrer_id')
-                            ->label(__('lang.referrer_user'))
-                            ->relationship('referrer', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->helperText(__('lang.referrer_helper'))
-                            ->nullable(),
+                                Select::make('referrer_id')
+                                    ->label(__('lang.referrer_user'))
+                                    ->relationship('referrer', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->helperText(__('lang.referrer_helper'))
+                                    ->nullable(),
+                            ]),
                     ]),
             ]);
     }

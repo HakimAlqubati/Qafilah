@@ -4,6 +4,7 @@ namespace App\Filament\Merchant\Resources\ProductVendorSkus\Tables;
 
 use App\Models\ProductVendorSku;
 use App\Models\Unit;
+use App\ValueObjects\Money;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -39,17 +40,6 @@ class ProductVendorSkusTable
                     ->fontFamily(FontFamily::Mono)
                     ->weight(FontWeight::Bold),
 
-//                TextColumn::make('variants_count')
-//                    ->label(__('lang.variants'))
-//                    ->state(function ($record) {
-//                        $count = ProductVendorSku::where('vendor_id', $record->vendor_id)
-//                            ->where('product_id', $record->product_id)
-//                            ->whereNotNull('variant_id')
-//                            ->count();
-//                        return $count > 0 ? $count . ' ' . __('lang.variants') : __('lang.not_variants');
-//                    })
-//                    ->badge()
-//                    ->color(fn($state) => str_contains($state, __('lang.simple_product')) ? 'gray' : 'info'),
 
                 TextColumn::make('product.category.name')
                     ->label(__('lang.category'))
@@ -67,7 +57,7 @@ class ProductVendorSkusTable
                     ->limit(1)
                     ->limitedRemainingText()
                     ->size(40)
-                    ->alignCenter() ,
+                    ->alignCenter(),
 
 
 
@@ -82,34 +72,41 @@ class ProductVendorSkusTable
                     ->color('primary')
                     ->sortable()->hidden(),
 
-                // عمود الأسعار - ملخص مع عدد الوحدات
-                TextColumn::make('units_count')
-                    ->label(__('lang.prices'))
-                    ->state(function ($record) {
-                        $unitsCount = $record->units->count();
-                        if ($unitsCount === 0) {
-                            return __('lang.no_units');
-                        }
-                        $defaultUnit = $record->units->where('is_default', true)->first()
-                            ?? $record->units->first();
-                        $currencyCode = $record->currency->code ?? 'SAR';
-                        return number_format($defaultUnit->selling_price, 2) . ' ' . $currencyCode . ' (' . $unitsCount . ' ' . __('lang.units') . ')';
+                // سعر البيع
+                TextColumn::make('selling_price')
+                    ->label(__('lang.selling_price'))
+                    ->state(fn($record) => $record->units->first()?->selling_price ?? 0)
+                    ->formatStateUsing(function ($state, $record) {
+                        return Money::make($state);
                     })
                     ->color(Color::Green)
-                    ->fontFamily(FontFamily::Mono)
                     ->weight(FontWeight::Bold)
-                    ->badge()->hidden(),
+                    ->sortable(
+                        query: fn($query, $direction) =>
+                        $query->orderBy(
+                            \App\Models\ProductVendorSkuUnit::select('selling_price')
+                                ->whereColumn('product_vendor_sku_id', 'product_vendor_skus.id')
+                                ->limit(1),
+                            $direction
+                        )
+                    ),
 
-                // عمود المخزون - ملخص
-                TextColumn::make('total_stock')
-                    ->label(__('lang.stock'))
-                    ->state(function ($record) {
-                        $totalStock = $record->units->sum('stock');
-                        return $totalStock;
+                // سعر الشراء (التكلفة)
+                TextColumn::make('cost_price')
+                    ->label(__('lang.cost_price'))
+                    ->state(fn($record) => $record->units->first()?->cost_price ?? 0)
+                    ->formatStateUsing(function ($state, $record) {
+                        return Money::make($state);
                     })
+                    ->color(Color::Gray),
+
+                // المخزون
+                TextColumn::make('stock')
+                    ->label(__('lang.stock'))->alignCenter()
+                    ->state(fn($record) => $record->units->first()?->stock ?? 0)
                     ->numeric()
                     ->color(fn($state) => $state > 0 ? Color::Green : Color::Red)
-                    ->badge()->hidden(),
+                    ->badge(),
 
                 TextColumn::make('status')
                     ->label(__('lang.status'))
@@ -149,7 +146,7 @@ class ProductVendorSkusTable
                 \Filament\Tables\Filters\SelectFilter::make('currency_id')
                     ->label(__('lang.currency'))
                     ->relationship('currency', 'code')
-                    ->preload(),
+                    ->preload()->hidden(),
 
                 \Filament\Tables\Filters\SelectFilter::make('status')
                     ->label(__('lang.status'))
@@ -172,53 +169,34 @@ class ProductVendorSkusTable
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel(__('lang.close'))
                     ->schema(function ($record) {
-                        $allSkus = ProductVendorSku::with(['variant.values.attribute', 'units.unit', 'currency'])
-                            ->where('vendor_id', $record->vendor_id)
-                            ->where('product_id', $record->product_id)
-                            ->get();
-
                         $currencyCode = $record->currency->code ?? 'SAR';
-                        $schemas = [
-                        ];
+                        $unitEntries = [];
 
-                        foreach ($allSkus as $sku) {
-                            $variantLabel = $sku->variant
-                                ? $sku->variant->values->map(fn($v) => $v->attribute->name . ': ' . $v->displayValue())->join(' | ')
-                                : __('lang.simple_product');
-
-                            // Build units info as simple text entries
-                            $unitEntries = [];
-                            foreach ($sku->units as $unitIndex => $unit) {
-                                $unitName = $unit->unit?->name ?? '-';
-                                $unitEntries[] = Grid::make(4)->schema([
-                                    TextEntry::make("unit_name_{$sku->id}_{$unitIndex}")
-                                        ->label(__('lang.unit'))
-                                        ->default($unitName)
-                                        ->weight(FontWeight::Bold),
-                                    TextEntry::make("selling_price_{$sku->id}_{$unitIndex}")
-                                        ->label(__('lang.selling_price'))
-                                        ->default(number_format($unit->selling_price, 2) . ' ' . $currencyCode)
-                                        ->color(Color::Green)
-                                        ->weight(FontWeight::Bold),
-                                    TextEntry::make("stock_{$sku->id}_{$unitIndex}")
-                                        ->label(__('lang.stock'))
-                                        ->default($unit->stock)
-                                        ->badge()
-                                        ->color($unit->stock > 0 ? 'success' : 'danger'),
-                                    TextEntry::make("package_size_{$sku->id}_{$unitIndex}")
-                                        ->label(__('lang.package_size'))
-                                        ->default($unit->package_size ?? 1),
-                                ]);
-                            }
-
-                            $schemas[] = Section::make($variantLabel)
-                                ->schema($unitEntries)
-                                ->collapsible()
-                                ->collapsed(false);
+                        foreach ($record->units as $unitIndex => $unit) {
+                            $unitName = $unit->unit?->name ?? '-';
+                            $unitEntries[] = Grid::make(4)->schema([
+                                TextEntry::make("unit_name_{$record->id}_{$unitIndex}")
+                                    ->label(__('lang.unit'))
+                                    ->default($unitName)
+                                    ->weight(FontWeight::Bold),
+                                TextEntry::make("selling_price_{$record->id}_{$unitIndex}")
+                                    ->label(__('lang.selling_price'))
+                                    ->default(number_format($unit->selling_price, 2) . ' ' . $currencyCode)
+                                    ->color(Color::Green)
+                                    ->weight(FontWeight::Bold),
+                                TextEntry::make("stock_{$record->id}_{$unitIndex}")
+                                    ->label(__('lang.stock'))
+                                    ->default($unit->stock)
+                                    ->badge()
+                                    ->color($unit->stock > 0 ? 'success' : 'danger'),
+                                TextEntry::make("moq_{$record->id}_{$unitIndex}")
+                                    ->label(__('lang.moq'))
+                                    ->default($unit->moq ?? 1),
+                            ]);
                         }
 
-                        return $schemas;
-                    }),
+                        return $unitEntries;
+                    })->hidden(),
                 EditAction::make(),
             ])
             ->toolbarActions([

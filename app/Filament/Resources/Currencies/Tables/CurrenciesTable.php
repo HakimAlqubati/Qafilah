@@ -29,7 +29,7 @@ class CurrenciesTable
                     ->label(__('lang.exchange_rate'))
                     ->numeric(),
                 IconColumn::make('is_default')
-                    ->label(__('lang.type'))
+                    ->label(__('lang.is_currency_default'))
                     ->boolean()->alignCenter(),
                 IconColumn::make('is_active')
                     ->label(__('lang.active'))

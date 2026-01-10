@@ -31,7 +31,7 @@ class CurrencyForm
                         ->required()
                         ->numeric(),
                     Toggle::make('is_default')
-                        ->label(__('lang.is_default'))
+                        ->label(__('lang.default_currency'))
                         ->required(),
                     Toggle::make('is_active')
                         ->label(__('lang.is_active'))

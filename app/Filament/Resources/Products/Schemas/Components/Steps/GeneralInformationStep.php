@@ -113,7 +113,7 @@ class GeneralInformationStep
                         ]),
                 ]),
 
-                MediaStep::make(),
+                // MediaStep::make(),
 
             ]);
     }

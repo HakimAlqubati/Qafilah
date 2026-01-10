@@ -7,15 +7,15 @@ class DefaultUnitReportService
     public function getReport(): array
     {
         return [
-            'title' => 'تقرير: إضافة حقل الوحدة الافتراضية',
+            'title' => 'تقرير: حقل الوحدة الافتراضية (is_default)',
             'date' => '2026-01-03',
-            'summary' => 'إضافة حقل is_default لتحديد وحدة افتراضية على مستوى النظام',
+            'summary' => 'وحدة تُختار تلقائياً عند إنشاء منتج/SKU جديد - غير إجباري',
 
             'sections' => [
                 [
                     'title' => 'ما هي الميزة؟',
                     'icon' => 'lightbulb',
-                    'content' => 'تم إضافة حقل is_default لجدول الوحدات (units) لتحديد وحدة افتراضية على مستوى النظام. عندما يقوم التاجر بإنشاء SKU لمنتج ليس له وحدات محددة مسبقاً في جدول product_units، النظام يستخدم هذه الوحدة الافتراضية تلقائياً.',
+                    'content' => 'عند إضافة منتج جديد (من الأدمن) أو إنشاء SKU جديد (من التاجر)، يتم اختيار الوحدة المحددة كـ is_default تلقائياً. التاجر/الأدمن حر في تغييرها أو إضافة وحدات أخرى.',
                 ],
                 [
                     'title' => 'الملفات المُعدَّلة',
@@ -25,8 +25,8 @@ class DefaultUnitReportService
                             'category' => 'Migration',
                             'items' => [
                                 [
-                                    'file' => 'database/migrations/2026_01_03_192333_add_is_default_to_units_table.php',
-                                    'change' => 'إضافة حقل is_default من نوع boolean بقيمة افتراضية false',
+                                    'file' => 'add_is_default_to_units_table.php',
+                                    'change' => 'إضافة حقل is_default boolean (افتراضي: false)',
                                 ],
                             ],
                         ],
@@ -34,48 +34,42 @@ class DefaultUnitReportService
                             'category' => 'Models',
                             'items' => [
                                 [
-                                    'file' => 'app/Models/Unit.php',
-                                    'change' => 'إضافة is_default للـ $fillable و cast للـ boolean',
-                                ],
-                                [
-                                    'file' => 'app/Models/ProductUnit.php',
-                                    'change' => 'إضافة makeDefaultForProduct() و getAvailableUnitsForProduct() لاستخدام الوحدة الافتراضية',
+                                    'file' => 'Unit.php',
+                                    'change' => 'إضافة is_default للـ $fillable و cast',
                                 ],
                             ],
                         ],
                         [
-                            'category' => 'Filament Components',
+                            'category' => 'Filament (التاجر)',
                             'items' => [
                                 [
                                     'file' => 'UnitsRepeater.php',
-                                    'change' => 'التحقق من is_default لتحديد سلوك الـ repeater (إظهار/إخفاء)',
+                                    'change' => 'اختيار الوحدة الافتراضية تلقائياً عند إنشاء SKU',
                                 ],
                                 [
-                                    'file' => 'ProductVendorSkusTable.php',
-                                    'change' => 'استخدام الوحدة الافتراضية لعرض السعر في الجدول',
+                                    'file' => 'VariantsUnitsRepeater.php',
+                                    'change' => 'نفس المنطق للمنتجات ذات المتغيرات',
+                                ],
+                            ],
+                        ],
+                        [
+                            'category' => 'Filament (الأدمن)',
+                            'items' => [
+                                [
+                                    'file' => 'ProductUnitsStep.php',
+                                    'change' => 'اختيار الوحدة الافتراضية تلقائياً عند إضافة منتج',
                                 ],
                             ],
                         ],
                     ],
                 ],
                 [
-                    'title' => 'كيف تعمل الميزة؟',
-                    'icon' => 'flow',
-                    'steps' => [
-                        'عند إنشاء SKU جديد، النظام يتحقق من وحدات المنتج في product_units',
-                        'إذا لم يكن للمنتج وحدات محددة، يستدعي ProductUnit::getAvailableUnitsForProduct()',
-                        'هذه الدالة تستدعي makeDefaultForProduct() التي تجلب الوحدة المحددة كـ is_default = true',
-                        'يتم إنشاء ProductUnit "وهمي" (بدون حفظ) لاستخدامه في النموذج',
-                        'عند الحفظ، يتم إنشاء ProductVendorSkuUnit بهذه الوحدة الافتراضية',
-                    ],
-                ],
-                [
-                    'title' => 'الغرض من الميزة',
+                    'title' => 'الفائدة',
                     'icon' => 'target',
                     'points' => [
-                        'تسهيل عملية إضافة المنتجات للتاجر بدون الحاجة لتعريف وحدات مسبقاً',
-                        'ضمان وجود وحدة واحدة على الأقل لكل SKU',
-                        'توحيد تجربة المستخدم عند إنشاء منتجات جديدة',
+                        'تسهيل وتسريع عملية الإضافة',
+                        'توحيد الوحدة المستخدمة افتراضياً',
+                        'غير إجباري - يمكن التغيير بحرية',
                     ],
                 ],
             ],

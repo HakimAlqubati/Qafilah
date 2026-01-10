@@ -12,9 +12,9 @@ class MediaStep
     /**
      * Create the Media step
      */
-    public static function make(): Section
+    public static function make(): Step
     {
-        return Section::make(__('lang.media'))
+        return Step::make(__('lang.media'))
             ->icon('heroicon-o-photo')
             ->schema([
                 SpatieMediaLibraryFileUpload::make('images')
