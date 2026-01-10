@@ -13,8 +13,9 @@ class UnitsRepeater
 {
     /**
      * Repeater للوحدات - يسمح للتاجر بإضافة/حذف الوحدات المرتبطة بالمنتج
+     * @param string $currencySymbol رمز العملة لعرضه كـ prefix
      */
-    public static function make(): Repeater
+    public static function make(string $currencySymbol = ''): Repeater
     {
         return Repeater::make('units')
             ->label(__('lang.units'))
@@ -42,15 +43,12 @@ class UnitsRepeater
                 return $unit?->name;
             })
 
-
-
             ->table([
-                TableColumn::make(__('lang.unit'))->width('25%'),
-                TableColumn::make(__('lang.selling_price'))->width('15%'),
-                TableColumn::make(__('lang.cost_price'))->width('15%'),
-                TableColumn::make(__('lang.moq_unit_helper'))->width('25%')
-                ,
-                TableColumn::make(__('lang.stock'))->width('15%'),
+                TableColumn::make(__('lang.unit'))->width('23%'),
+                TableColumn::make(__('lang.selling_price'))->width('18%'),
+                TableColumn::make(__('lang.cost_price'))->width('18%'),
+                TableColumn::make(__('lang.moq_unit_helper'))->width('20%'),
+                TableColumn::make(__('lang.stock'))->width('16%'),
             ])
             ->schema([
                 // قائمة الوحدات المرتبطة بالمنتج
@@ -83,7 +81,7 @@ class UnitsRepeater
                     })
                     ->required()
                     ->live()
-                    ->extraAlpineAttributes([ 
+                    ->extraAlpineAttributes([
                         'style' => 'text-align: center; border: 2px solid #ccc;'
                     ])
                     ->afterStateUpdated(function ($set, $get, $state) {
@@ -112,7 +110,8 @@ class UnitsRepeater
                     ->label(__('lang.selling_price'))
                     ->numeric()
                     ->required()
-                    ->extraAlpineAttributes([ 
+                    ->prefix($currencySymbol)
+                    ->extraAlpineAttributes([
                         'style' => 'text-align: center; border: 2px solid #ccc;'
                     ])
                     ->minValue(0)
@@ -122,7 +121,8 @@ class UnitsRepeater
                     ->label(__('lang.cost_price'))
                     ->numeric()
                     ->nullable()
-                    ->extraAlpineAttributes([ 
+                    ->prefix($currencySymbol)
+                    ->extraAlpineAttributes([
                         'style' => 'text-align: center; border: 2px solid #ccc;'
                     ])
                     ->minValue(0)
@@ -130,24 +130,19 @@ class UnitsRepeater
 
                 TextInput::make('moq')
                     ->label(__('lang.moq'))
-                    // ->helperText(__('lang.moq_unit_helper'))
                     ->numeric()
-                    ->extraAlpineAttributes([ 
+                    ->extraAlpineAttributes([
                         'style' => 'text-align: center; border: 2px solid #ccc;'
                     ])
                     ->required()
                     ->minValue(1)
                     ->default(1)
-                     
-                    ->extraAlpineAttributes([ 
-                        'style' => 'text-align: center; border: 2px solid #ccc;'
-                    ])
                     ->columnSpan(1),
 
                 TextInput::make('stock')
                     ->label(__('lang.stock'))
                     ->numeric()
-                    ->extraAlpineAttributes([ 
+                    ->extraAlpineAttributes([
                         'style' => 'text-align: center; border: 2px solid #ccc;'
                     ])
                     ->required()

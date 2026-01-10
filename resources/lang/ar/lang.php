@@ -89,6 +89,8 @@ return [
     // Unit & Currency Table Columns
     'symbol' => 'الرمز',
     'exchange_rate' => 'سعر الصرف',
+    'is_currency_default' => 'العملة الافتراضية',
+    'default_currency_already_exists' => 'العملة ":name" هي العملة الافتراضية حالياً. قم بإلغاء تفعيلها أولاً.',
     // Forms
     'basic_information' => 'المعلومات الأساسية',
     'description' => 'الوصف',
@@ -225,6 +227,7 @@ return [
     'package_size' => 'حجم العبوة',
     'package_size_helper' => 'عدد القطع في هذه الوحدة (مثال: 12 قطعة في العلبة)',
     'moq_unit_helper' => 'الحد الأدنى للطلب بهذه الوحدة',
+    'prices_in_default_currency' => 'الأسعار هي حسب العملة الافتراضية في النظام (:currency)',
     'unit_cost_price' => 'سعر تكلفة الوحدة',
     'unit_cost_price_helper' => 'سعر التكلفة للوحدة الكاملة',
     'unit_selling_price' => 'سعر بيع الوحدة',

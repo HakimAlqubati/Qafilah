@@ -89,6 +89,8 @@ return [
     // Unit & Currency Table Columns
     'symbol' => 'Symbol',
     'exchange_rate' => 'Exchange Rate',
+    'is_currency_default' => 'Default Currency',
+    'default_currency_already_exists' => 'Currency ":name" is already set as the default currency. Please disable it first.',
     // Forms
     'basic_information' => 'Basic Information',
     'description' => 'Description',
@@ -225,6 +227,7 @@ return [
     'package_size' => 'Package Size',
     'package_size_helper' => 'Number of pieces in this unit (e.g., 12 pieces per box)',
     'moq_unit_helper' => 'Minimum order quantity for this unit',
+    'prices_in_default_currency' => 'Prices are based on the system default currency (:currency)',
     'unit_cost_price' => 'Unit Cost Price',
     'unit_cost_price_helper' => 'Cost price for the complete unit',
     'unit_selling_price' => 'Unit Selling Price',

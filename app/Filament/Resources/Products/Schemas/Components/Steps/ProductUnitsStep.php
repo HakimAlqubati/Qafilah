@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Products\Schemas\Components\Steps;
 
+use App\Models\Currency;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
@@ -15,17 +17,27 @@ class ProductUnitsStep
      */
     public static function make(): Step
     {
+        $defaultCurrency = Currency::default()->first();
+        $currencyName = $defaultCurrency?->name ?? '';
+        $currencySymbol = $defaultCurrency?->symbol ?? '';
+
         return Step::make(__('lang.product_units'))
             ->icon('heroicon-o-cube')
             ->schema([
+                // ملاحظة العملة الافتراضية
+                Placeholder::make('currency_note')
+                    ->label(__('lang.default_currency'))
+                    ->content(fn() => __('lang.prices_in_default_currency', ['currency' => $currencyName]))
+                    ->columnSpanFull(),
+
                 Repeater::make('units')
                     ->relationship('units')
-                    ->label('')
+                    ->label(__('lang.product_units'))
                     ->columnSpanFull()
                     ->minItems(1)
                     ->columns(4)
                     ->defaultItems(1)
-                    
+
                     ->table([
                         TableColumn::make(__('lang.unit'))->width('25%'),
                         TableColumn::make(__('lang.package_size'))->width('25%'),
@@ -54,6 +66,7 @@ class ProductUnitsStep
                         TextInput::make('selling_price')
                             ->label(__('lang.selling_price'))
                             ->numeric()
+                            ->prefix($currencySymbol)
                             ->extraInputAttributes(['style' => 'text-align: center;'])
                             ->minValue(0)->required()
                             ->step(0.01),
@@ -61,6 +74,7 @@ class ProductUnitsStep
                         TextInput::make('cost_price')
                             ->label(__('lang.cost_price'))
                             ->numeric()
+                            ->prefix($currencySymbol)
                             ->extraInputAttributes(['style' => 'text-align: center;'])
                             ->minValue(0)->required()
                             ->step(0.01),
