@@ -28,7 +28,7 @@ class ProductForm
                     GeneralInformationStep::make(),
 
                     // Step 2: Media
-                   MediaStep::make(),
+                //    MediaStep::make(),
 
                     // Step 3: Attributes (Direct Attributes without Set)
 //                    AttributesStep::make(),

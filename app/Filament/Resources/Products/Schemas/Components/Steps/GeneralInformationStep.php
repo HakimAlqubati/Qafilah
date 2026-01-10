@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Schemas\Components\Steps;
 
+use App\Filament\Resources\Products\Schemas\Components\Fields\ProductImages;
 use App\Models\Product;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -113,7 +114,7 @@ class GeneralInformationStep
                         ]),
                 ]),
 
-                // MediaStep::make(),
+                ProductImages::make(),
 
             ]);
     }
