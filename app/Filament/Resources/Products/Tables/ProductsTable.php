@@ -23,8 +23,6 @@ class ProductsTable
 {
     public static function configure(Table $table): Table
     {
-        $product = Product::find(22);
-        // dd($product->default_image);
         return $table->striped()
             ->columns([
                 // 1. Name & SKU (Primary identifiers)
