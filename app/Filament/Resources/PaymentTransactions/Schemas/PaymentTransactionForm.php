@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PaymentTransactions\Schemas;
 
+use App\Models\Currency;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
@@ -14,6 +15,10 @@ class PaymentTransactionForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $defaultCurrency = Currency::where('is_default', true)->first();
+        $defaultCurrencyCode = $defaultCurrency?->code ?? 'USD';
+        $defaultCurrencySymbol = $defaultCurrency?->symbol ?? '$';
+
         return $schema
             ->components([
                 // 1. Basic Information Section
@@ -34,17 +39,20 @@ class PaymentTransactionForm
                                     ->label(__('lang.transaction_amount'))
                                     ->numeric()
                                     ->required()
-                                    ->prefix(fn($get) => $get('currency') ?? '$'),
+                                    ->prefix(function ($get) use ($defaultCurrencySymbol) {
+                                        $currencyCode = $get('currency');
+                                        if (!$currencyCode) return $defaultCurrencySymbol;
+
+                                        return Currency::where('code', $currencyCode)->first()?->symbol ?? $defaultCurrencySymbol;
+                                    })
+                                    ->live(),
 
                                 Select::make('currency')
                                     ->label(__('lang.transaction_currency'))
-                                    ->options([
-                                        'YER' => 'YER',
-                                        'SAR' => 'SAR',
-                                        'USD' => 'USD',
-                                    ])
+                                    ->options(Currency::active()->pluck('code', 'code'))
                                     ->required()
-                                    ->default('YER')
+                                    ->default($defaultCurrencyCode)
+                                    ->live()
                                     ->native(false),
 
                                 Select::make('status')

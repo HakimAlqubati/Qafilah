@@ -42,11 +42,11 @@ class PaymentTransaction extends Model
     public const STATUS_REVIEWING = 'reviewing';
 
     public const STATUSES = [
-        self::STATUS_PENDING => 'في انتظار الدفع',
-        self::STATUS_PAID => 'تم الدفع',
-        self::STATUS_FAILED => 'فشل الدفع',
-        self::STATUS_REFUNDED => 'تم الاسترداد',
-        self::STATUS_REVIEWING => 'قيد المراجعة',
+        self::STATUS_PENDING,
+        self::STATUS_PAID,
+        self::STATUS_FAILED,
+        self::STATUS_REFUNDED,
+        self::STATUS_REVIEWING,
     ];
 
     /* ============================================================
@@ -156,7 +156,7 @@ class PaymentTransaction extends Model
      */
     public function getStatusLabel(): string
     {
-        return self::STATUSES[$this->status] ?? $this->status;
+        return __('lang.' . $this->status);
     }
 
     /**

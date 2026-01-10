@@ -34,9 +34,9 @@ class PaymentGateway extends Model
     public const TYPE_TRANSFER = 'transfer';
 
     public const TYPES = [
-        self::TYPE_ELECTRONIC => 'دفع إلكتروني',
-        self::TYPE_CASH => 'دفع نقدي',
-        self::TYPE_TRANSFER => 'تحويل بنكي',
+        self::TYPE_ELECTRONIC,
+        self::TYPE_CASH,
+        self::TYPE_TRANSFER,
     ];
 
     /* ============================================================
@@ -47,8 +47,8 @@ class PaymentGateway extends Model
     public const MODE_LIVE = 'live';
 
     public const MODES = [
-        self::MODE_SANDBOX => 'تجريبي',
-        self::MODE_LIVE => 'إنتاجي',
+        self::MODE_SANDBOX,
+        self::MODE_LIVE,
     ];
 
     /* ============================================================
@@ -145,7 +145,7 @@ class PaymentGateway extends Model
      */
     public function getTypeLabel(): string
     {
-        return self::TYPES[$this->type] ?? $this->type;
+        return __('lang.gateway_type_' . $this->type);
     }
 
     /**
@@ -153,6 +153,6 @@ class PaymentGateway extends Model
      */
     public function getModeLabel(): string
     {
-        return self::MODES[$this->mode] ?? $this->mode;
+        return __('lang.gateway_mode_' . $this->mode);
     }
 }
