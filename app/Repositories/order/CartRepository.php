@@ -2,10 +2,6 @@
 
 namespace App\Repositories\order;
 use App\Models\ProductVendorSkuUnit;
-use App\Models\User;
-use App\Repositories\Auth\AuthRepositoryInterface;
-use Illuminate\Support\Facades\Hash;
-
 use App\Models\Cart;
 use App\Models\CartItem;
 use Illuminate\Support\Facades\DB;
@@ -13,60 +9,121 @@ use Illuminate\Validation\ValidationException;
 
 class CartRepository
 {
-    public function getOrCreateActiveCart(?int $buyerId, ?string $cartToken, ?int $sellerId = null): Cart
+    // سياق الطلب
+    private ?int $buyerId = null;
+    private ?string $cartToken = null;
+    private ?int $sellerId = null;
+
+    // حماية اختيارية (للـ update/remove)
+    private ?int $expectedCartId = null;
+
+    // بيانات item
+    private ?int $productId = null;
+    private ?int $variantId = null;
+    private ?int $productVendorSkuId = null;
+    private ?int $productVendorSkuUnitId = null;
+    private int $quantity = 1;
+    private ?string $notes = null;
+
+    // claim
+    private ?string $claimCartToken = null;
+
+    /**
+     * يجهّز سياق السلة (Token-first)
+     */
+    public function context(?int $buyerId, ?string $cartToken, ?int $sellerId = null): self
     {
-        $q = Cart::query()->where('status', 'active');
-
-        if ($cartToken) {
-            $q->where('cart_token', $cartToken);
-        } elseif ($buyerId) {
-            $q->where('buyer_id', $buyerId);
-        } else {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'cart_token' => 'cart_token is required for guest cart.',
-            ]);
-        }
-
-
-        $cart = $q->latest('id')->first();
-        if ($cart) {
-             if ($buyerId && is_null($cart->buyer_id)) {
-                $cart->update(['buyer_id' => $buyerId]);
-            }
-            return $cart;
-        }
-
-
-        return Cart::create([
-            'buyer_id'   => $buyerId,
-            'seller_id'  => $sellerId,
-            'cart_token' => $cartToken,
-            'status'     => 'active',
-        ]);
+        $self = clone $this;
+        $this->buyerId = $buyerId;
+        $self->cartToken = $cartToken;
+        $self->sellerId = $sellerId;
+        return $self;
     }
 
-    public function addItem(Cart $cart, array $data): Cart
+    public function forBuyer(int $buyerId): self
     {
-        return DB::transaction(function () use ($cart, $data) {
+        $self = clone $this;
+        $self->buyerId = $buyerId;
+        return $self;
+    }
 
-             Cart::where('id', $cart->id)->lockForUpdate()->first();
+    public function expectCartId(int $cartId): self
+    {
+        $self = clone $this;
+        $self->expectedCartId = $cartId;
+        return $self;
+    }
 
-            $qty = (int) $data['quantity'];
+    public function withItemData(array $data): self
+    {
+        $self = clone $this;
 
-            $discount  =   0;
-            $tax       = 0;
+        $self->productId = (int) $data['product_id'];
+        $self->variantId = isset($data['variant_id']) ? (int) $data['variant_id'] : null;
+        $self->productVendorSkuId = isset($data['product_vendor_sku_id']) ? (int) $data['product_vendor_sku_id'] : null;
+        $self->productVendorSkuUnitId = isset($data['product_vendor_sku_unit_id']) ? (int) $data['product_vendor_sku_unit_id'] : null;
+        $self->quantity = (int) $data['quantity'];
+        $self->notes = $data['notes'] ?? null;
+
+        return $self;
+    }
+
+    public function withQuantity(int $quantity): self
+    {
+        $self = clone $this;
+        $self->quantity = $quantity;
+        return $self;
+    }
+
+    public function withClaimToken(string $token): self
+    {
+        $self = clone $this;
+        $self->claimCartToken = $token;
+        return $self;
+    }
+
+    public function show(): Cart
+    {
+        $cart = $this->getOrCreateActiveCart();
+
+        $this->assertExpectedCart($cart);
+
+        return $cart->load('items');
+    }
+
+    public function addItem(): Cart
+    {
+        $this->requireItemData();
+
+        return DB::transaction(function () {
+            $cart = $this->getOrCreateActiveCart();
+
+            $this->assertExpectedCart($cart);
+
+            Cart::where('id', $cart->id)->lockForUpdate()->first();
+
+            $qty = $this->quantity;
+
+            $discount = 0;
+            $tax = 0;
 
             $itemQuery = CartItem::query()
                 ->where('cart_id', $cart->id)
-                ->where('product_id', $data['product_id']);
+                ->where('product_id', $this->productId);
 
-            $productVendorSkuUnit = ProductVendorSkuUnit::where('id', $data['product_vendor_sku_unit_id'])->first();
-            $unitPrice = (float) ( $productVendorSkuUnit->selling_price ?? 0);
-            $itemQuery = $this->whereNullSafe($itemQuery, 'product_vendor_sku_id', $data['product_vendor_sku_id'] ?? null);
-            $itemQuery = $this->whereNullSafe($itemQuery, 'product_vendor_sku_unit_id', $data['product_vendor_sku_unit_id'] ?? null);
+            $productVendorSkuUnit = $this->productVendorSkuUnitId
+                ? ProductVendorSkuUnit::where('id', $this->productVendorSkuUnitId)->first()
+                : null;
+
+            $unitPrice = (float) ($productVendorSkuUnit->selling_price ?? 0);
+            $unitId    = (int) ($productVendorSkuUnit->unit_id ?? 0) ?: null;
+
+            $itemQuery = $this->whereNullSafe($itemQuery, 'product_vendor_sku_id', $this->productVendorSkuId);
+            $itemQuery = $this->whereNullSafe($itemQuery, 'product_vendor_sku_unit_id', $this->productVendorSkuUnitId);
 
             $item = $itemQuery->lockForUpdate()->first();
-             if ($item) {
+
+            if ($item) {
                 $item->quantity += $qty;
 
                 $item->unit_price = $unitPrice;
@@ -78,22 +135,20 @@ class CartRepository
             } else {
                 CartItem::create([
                     'cart_id' => $cart->id,
-                    'product_id' => $data['product_id'],
+                    'product_id' => $this->productId,
 
-                    'variant_id' => $data['variant_id'] ?? null,
-                    'unit_id'    => $productVendorSkuUnit->unit_id ?? null,
+                    'variant_id' => $this->variantId,
+                    'unit_id'    => $unitId,
 
-                    'product_vendor_sku_id' => $data['product_vendor_sku_id'] ?? null,
-                    'product_vendor_sku_unit_id' => $data['product_vendor_sku_unit_id'] ?? null,
+                    'product_vendor_sku_id' => $this->productVendorSkuId,
+                    'product_vendor_sku_unit_id' => $this->productVendorSkuUnitId,
 
-                    'sku' => $data['sku'] ?? null,
-                    'package_size' => $data['package_size'] ?? 1,
                     'quantity' => $qty,
                     'unit_price' => $unitPrice,
                     'discount' => $discount,
                     'tax' => $tax,
                     'total' => $this->calcLineTotal($unitPrice, $qty, $discount, $tax),
-                    'notes' => $data['notes'] ?? null,
+                    'notes' => $this->notes,
                 ]);
             }
 
@@ -103,9 +158,12 @@ class CartRepository
         });
     }
 
-    public function updateItemQuantity(Cart $cart, int $itemId, int $quantity): Cart
+    public function updateItemQuantity(int $itemId): Cart
     {
-        return DB::transaction(function () use ($cart, $itemId, $quantity) {
+        return DB::transaction(function () use ($itemId) {
+            $cart = $this->getOrCreateActiveCart();
+
+            $this->assertExpectedCart($cart);
 
             Cart::where('id', $cart->id)->lockForUpdate()->first();
 
@@ -114,7 +172,7 @@ class CartRepository
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $item->quantity = $quantity;
+            $item->quantity = $this->quantity;
             $item->total = $this->calcLineTotal($item->unit_price, $item->quantity, $item->discount, $item->tax);
             $item->save();
 
@@ -124,9 +182,12 @@ class CartRepository
         });
     }
 
-    public function removeItem(Cart $cart, int $itemId): Cart
+    public function removeItem(int $itemId): Cart
     {
-        return DB::transaction(function () use ($cart, $itemId) {
+        return DB::transaction(function () use ($itemId) {
+            $cart = $this->getOrCreateActiveCart();
+
+            $this->assertExpectedCart($cart);
 
             Cart::where('id', $cart->id)->lockForUpdate()->first();
 
@@ -136,14 +197,27 @@ class CartRepository
 
             $this->recalcTotals($cart);
 
-            return $cart->fresh()->load('items');
+            return $cart->fresh();
         });
     }
 
-    public function claimGuestCart(string $cartToken, int $buyerId): Cart
+    public function claimGuestCart(): Cart
     {
-        return DB::transaction(function () use ($cartToken, $buyerId) {
+        if (!$this->claimCartToken) {
+            throw ValidationException::withMessages([
+                'cart_token' => 'cart_token is required.',
+            ]);
+        }
+        if (!$this->buyerId) {
+            throw ValidationException::withMessages([
+                'buyer_id' => 'buyer_id is required.',
+            ]);
+        }
 
+        $cartToken = $this->claimCartToken;
+        $buyerId = $this->buyerId;
+
+        return DB::transaction(function () use ($cartToken, $buyerId) {
             $guestCart = Cart::where('cart_token', $cartToken)
                 ->where('status', 'active')
                 ->latest('id')
@@ -174,7 +248,6 @@ class CartRepository
             $guestItems = $guestCart->items()->lockForUpdate()->get();
 
             foreach ($guestItems as $gi) {
-
                 $existsQ = CartItem::query()
                     ->where('cart_id', $userCart->id)
                     ->where('product_id', $gi->product_id);
@@ -186,7 +259,6 @@ class CartRepository
 
                 if ($exists) {
                     $exists->quantity += $gi->quantity;
-
                     $exists->total = $this->calcLineTotal($exists->unit_price, $exists->quantity, $exists->discount, $exists->tax);
                     $exists->save();
 
@@ -203,6 +275,61 @@ class CartRepository
 
             return $userCart->fresh()->load('items');
         });
+    }
+
+    private function getOrCreateActiveCart(): Cart
+    {
+        $q = Cart::query()->where('status', 'active');
+
+        // Token-first: إذا موجود توكن استخدمه حتى لو buyerId موجود
+        if ($this->cartToken) {
+            $q->where('cart_token', $this->cartToken);
+        } elseif ($this->buyerId) {
+            $q->where('buyer_id', $this->buyerId);
+        } else {
+            throw ValidationException::withMessages([
+                'cart_token' => 'cart_token is required for guest cart.',
+            ]);
+        }
+
+        $cart = $q->latest('id')->first();
+
+        if ($cart) {
+            if ($this->buyerId && is_null($cart->buyer_id)) {
+                $cart->update(['buyer_id' => $this->buyerId]);
+            }
+            return $cart;
+        }
+
+        return Cart::create([
+            'buyer_id'   => $this->buyerId,
+            'seller_id'  => $this->sellerId,
+            'cart_token' => $this->cartToken,
+            'status'     => 'active',
+        ]);
+    }
+
+    private function assertExpectedCart(Cart $cart): void
+    {
+        if ($this->expectedCartId !== null && $cart->id !== $this->expectedCartId) {
+            throw ValidationException::withMessages([
+                'cart_id' => 'Provided cart_id does not match the active cart.',
+            ]);
+        }
+    }
+
+    private function requireItemData(): void
+    {
+        if (!$this->productId) {
+            throw ValidationException::withMessages([
+                'product_id' => 'product_id is required.',
+            ]);
+        }
+        if ($this->quantity < 1) {
+            throw ValidationException::withMessages([
+                'quantity' => 'quantity must be at least 1.',
+            ]);
+        }
     }
 
     public function recalcTotals(Cart $cart): Cart
@@ -240,4 +367,166 @@ class CartRepository
             : $query->where($column, $value);
     }
 
+
+
+    public function incrementItemById(int $cartItemId): array
+    {
+        return DB::transaction(function () use ($cartItemId) {
+            $cart = $this->getActiveCartByExpectedIdOrFail();
+
+            Cart::where('id', $cart->id)->lockForUpdate()->first();
+
+            $item = CartItem::where('cart_id', $cart->id)
+                ->where('id', $cartItemId)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $item->quantity += 1;
+            $item->total = $this->calcLineTotal($item->unit_price, $item->quantity, $item->discount, $item->tax);
+            $item->save();
+
+            $this->recalcTotals($cart);
+            $cart = $cart->fresh(); // أحدث قيم totals
+
+            return [
+                'id' => $cart->id,
+                'buyer_id' => $cart->buyer_id,
+                'seller_id' => $cart->seller_id,
+                'cart_token' => $cart->cart_token,
+                'status' => $cart->status,
+                'subtotal' => (float) $cart->subtotal,
+                'tax_amount' => (float) $cart->tax_amount,
+                'discount_amount' => (float) $cart->discount_amount,
+                'shipping_amount' => (float) $cart->shipping_amount,
+                'total' => (float) $cart->total,
+                'notes' => $cart->notes,
+                'expires_at' => $cart->expires_at,
+                'converted_order_id' => $cart->converted_order_id,
+                'item' => $this->itemPayload($item->fresh()),
+            ];
+        });
+    }
+
+    public function decrementItemById(int $cartItemId): array
+    {
+        return DB::transaction(function () use ($cartItemId) {
+            $cart = $this->getActiveCartByExpectedIdOrFail();
+
+            Cart::where('id', $cart->id)->lockForUpdate()->first();
+
+            $item = CartItem::where('cart_id', $cart->id)
+                ->where('id', $cartItemId)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $item->quantity -= 1;
+
+            $returnedItem = null;
+
+            if ($item->quantity <= 0) {
+                $item->delete();
+            } else {
+                $item->total = $this->calcLineTotal($item->unit_price, $item->quantity, $item->discount, $item->tax);
+                $item->save();
+                $returnedItem = $item->fresh();
+            }
+
+            $this->recalcTotals($cart);
+            $cart = $cart->fresh();
+
+            return [
+                'id' => $cart->id,
+                'buyer_id' => $cart->buyer_id,
+                'seller_id' => $cart->seller_id,
+                'cart_token' => $cart->cart_token,
+                'status' => $cart->status,
+                'subtotal' => (float) $cart->subtotal,
+                'tax_amount' => (float) $cart->tax_amount,
+                'discount_amount' => (float) $cart->discount_amount,
+                'shipping_amount' => (float) $cart->shipping_amount,
+                'total' => (float) $cart->total,
+                'notes' => $cart->notes,
+                'expires_at' => $cart->expires_at,
+                'converted_order_id' => $cart->converted_order_id,
+                'item' => $returnedItem ? $this->itemPayload($returnedItem) : null,
+            ];
+        });
+    }
+
+
+    private function getActiveCartByExpectedIdOrFail(): Cart
+    {
+        if (!$this->expectedCartId) {
+            throw ValidationException::withMessages(['cart_id' => 'cart_id is required.']);
+        }
+
+        $q = Cart::query()
+            ->where('id', $this->expectedCartId)
+            ->where('status', 'active')
+            ->lockForUpdate();
+
+        // حماية الملكية
+        if ($this->cartToken) {
+            $q->where('cart_token', $this->cartToken);
+        } elseif ($this->buyerId) {
+            $q->where('buyer_id', $this->buyerId);
+        } else {
+            throw ValidationException::withMessages([
+                'cart_token' => 'cart_token is required for guest cart.',
+            ]);
+        }
+
+        $cart = $q->first();
+
+        if (!$cart) {
+            throw ValidationException::withMessages(['cart' => 'No active cart found for this cart_id.']);
+        }
+
+        // لو كان ضيف ثم سجل دخول (اختياري)
+        if ($this->buyerId && is_null($cart->buyer_id)) {
+            $cart->update(['buyer_id' => $this->buyerId]);
+        }
+
+        return $cart;
+    }
+
+    private function cartSummary(Cart $cart): array
+    {
+        return [
+            'id' => $cart->id,
+            'buyer_id' => $cart->buyer_id,
+            'seller_id' => $cart->seller_id,
+            'cart_token' => $cart->cart_token,
+            'status' => $cart->status,
+            'subtotal' => (float) $cart->subtotal,
+            'discount_amount' => (float) $cart->discount_amount,
+            'tax_amount' => (float) $cart->tax_amount,
+            'shipping_amount' => (float) $cart->shipping_amount,
+            'total' => (float) $cart->total,
+        ];
+    }
+
+    private function itemPayload(CartItem $i): array
+    {
+        return [
+            'id' => $i->id,
+            'product_id' => $i->product_id,
+            'variant_id' => $i->variant_id,
+            'product_vendor_sku_id' => $i->product_vendor_sku_id,
+            'product_vendor_sku_unit_id' => $i->product_vendor_sku_unit_id,
+            'unit_id' => $i->unit_id,
+            'sku' => $i->sku,
+            'package_size' => (int) $i->package_size,
+            'quantity' => (int) $i->quantity,
+            'unit_price' => (float) $i->unit_price,
+            'discount' => (float) $i->discount,
+            'tax' => (float) $i->tax,
+            'total' => (float) $i->total,
+            'notes' => $i->notes,
+        ];
+    }
+
+
+
 }
+

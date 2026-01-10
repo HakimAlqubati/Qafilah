@@ -41,10 +41,11 @@ Route::prefix('v1/ecommerce')->group(function () {
     Route::post('/products/details', [ProductController::class, 'productDetails']);
     Route::prefix('cart')->group(function () {
         Route::get('/', [CartController::class, 'show']);
-        Route::post('/items', [CartController::class, 'addItem']);
-        Route::patch('/items/{itemId}', [CartController::class, 'updateItem']);
-        Route::delete('/items/{itemId}', [CartController::class, 'removeItem']);
-
+        Route::post('/add', [CartController::class, 'addItem']);
+        Route::post('/update', [CartController::class, 'updateItem']);
+        Route::post('/delete', [CartController::class, 'removeItem']);
+        Route::post('/inc', [CartController::class, 'incItem']); // +
+        Route::post('/dec', [CartController::class, 'decItem']); // -
         Route::middleware('auth:sanctum')->post('/claim', [CartController::class, 'claim']);
     });
     Route::post('/checkout', [CheckoutController::class, 'checkout']);

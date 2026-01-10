@@ -1,25 +1,70 @@
 <?php
 
 namespace App\Repositories\order;
-use App\Models\User;
-use App\Repositories\Auth\AuthRepositoryInterface;
-use Illuminate\Support\Facades\Hash;
-
 use App\Models\Cart;
-use App\Models\CartItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use App\Models\Order;
 use App\Models\OrderItem;
-
 class CheckoutRepository
 {
-    public function checkout(int $buyerId, array $data): Order
+    private ?int $buyerId = null;
+
+    private ?int $sellerId = null;
+    private ?int $shippingAddressId = null;
+    private ?int $billingAddressId = null;
+    private ?string $notes = null;
+
+    public function forBuyer(int $buyerId): self
     {
-        return DB::transaction(function () use ($buyerId, $data) {
-            $cart = Cart::where('buyer_id', $buyerId)
+        $self = clone $this;
+        $self->buyerId = $buyerId;
+        return $self;
+    }
+
+    public function withSellerId(?int $sellerId): self
+    {
+        $self = clone $this;
+        $self->sellerId = $sellerId;
+        return $self;
+    }
+
+    public function withShippingAddressId(int $shippingAddressId): self
+    {
+        $self = clone $this;
+        $self->shippingAddressId = $shippingAddressId;
+        return $self;
+    }
+
+    public function withBillingAddressId(?int $billingAddressId): self
+    {
+        $self = clone $this;
+        $self->billingAddressId = $billingAddressId;
+        return $self;
+    }
+
+    public function withNotes(?string $notes): self
+    {
+        $self = clone $this;
+        $self->notes = $notes;
+        return $self;
+    }
+
+    public function checkout(): Order
+    {
+        if (!$this->buyerId) {
+            throw ValidationException::withMessages(['buyer_id' => 'buyer_id is required.']);
+        }
+        if (!$this->shippingAddressId) {
+            throw ValidationException::withMessages(['shipping_address_id' => 'shipping_address_id is required.']);
+        }
+
+        $billingAddressId = $this->billingAddressId ?? $this->shippingAddressId;
+
+        return DB::transaction(function () use ($billingAddressId) {
+            $cart = Cart::where('buyer_id', $this->buyerId)
                 ->where('status', 'active')
-                ->when(isset($data['seller_id']), fn($q) => $q->where('seller_id', $data['seller_id']))
+                ->when($this->sellerId !== null, fn($q) => $q->where('seller_id', $this->sellerId))
                 ->latest('id')
                 ->lockForUpdate()
                 ->first();
@@ -34,30 +79,28 @@ class CheckoutRepository
             }
 
             $order = Order::create([
-                'order_number' => 'TMP-' . uniqid(),
-                'customer_id' => $cart->buyer_id,
-                'vendor_id' => $cart->seller_id,
-                'status' => 'pending',
-                'payment_status' => 'pending',
-                'shipping_status' => 'pending',
-                'subtotal' => $cart->subtotal,
-                'tax_amount' => $cart->tax_amount,
-                'discount_amount' => $cart->discount_amount,
-                'shipping_amount' => $cart->shipping_amount,
-                'total' => $cart->total,
-                'shipping_address_id' => $data['shipping_address_id'],
-                'billing_address_id' => $data['billing_address_id'] ?? $data['shipping_address_id'],
-                'notes' => $data['notes'] ?? null,
-                'placed_at' => now(),
+                'order_number'       => 'TMP-' . uniqid(),
+                'customer_id'        => $cart->buyer_id,
+                'vendor_id'          => $cart->seller_id,
+                'status'             => 'pending',
+                'payment_status'     => 'pending',
+                'shipping_status'    => 'pending',
+                'subtotal'           => $cart->subtotal,
+                'tax_amount'         => $cart->tax_amount,
+                'discount_amount'    => $cart->discount_amount,
+                'shipping_amount'    => $cart->shipping_amount,
+                'total'              => $cart->total,
+                'shipping_address_id'=> $this->shippingAddressId,
+                'billing_address_id' => $billingAddressId,
+                'notes'              => $this->notes,
+                'placed_at'          => now(),
             ]);
 
             $order->order_number = 'ORD-' . $order->id . '-' . now()->format('Ymd');
             $order->save();
 
             foreach ($cart->items as $ci) {
-                // IMPORTANT: product_name is NOT NULL in your order_items table.
-                // Replace this with actual product name from DB.
-                $productName = 'Product #' . $ci->product_id;
+                $productName = 'Product #' . $ci->product_id; // الأفضل تجيبه من products
 
                 OrderItem::create([
                     'order_id' => $order->id,
