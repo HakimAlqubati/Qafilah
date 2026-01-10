@@ -8,7 +8,7 @@ use App\Models\Product;
 use App\Models\ProductVendorSku;
 use App\Models\ProductVendorSkuUnit;
 use App\Models\Unit;
-use App\Repositories\order\CartRepository;
+use App\Repositories\order\CustomerAddressRepository;
 use App\Repositories\order\CheckoutRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;

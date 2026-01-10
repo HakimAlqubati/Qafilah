@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Address\CustomerAddressController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\LoginController;
@@ -49,6 +50,14 @@ Route::prefix('v1/ecommerce')->group(function () {
         Route::middleware('auth:sanctum')->post('/claim', [CartController::class, 'claim']);
     });
     Route::post('/checkout', [CheckoutController::class, 'checkout']);
+
+    Route::middleware('auth:sanctum')->prefix('address')->group(function () {
+        Route::get('/', [CustomerAddressController::class, 'index']);
+        Route::post('/', [CustomerAddressController::class, 'store']);
+        Route::put('{id}', [CustomerAddressController::class, 'update']);
+        Route::delete('{id}', [CustomerAddressController::class, 'destroy']);
+        Route::post('/default', [CustomerAddressController::class, 'setDefault']);
+    });
 
 
 });
