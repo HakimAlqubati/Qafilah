@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Vendors\Schemas\Components\Tabs;
 
 use App\Models\City;
 use App\Models\Country;
+use App\Models\Currency;
 use App\Models\District;
 use App\Models\Setting;
 use App\Models\Vendor;
@@ -115,7 +116,10 @@ class LocationDeliveryTab
                             ->label(__('lang.default_currency'))
                             ->relationship('defaultCurrency', 'name')
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->default(fn() => Currency::default()->first()?->id)
+                            ->disabled()
+                            ->helperText(__('lang.default_currency_helper')),
 
                         Select::make('referrer_id')
                             ->label(__('lang.referrer_user'))

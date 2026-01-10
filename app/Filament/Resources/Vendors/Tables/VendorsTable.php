@@ -18,6 +18,8 @@ use Filament\Schemas\Components\Grid;
 use Filament\Notifications\Notification;
 use App\Models\Vendor;
 use App\Models\User;
+use App\ValueObjects\Money;
+use Filament\Actions\ActionGroup;
 use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Support\Facades\Hash;
 
@@ -91,12 +93,14 @@ class VendorsTable
                 TextColumn::make('defaultCurrency.name')
                     ->label(__('lang.currency'))
                     ->sortable()
+                    ->hidden()
                     ->toggleable(),
 
                 // 6. Delivery Rate
                 TextColumn::make('delivery_rate_per_km')
                     ->label(__('lang.delivery_rate'))
-                    ->money(fn($record) => $record->defaultCurrency?->code ?? 'SAR')
+                    ->alignCenter()
+                    ->formatStateUsing(fn($state): string => Money::make($state))
                     ->sortable()
                     ->toggleable(),
 
@@ -116,6 +120,7 @@ class VendorsTable
                 TextColumn::make('created_at')
                     ->label(__('lang.creation_date'))
                     ->dateTime()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
             ])->filtersFormColumns(4)
             ->filters([
@@ -132,60 +137,62 @@ class VendorsTable
                 TrashedFilter::make(),
             ], FiltersLayout::Modal)
             ->actions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
 
-                // Action to create user for vendor
-                Action::make('createUser')
-                    ->label(__('lang.create_user'))
-                    ->icon('heroicon-o-user-plus')
-                    ->color('success')
-                    ->visible(fn(Vendor $record): bool => !$record->has_user)
-                    ->form([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('name')
-                                    ->label(__('lang.name'))
-                                    ->default(fn(Vendor $record): string => $record->name)
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('email')
-                                    ->label(__('lang.email'))
-                                    ->email()
-                                    ->default(fn(Vendor $record): ?string => $record->email)
-                                    ->required()
-                                    ->unique(User::class, 'email', ignoreRecord: false)
-                                    ->maxLength(255),
-                                TextInput::make('password')
-                                    ->label(__('lang.password'))
-                                    ->password()
-                                    ->revealable()
-                                    ->default('123456')
-                                    ->required()
-                                    ->minLength(6)
-                                    ->same('password_confirmation'),
-                                TextInput::make('password_confirmation')
-                                    ->label(__('lang.password_confirmation'))
-                                    ->password()
-                                    ->revealable()
-                                    ->default('123456')
-                                    ->required(),
-                            ]),
-                    ])
-                    ->action(function (Vendor $record, array $data): void {
-                        User::create([
-                            'name' => $data['name'],
-                            'email' => $data['email'],
-                            'password' => Hash::make($data['password']),
-                            'vendor_id' => $record->id,
-                        ]);
+                    // Action to create user for vendor
+                    Action::make('createUser')
+                        ->label(__('lang.create_user'))
+                        ->icon('heroicon-o-user-plus')
+                        ->color('success')
+                        ->visible(fn(Vendor $record): bool => !$record->has_user)
+                        ->schema([
+                            Grid::make(2)
+                                ->schema([
+                                    TextInput::make('name')
+                                        ->label(__('lang.name'))
+                                        ->default(fn(Vendor $record): string => $record->name)
+                                        ->required()
+                                        ->maxLength(255),
+                                    TextInput::make('email')
+                                        ->label(__('lang.email'))
+                                        ->email()
+                                        ->default(fn(Vendor $record): ?string => $record->email)
+                                        ->required()
+                                        ->unique(User::class, 'email', ignoreRecord: false)
+                                        ->maxLength(255),
+                                    TextInput::make('password')
+                                        ->label(__('lang.password'))
+                                        ->password()
+                                        ->revealable()
+                                        ->default('123456')
+                                        ->required()
+                                        ->minLength(6)
+                                        ->same('password_confirmation'),
+                                    TextInput::make('password_confirmation')
+                                        ->label(__('lang.password_confirmation'))
+                                        ->password()
+                                        ->revealable()
+                                        ->default('123456')
+                                        ->required(),
+                                ]),
+                        ])
+                        ->action(function (Vendor $record, array $data): void {
+                            User::create([
+                                'name' => $data['name'],
+                                'email' => $data['email'],
+                                'password' => Hash::make($data['password']),
+                                'vendor_id' => $record->id,
+                            ]);
 
-                        Notification::make()
-                            ->title(__('lang.user_created_successfully'))
-                            ->success()
-                            ->send();
-                    })
-                    ->modalHeading(__('lang.create_user_for_vendor'))
-                    ->modalSubmitActionLabel(__('lang.create')),
+                            Notification::make()
+                                ->title(__('lang.user_created_successfully'))
+                                ->success()
+                                ->send();
+                        })
+                        ->modalHeading(__('lang.create_user_for_vendor'))
+                        ->modalSubmitActionLabel(__('lang.create')),
+                ])
             ])
             ->bulkActions([
                 BulkActionGroup::make([

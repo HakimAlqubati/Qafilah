@@ -173,6 +173,7 @@ return [
     'hours' => 'Hour(s)',
     'days' => 'Day(s)',
     'default_currency' => 'Default Currency',
+    'default_currency_helper' => 'Based on the system default currency',
     'referrer' => 'Referrer',
     'referrer_user' => 'Referrer User',
     'referrer_helper' => 'The user who referred this vendor (for commission tracking).',

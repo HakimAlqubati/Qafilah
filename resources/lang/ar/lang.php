@@ -173,6 +173,7 @@ return [
     'hours' => 'ساعة/ساعات',
     'days' => 'يوم/أيام',
     'default_currency' => 'العملة الافتراضية',
+    'default_currency_helper' => 'حسب العملة الافتراضية للنظام',
     'referrer' => 'المُحيل',
     'referrer_user' => 'المستخدم المُحيل',
     'referrer_helper' => 'المستخدم الذي أحال هذا التاجر (للعمولة)',
