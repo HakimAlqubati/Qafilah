@@ -12,23 +12,21 @@ class CheckoutController extends Controller
     public function checkout(Request $request)
     {
         $data = $request->validate([
-            'seller_id'            => ['nullable','integer'],
-            'shipping_address_id'  => ['required','integer'],
-            'billing_address_id'   => ['nullable','integer'],
-            'notes'                => ['nullable','string'],
+            'cart_id'              => ['required', 'integer'],
+            'shipping_address_id'  => ['required', 'integer'],
+            'billing_address_id'   => ['nullable', 'integer'],
+            'notes'                => ['nullable', 'string'],
         ]);
 
-        $order = $this->checkoutRepo
-            ->forBuyer((int) $request->user()->id)
-            ->withSellerId(isset($data['seller_id']) ? (int)$data['seller_id'] : null)
-            ->withShippingAddressId((int) $data['shipping_address_id'])
-            ->withBillingAddressId(isset($data['billing_address_id']) ? (int)$data['billing_address_id'] : null)
-            ->withNotes($data['notes'] ?? null)
-            ->checkout();
+        $order = $this->checkoutRepo->checkout(
+            cartId: (int) $data['cart_id'],
+            buyerId: (int) $request->user()->id,
+            shippingAddressId: (int) $data['shipping_address_id'],
+            billingAddressId: isset($data['billing_address_id']) ? (int) $data['billing_address_id'] : null,
+            notes: $data['notes'] ?? null,
+        );
 
         return new OrderResource($order);
     }
 }
-
-
 
