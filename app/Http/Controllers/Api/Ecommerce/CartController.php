@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api\Ecommerce;
-use App\Repositories\order\CustomerAddressRepository;
+use App\Repositories\order\CartRepository;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -9,7 +9,7 @@ use App\Http\Resources\CartResource;
 class CartController extends Controller
 {
     use ApiResponse;
-    public function __construct(private CustomerAddressRepository $cartRepo) {}
+    public function __construct(private CartRepository $cartRepo) {}
 
     private function cartToken(Request $request): ?string
     {
