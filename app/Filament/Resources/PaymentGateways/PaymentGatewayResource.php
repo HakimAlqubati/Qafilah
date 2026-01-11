@@ -62,4 +62,75 @@ class PaymentGatewayResource extends Resource
             'edit' => EditPaymentGateway::route('/{record}/edit'),
         ];
     }
+
+    /* ============================================================
+     | 🎨 Badge Helper Methods
+     |============================================================ */
+
+    /**
+     * Get badge color for gateway type
+     */
+    public static function getTypeBadgeColor(string $type): string
+    {
+        return match ($type) {
+            'electronic' => 'success',
+            'cash' => 'warning',
+            'transfer' => 'info',
+            default => 'gray',
+        };
+    }
+
+    /**
+     * Get icon for gateway type
+     */
+    public static function getTypeIcon(string $type): string
+    {
+        return match ($type) {
+            'electronic' => 'heroicon-o-device-phone-mobile',
+            'cash' => 'heroicon-o-banknotes',
+            'transfer' => 'heroicon-o-building-library',
+            default => 'heroicon-o-question-mark-circle',
+        };
+    }
+
+    /**
+     * Get translated label for gateway type
+     */
+    public static function getTypeLabel(string $type): string
+    {
+        return match ($type) {
+            'electronic' => __('lang.gateway_type_electronic'),
+            'cash' => __('lang.gateway_type_cash'),
+            'transfer' => __('lang.gateway_type_transfer'),
+            default => $type,
+        };
+    }
+
+    /**
+     * Get badge color for gateway mode
+     */
+    public static function getModeBadgeColor(string $mode): string
+    {
+        return match ($mode) {
+            'sandbox' => 'warning',
+            'live' => 'success',
+            default => 'gray',
+        };
+    }
+
+    /**
+     * Get translated label for gateway mode
+     */
+    public static function getModeLabel(string $mode): string
+    {
+        return match ($mode) {
+            'sandbox' => __('lang.gateway_mode_sandbox'),
+            'live' => __('lang.gateway_mode_live'),
+            default => $mode,
+        };
+    }
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 }

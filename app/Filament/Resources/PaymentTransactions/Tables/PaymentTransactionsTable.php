@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PaymentTransactions\Tables;
 
+use App\Filament\Resources\PaymentTransactions\PaymentTransactionResource;
 use App\ValueObjects\Money;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -56,16 +57,9 @@ class PaymentTransactionsTable
                 // 5. Status
                 TextColumn::make('status')
                     ->label(__('lang.transaction_status'))
-                    ->formatStateUsing(fn(string $state): string => __('lang.' . $state))
+                    ->formatStateUsing(fn(string $state): string => PaymentTransactionResource::getStatusLabel($state))
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'paid' => 'success',
-                        'failed' => 'danger',
-                        'refunded' => 'gray',
-                        'reviewing' => 'info',
-                        default => 'gray',
-                    })
+                    ->color(fn(string $state): string => PaymentTransactionResource::getStatusBadgeColor($state))
                     ->sortable(),
 
                 // 6. Reference ID

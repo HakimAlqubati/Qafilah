@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PaymentGateways\Tables;
 
+use App\Filament\Resources\PaymentGateways\PaymentGatewayResource;
 use App\Models\PaymentGateway;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -41,41 +42,18 @@ class PaymentGatewaysTable
                 // 4. Type
                 TextColumn::make('type')
                     ->label(__('lang.gateway_type'))
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'electronic' => __('lang.gateway_type_electronic'),
-                        'cash' => __('lang.gateway_type_cash'),
-                        'transfer' => __('lang.gateway_type_transfer'),
-                        default => $state,
-                    })
+                    ->formatStateUsing(fn(string $state): string => PaymentGatewayResource::getTypeLabel($state))
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'electronic' => 'success',
-                        'cash' => 'warning',
-                        'transfer' => 'info',
-                        default => 'gray',
-                    })
-                    ->icon(fn(string $state): string => match ($state) {
-                        'electronic' => 'heroicon-o-device-phone-mobile',
-                        'cash' => 'heroicon-o-banknotes',
-                        'transfer' => 'heroicon-o-building-library',
-                        default => 'heroicon-o-question-mark-circle',
-                    })
+                    ->color(fn(string $state): string => PaymentGatewayResource::getTypeBadgeColor($state))
+                    ->icon(fn(string $state): string => PaymentGatewayResource::getTypeIcon($state))
                     ->sortable(),
 
                 // 5. Mode
                 TextColumn::make('mode')
                     ->label(__('lang.gateway_mode'))
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'sandbox' => __('lang.gateway_mode_sandbox'),
-                        'live' => __('lang.gateway_mode_live'),
-                        default => $state,
-                    })
+                    ->formatStateUsing(fn(string $state): string => PaymentGatewayResource::getModeLabel($state))
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'sandbox' => 'warning',
-                        'live' => 'success',
-                        default => 'gray',
-                    })
+                    ->color(fn(string $state): string => PaymentGatewayResource::getModeBadgeColor($state))
                     ->sortable(),
 
                 // 6. Is Active

@@ -75,4 +75,34 @@ class PaymentTransactionResource extends Resource
             'edit' => EditPaymentTransaction::route('/{record}/edit'),
         ];
     }
+
+    /* ============================================================
+     | 🎨 Badge Helper Methods
+     |============================================================ */
+
+    /**
+     * Get badge color for transaction status
+     */
+    public static function getStatusBadgeColor(string $status): string
+    {
+        return match ($status) {
+            'pending' => 'warning',
+            'paid' => 'success',
+            'failed' => 'danger',
+            'refunded' => 'gray',
+            'reviewing' => 'info',
+            default => 'gray',
+        };
+    }
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+    /**
+     * Get translated label for transaction status
+     */
+    public static function getStatusLabel(string $status): string
+    {
+        return __('lang.' . $status);
+    }
 }
