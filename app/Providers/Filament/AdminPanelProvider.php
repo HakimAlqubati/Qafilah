@@ -116,14 +116,14 @@ class AdminPanelProvider extends PanelProvider
                         ->items([
                             ...UserResource::getNavigationItems(),
                         ]),
-                    NavigationGroup::make(__('lang.settings'))
-                        ->items([
-                            ...SettingResource::getNavigationItems(),
-                        ]),
                     NavigationGroup::make(__('lang.payment_gateways'))
                         ->items([
                             ...PaymentGatewayResource::getNavigationItems(),
                             ...PaymentTransactionResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make(__('lang.settings'))
+                        ->items([
+                            ...SettingResource::getNavigationItems(),
                         ]),
                 ]);
             })
