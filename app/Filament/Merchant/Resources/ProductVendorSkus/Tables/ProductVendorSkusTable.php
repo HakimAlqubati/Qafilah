@@ -5,6 +5,7 @@ namespace App\Filament\Merchant\Resources\ProductVendorSkus\Tables;
 use App\Models\ProductVendorSku;
 use App\Models\Unit;
 use App\ValueObjects\Money;
+use App\ValueObjects\Quantity;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -104,9 +105,11 @@ class ProductVendorSkusTable
                 TextColumn::make('stock')
                     ->label(__('lang.stock'))->alignCenter()
                     ->state(fn($record) => $record->units->first()?->stock ?? 0)
-                    ->numeric()
-                    ->color(fn($state) => $state > 0 ? Color::Green : Color::Red)
-                    ->badge(),
+                    ->formatStateUsing(fn($state) => Quantity::make($state))
+                    // ->numeric()
+                    // ->color(fn($state) => $state > 0 ? Color::Green : Color::Red)
+                    // ->badge()
+                    ,
 
                 TextColumn::make('status')
                     ->label(__('lang.status'))
