@@ -43,7 +43,6 @@ class ProductInfoStep
             // 4. Hidden Fields
 
             ProductFields::vendorIdHidden(),
-            ProductFields::productIdHidden(),
         ];
     }
 }
