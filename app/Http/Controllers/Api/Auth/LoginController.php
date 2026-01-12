@@ -6,15 +6,18 @@ use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Repositories\Auth\AuthRepositoryInterface;
+use App\Repositories\order\CartRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class LoginController extends ApiController
 {
     public function __construct(
-        protected AuthRepositoryInterface $authRepository
+        protected AuthRepositoryInterface $authRepository,
+        protected  CartRepository $cartRepository
     ) {
     }
+
 
     public function login(LoginRequest $request): JsonResponse
     {
@@ -27,6 +30,13 @@ class LoginController extends ApiController
 
         if (! $user) {
             return $this->errorResponse('Invalid credentials.', 401);
+        }
+
+        if (($credentials['is_guest'] ?? false) === true) {
+            $this->cartRepository
+                ->forBuyer((int) $user->id)
+                ->withClaimToken($request->header('X-Cart-Token'))
+                ->claimGuestCart();
         }
 
         $token = $user->createToken('api_token')->plainTextToken;

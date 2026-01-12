@@ -40,7 +40,6 @@ class CartController extends Controller
             'quantity' => ['required', 'integer', 'min:1'],
             'notes' => ['nullable', 'string'],
         ]);
-
         $buyerId   = optional($request->user())->id;
         $cartToken = $this->cartToken($request);
         $sellerId  = $data['seller_id'] ?? null;

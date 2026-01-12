@@ -24,6 +24,8 @@ class CartItemResource extends JsonResource
             'tax' => (float) $this->tax,
             'total' => (float) $this->total,
             'notes' => $this->notes,
+            'product_name' => $this->product?->name,
+            'product_image' => $this->product?->getDefaultImageUrl(),
         ];
     }
 }

@@ -28,13 +28,11 @@ class CartRepository
     // claim
     private ?string $claimCartToken = null;
 
-    /**
-     * يجهّز سياق السلة (Token-first)
-     */
+
     public function context(?int $buyerId, ?string $cartToken, ?int $sellerId = null): self
     {
         $self = clone $this;
-        $this->buyerId = $buyerId;
+        $self->buyerId = $buyerId;
         $self->cartToken = $cartToken;
         $self->sellerId = $sellerId;
         return $self;
@@ -236,8 +234,7 @@ class CartRepository
 
             if (!$userCart) {
                 $guestCart->update([
-                    'buyer_id' => $buyerId,
-                    'cart_token' => null,
+                    'buyer_id' => $buyerId
                 ]);
 
                 $this->recalcTotals($guestCart);
