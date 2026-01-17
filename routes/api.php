@@ -51,10 +51,13 @@ Route::prefix('v1/ecommerce')->group(function () {
             Route::post('/inc', [CartController::class, 'incItem']); // +
             Route::post('/dec', [CartController::class, 'decItem']); // -
             Route::middleware('auth:sanctum')->post('/claim', [CartController::class, 'claim']);
+            Route::post('/checkout', [CheckoutController::class, 'checkout']);
+
         });
+
     });
 
-    Route::post('/checkout', [CheckoutController::class, 'checkout']);
+
     Route::get('payment-gateways', [PaymentGatewayController::class, 'live']);
     Route::middleware('auth:sanctum')->prefix('address')->group(function () {
         Route::get('/', [CustomerAddressController::class, 'index']);
@@ -62,6 +65,7 @@ Route::prefix('v1/ecommerce')->group(function () {
         Route::put('{id}', [CustomerAddressController::class, 'update']);
         Route::delete('{id}', [CustomerAddressController::class, 'destroy']);
         Route::post('/default', [CustomerAddressController::class, 'setDefault']);
+
     });
 
 
