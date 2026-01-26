@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\PaymentTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -30,6 +31,7 @@ class OrderResource extends JsonResource
             'placed_at' => optional($this->placed_at)->toISOString(),
 
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
+            'paymentTransactions' => PaymentTransactionResource::collection($this->whenLoaded('paymentTransactions')),
         ];
     }
 }
