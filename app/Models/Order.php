@@ -367,6 +367,6 @@ class Order extends Model
     }
     public function paymentTransactions()
     {
-        return  $this->morphMany(PaymentTransaction::class, 'payable');
+        return   $this->morphMany(PaymentTransaction::class, 'payable');
     }
 }
