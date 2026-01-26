@@ -59,7 +59,6 @@ class CheckoutRepository
                 ->whereKey($paymentGatewayId)
                 ->lockForUpdate()
                 ->firstOrFail();
-
             if ($cart->converted_order_id) {
                 $existing = Order::query()
                     ->whereKey($cart->converted_order_id)
@@ -157,7 +156,7 @@ class CheckoutRepository
         PaymentGateway $gateway,
         ?string $gatewayInstructions,
     ): PaymentTransaction {
-         $txStatus = $gateway->isElectronic() ? 'pending' : 'paid';
+         $txStatus = $gateway->isElectronic() ? 'pending' : 'pending';
 
         $payload = [
             'gateway_id'     => $gateway->id,
@@ -178,7 +177,7 @@ class CheckoutRepository
         $tx = PaymentTransaction::query()
             ->where('payable_type', Order::class)
             ->where('payable_id', $order->id)
-            ->whereIn('status', ['pending', 'reviewing']) // تحديث العملية المعلقة بدل التكرار
+            ->whereIn('status', ['pending', 'reviewing'])
             ->lockForUpdate()
             ->latest('id')
             ->first();

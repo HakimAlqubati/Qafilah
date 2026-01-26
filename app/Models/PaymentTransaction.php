@@ -32,10 +32,6 @@ class PaymentTransaction extends Model
         'gateway_response' => 'array',
     ];
 
-    /* ============================================================
-     | 🔹 Constants - حالات المعاملة
-     |============================================================ */
-
     public const STATUS_PENDING = 'pending';
     public const STATUS_PAID = 'paid';
     public const STATUS_FAILED = 'failed';
@@ -49,10 +45,6 @@ class PaymentTransaction extends Model
         self::STATUS_REFUNDED,
         self::STATUS_REVIEWING,
     ];
-
-    /* ============================================================
-     | 🔗 العلاقات (Relations)
-     |============================================================ */
 
     public function gateway(): BelongsTo
     {
@@ -74,9 +66,10 @@ class PaymentTransaction extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /* ============================================================
-     | 🧭 Scopes
-     |============================================================ */
+    public function supportsOtp(): bool
+    {
+         return $this->gateway?->supportsOtp() ?? false;
+    }
 
     public function scopePending($query)
     {
@@ -113,61 +106,39 @@ class PaymentTransaction extends Model
         return $query->where('gateway_id', $gatewayId);
     }
 
-    /* ============================================================
-     | ⚙️ Helper Methods
-     |============================================================ */
 
-    /**
-     * هل المعاملة في انتظار الدفع؟
-     */
     public function isPending(): bool
     {
         return $this->status === self::STATUS_PENDING;
     }
 
-    /**
-     * هل تم الدفع؟
-     */
+
     public function isPaid(): bool
     {
         return $this->status === self::STATUS_PAID;
     }
 
-    /**
-     * هل فشلت المعاملة؟
-     */
     public function isFailed(): bool
     {
         return $this->status === self::STATUS_FAILED;
     }
 
-    /**
-     * هل تم الاسترداد؟
-     */
     public function isRefunded(): bool
     {
         return $this->status === self::STATUS_REFUNDED;
     }
 
-    /**
-     * هل المعاملة قيد المراجعة؟
-     */
     public function isReviewing(): bool
     {
         return $this->status === self::STATUS_REVIEWING;
     }
 
-    /**
-     * الحصول على تسمية الحالة
-     */
+
     public function getStatusLabel(): string
     {
         return __('lang.' . $this->status);
     }
 
-    /**
-     * تحديث حالة المعاملة
-     */
     public function markAs(string $status, ?array $gatewayResponse = null): bool
     {
         $data = ['status' => $status];
@@ -179,25 +150,15 @@ class PaymentTransaction extends Model
         return $this->update($data);
     }
 
-    /**
-     * تحديد كمدفوعة
-     */
     public function markAsPaid(?array $gatewayResponse = null): bool
     {
         return $this->markAs(self::STATUS_PAID, $gatewayResponse);
     }
 
-    /**
-     * تحديد كفاشلة
-     */
     public function markAsFailed(?array $gatewayResponse = null): bool
     {
         return $this->markAs(self::STATUS_FAILED, $gatewayResponse);
     }
-
-    /* ============================================================
-     | 🔄 Boot Methods
-     |============================================================ */
 
     protected static function boot()
     {
