@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Currencies\Tables;
 
+use App\ValueObjects\Money;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -26,8 +27,11 @@ class CurrenciesTable
                     ->label(__('lang.symbol'))
                     ->searchable(),
                 TextColumn::make('rate')->alignCenter()
+                    ->formatStateUsing(function ($state) {
+                        return Money::make($state);
+                    })
                     ->label(__('lang.exchange_rate'))
-                    ->numeric(),
+                    ,
                 IconColumn::make('is_default')
                     ->label(__('lang.is_currency_default'))
                     ->boolean()->alignCenter(),
