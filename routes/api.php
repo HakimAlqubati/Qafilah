@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Address\CustomerAddressController;
+use App\Http\Controllers\Api\Ecommerce\OrderController;
 use App\Http\Controllers\Api\PaymentGateway\PaymentGatewayController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -41,6 +42,11 @@ Route::prefix('v1/ecommerce')->group(function () {
     Route::post('/products/vendor-count', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'getVendorCount']);
     Route::post('/products/vendor-prices', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'getVendorProductPrices']);
     Route::post('/products/details', [ProductController::class, 'productDetails']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/orders', [ OrderController::class, 'index']);
+        Route::post('/orders/{id}', [ OrderController::class, 'show']);
+    });
 
     Route::middleware('optional.sanctum')->group(function () {
         Route::prefix('cart')->group(function () {
