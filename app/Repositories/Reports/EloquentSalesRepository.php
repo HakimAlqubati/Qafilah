@@ -96,7 +96,7 @@ class EloquentSalesRepository implements SalesRepositoryInterface
     {
         $results = $this->getBaseQuery($filter)
             ->join('vendors', 'orders.vendor_id', '=', 'vendors.id')
-            // ->whereNotIn('orders.status', self::EXCLUDED_REVENUE_STATUSES)
+            ->whereNotIn('orders.status', self::EXCLUDED_REVENUE_STATUSES)
             ->groupBy('orders.vendor_id', 'vendors.name')
             ->selectRaw('
                 orders.vendor_id,
