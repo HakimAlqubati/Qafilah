@@ -23,7 +23,8 @@ Route::prefix('auth')->group(function () {
     Route::get('me', [LoginController::class, 'me'])->middleware('auth:sanctum');
 });
 Route::prefix('v1')->group(function () {
-
+    // Reports API Routes
+    require __DIR__ . '/api/reports.php';
 });
 Route::prefix('v1/ecommerce')->group(function () {
     Route::prefix('sync')->group(function () {
@@ -44,8 +45,8 @@ Route::prefix('v1/ecommerce')->group(function () {
     Route::post('/products/details', [ProductController::class, 'productDetails']);
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/orders', [ OrderController::class, 'index']);
-        Route::post('/orders/{id}', [ OrderController::class, 'show']);
+        Route::post('/orders', [OrderController::class, 'index']);
+        Route::post('/orders/{id}', [OrderController::class, 'show']);
     });
 
     Route::middleware('optional.sanctum')->group(function () {
@@ -58,9 +59,7 @@ Route::prefix('v1/ecommerce')->group(function () {
             Route::post('/dec', [CartController::class, 'decItem']); // -
             Route::middleware('auth:sanctum')->post('/claim', [CartController::class, 'claim']);
             Route::post('/checkout', [CheckoutController::class, 'checkout']);
-
         });
-
     });
 
 
@@ -71,8 +70,5 @@ Route::prefix('v1/ecommerce')->group(function () {
         Route::put('{id}', [CustomerAddressController::class, 'update']);
         Route::delete('{id}', [CustomerAddressController::class, 'destroy']);
         Route::post('/default', [CustomerAddressController::class, 'setDefault']);
-
     });
-
-
 });
