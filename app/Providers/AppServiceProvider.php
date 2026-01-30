@@ -17,6 +17,10 @@ use App\Repositories\Reports\Sales\EloquentSalesRepository;
 use App\Repositories\Reports\Products\ProductsReportRepositoryInterface;
 use App\Repositories\Reports\Products\EloquentProductsReportRepository;
 
+// Vendors Report Repositories
+use App\Repositories\Reports\Vendors\VendorsReportRepositoryInterface;
+use App\Repositories\Reports\Vendors\EloquentVendorsReportRepository;
+
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 
 class AppServiceProvider extends ServiceProvider
@@ -34,6 +38,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Reports - Products
         $this->app->bind(ProductsReportRepositoryInterface::class, EloquentProductsReportRepository::class);
+
+        // Reports - Vendors
+        $this->app->bind(VendorsReportRepositoryInterface::class, EloquentVendorsReportRepository::class);
     }
 
     /**

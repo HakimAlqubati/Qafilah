@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\Reports\ProductsReportController;
 use App\Http\Controllers\Api\Reports\SalesReportController;
+use App\Http\Controllers\Api\Reports\VendorsReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,7 +21,7 @@ Route::prefix('reports')->name('reports.')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Sales Reports
+    | Sales Reports - تقرير المبيعات
     |--------------------------------------------------------------------------
     */
     Route::prefix('sales')->name('sales.')->group(function () {
@@ -67,43 +68,90 @@ Route::prefix('reports')->name('reports.')->group(function () {
     Route::prefix('products')->name('products.')->group(function () {
 
         // GET /api/v1/reports/products/top
-        // Get top selling products with full details
         Route::get('top', [ProductsReportController::class, 'topProducts'])
             ->name('top');
 
         // GET /api/v1/reports/products/summary
-        // Get products summary statistics
         Route::get('summary', [ProductsReportController::class, 'summary'])
             ->name('summary');
 
         // GET /api/v1/reports/products/by-category
-        // Get products breakdown by category
         Route::get('by-category', [ProductsReportController::class, 'byCategory'])
             ->name('by-category');
 
         // GET /api/v1/reports/products/by-vendor
-        // Get products breakdown by vendor
         Route::get('by-vendor', [ProductsReportController::class, 'byVendor'])
             ->name('by-vendor');
 
         // GET /api/v1/reports/products/trends
-        // Get product sales trends over time
         Route::get('trends', [ProductsReportController::class, 'trends'])
             ->name('trends');
 
         // GET /api/v1/reports/products/slow-moving
-        // Get slow moving products (lowest sales)
         Route::get('slow-moving', [ProductsReportController::class, 'slowMoving'])
             ->name('slow-moving');
 
         // GET /api/v1/reports/products/compare
-        // Compare product performance between periods
         Route::get('compare', [ProductsReportController::class, 'compare'])
             ->name('compare');
 
         // GET /api/v1/reports/products/dashboard
-        // Get comprehensive products dashboard
         Route::get('dashboard', [ProductsReportController::class, 'dashboard'])
+            ->name('dashboard');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Vendors Reports - تقرير أداء الموردين
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('vendors')->name('vendors.')->group(function () {
+
+        // GET /api/v1/reports/vendors/top
+        // Get top performing vendors
+        Route::get('top', [VendorsReportController::class, 'topVendors'])
+            ->name('top');
+
+        // GET /api/v1/reports/vendors/summary
+        // Get vendors summary statistics
+        Route::get('summary', [VendorsReportController::class, 'summary'])
+            ->name('summary');
+
+        // GET /api/v1/reports/vendors/{vendorId}
+        // Get specific vendor performance
+        Route::get('{vendorId}', [VendorsReportController::class, 'vendorPerformance'])
+            ->where('vendorId', '[0-9]+')
+            ->name('vendor-performance');
+
+        // GET /api/v1/reports/vendors/{vendorId}/trends
+        // Get specific vendor trends
+        Route::get('{vendorId}/trends', [VendorsReportController::class, 'vendorTrends'])
+            ->where('vendorId', '[0-9]+')
+            ->name('vendor-trends');
+
+        // GET /api/v1/reports/vendors/by-category
+        // Get vendors breakdown by category
+        Route::get('by-category', [VendorsReportController::class, 'byCategory'])
+            ->name('by-category');
+
+        // GET /api/v1/reports/vendors/low-performing
+        // Get low performing vendors
+        Route::get('low-performing', [VendorsReportController::class, 'lowPerforming'])
+            ->name('low-performing');
+
+        // GET /api/v1/reports/vendors/compare
+        // Compare vendor performance between periods
+        Route::get('compare', [VendorsReportController::class, 'compare'])
+            ->name('compare');
+
+        // GET /api/v1/reports/vendors/growth
+        // Get vendors growth ranking
+        Route::get('growth', [VendorsReportController::class, 'growthRanking'])
+            ->name('growth');
+
+        // GET /api/v1/reports/vendors/dashboard
+        // Get comprehensive vendors dashboard
+        Route::get('dashboard', [VendorsReportController::class, 'dashboard'])
             ->name('dashboard');
     });
 });
