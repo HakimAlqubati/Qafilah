@@ -622,4 +622,30 @@ return [
     'average_price' => 'Average Price',
     'items_sold' => 'Items Sold',
     'rank' => 'Rank',
+
+    // Products Reports API
+    'products_summary_generated' => 'Products summary report generated successfully',
+    'products_by_category_generated' => 'Products by category report generated successfully',
+    'products_by_vendor_generated' => 'Products by vendor report generated successfully',
+    'products_trends_generated' => 'Products trends report generated successfully',
+    'slow_moving_products_generated' => 'Slow moving products report generated successfully',
+    'products_comparison_generated' => 'Products comparison report generated successfully',
+    'products_dashboard_generated' => 'Products dashboard generated successfully',
+
+    // Products Report Fields
+    'sort_by' => 'Sort By',
+    'sort_order' => 'Sort Order',
+    'invalid_sort_by' => 'Invalid sort field. Use: revenue, quantity, or orders',
+    'invalid_sort_order' => 'Invalid sort order. Use: asc or desc',
+    'product_name' => 'Product Name',
+    'product_sku' => 'Product SKU',
+    'products_count' => 'Products Count',
+    'category' => 'Category',
+    'vendor' => 'Vendor',
+    'total_products' => 'Total Products',
+    'average_revenue_per_product' => 'Average Revenue Per Product',
+    'average_quantity_per_order' => 'Average Quantity Per Order',
+    'top_category' => 'Top Category',
+    'top_vendor' => 'Top Vendor',
+    'slow_moving' => 'Slow Moving',
 ];

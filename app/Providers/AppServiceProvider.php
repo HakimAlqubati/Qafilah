@@ -8,6 +8,8 @@ use App\Repositories\Auth\AuthRepositoryInterface;
 use App\Repositories\Auth\AuthRepository;
 use App\Repositories\Reports\SalesRepositoryInterface;
 use App\Repositories\Reports\EloquentSalesRepository;
+use App\Repositories\Reports\ProductsReportRepositoryInterface;
+use App\Repositories\Reports\EloquentProductsReportRepository;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
         $this->app->bind(SalesRepositoryInterface::class, EloquentSalesRepository::class);
+        $this->app->bind(ProductsReportRepositoryInterface::class, EloquentProductsReportRepository::class);
     }
 
     /**

@@ -623,4 +623,30 @@ return [
     'average_price' => 'متوسط السعر',
     'items_sold' => 'العناصر المباعة',
     'rank' => 'الترتيب',
+
+    // Products Reports API
+    'products_summary_generated' => 'تم إنشاء تقرير ملخص المنتجات بنجاح',
+    'products_by_category_generated' => 'تم إنشاء تقرير المنتجات حسب الفئة بنجاح',
+    'products_by_vendor_generated' => 'تم إنشاء تقرير المنتجات حسب البائع بنجاح',
+    'products_trends_generated' => 'تم إنشاء تقرير اتجاهات المنتجات بنجاح',
+    'slow_moving_products_generated' => 'تم إنشاء تقرير المنتجات بطيئة الحركة بنجاح',
+    'products_comparison_generated' => 'تم إنشاء تقرير مقارنة المنتجات بنجاح',
+    'products_dashboard_generated' => 'تم تحميل لوحة تحكم المنتجات بنجاح',
+
+    // Products Report Fields
+    'sort_by' => 'ترتيب حسب',
+    'sort_order' => 'اتجاه الترتيب',
+    'invalid_sort_by' => 'حقل الترتيب غير صالح. استخدم: revenue أو quantity أو orders',
+    'invalid_sort_order' => 'اتجاه الترتيب غير صالح. استخدم: asc أو desc',
+    'product_name' => 'اسم المنتج',
+    'product_sku' => 'رمز المنتج',
+    'products_count' => 'عدد المنتجات',
+    'category' => 'الفئة',
+    'vendor' => 'البائع',
+    'total_products' => 'إجمالي المنتجات',
+    'average_revenue_per_product' => 'متوسط الإيراد لكل منتج',
+    'average_quantity_per_order' => 'متوسط الكمية لكل طلب',
+    'top_category' => 'الفئة الأكثر مبيعاً',
+    'top_vendor' => 'البائع الأكثر مبيعاً',
+    'slow_moving' => 'بطيء الحركة',
 ];
