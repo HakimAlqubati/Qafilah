@@ -4,12 +4,19 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+
+// Auth Repositories
 use App\Repositories\Auth\AuthRepositoryInterface;
 use App\Repositories\Auth\AuthRepository;
-use App\Repositories\Reports\SalesRepositoryInterface;
-use App\Repositories\Reports\EloquentSalesRepository;
-use App\Repositories\Reports\ProductsReportRepositoryInterface;
-use App\Repositories\Reports\EloquentProductsReportRepository;
+
+// Sales Report Repositories
+use App\Repositories\Reports\Sales\SalesRepositoryInterface;
+use App\Repositories\Reports\Sales\EloquentSalesRepository;
+
+// Products Report Repositories
+use App\Repositories\Reports\Products\ProductsReportRepositoryInterface;
+use App\Repositories\Reports\Products\EloquentProductsReportRepository;
+
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,8 +26,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Auth
         $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
+
+        // Reports - Sales
         $this->app->bind(SalesRepositoryInterface::class, EloquentSalesRepository::class);
+
+        // Reports - Products
         $this->app->bind(ProductsReportRepositoryInterface::class, EloquentProductsReportRepository::class);
     }
 

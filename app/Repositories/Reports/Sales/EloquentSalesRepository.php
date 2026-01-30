@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\Reports;
+namespace App\Repositories\Reports\Sales;
 
-use App\DTOs\Reports\SalesFilterDTO;
-use App\DTOs\Reports\SalesSummaryDTO;
-use App\DTOs\Reports\VendorSalesDTO;
+use App\DTOs\Reports\Sales\SalesFilterDTO;
+use App\DTOs\Reports\Sales\SalesSummaryDTO;
+use App\DTOs\Reports\Sales\VendorSalesDTO;
 use App\Models\Order;
 use App\ValueObjects\Money;
 use Illuminate\Database\Query\Builder;

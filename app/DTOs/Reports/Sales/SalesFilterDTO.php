@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\DTOs\Reports;
+namespace App\DTOs\Reports\Sales;
 
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
 
 /**
- * Data Transfer Object for Products Report Filters
+ * Data Transfer Object for Sales Report Filters
  * 
  * Immutable value object that encapsulates all filtering criteria
- * for generating product reports.
+ * for generating sales reports.
  */
-readonly class ProductsFilterDTO
+readonly class SalesFilterDTO
 {
     public ?CarbonImmutable $startDate;
     public ?CarbonImmutable $endDate;
@@ -22,12 +22,12 @@ readonly class ProductsFilterDTO
         DateTimeInterface|string|null $startDate = null,
         DateTimeInterface|string|null $endDate = null,
         public ?int $vendorId = null,
+        public ?string $status = null,
+        public ?string $paymentStatus = null,
+        public ?int $customerId = null,
         public ?int $categoryId = null,
-        public ?string $orderStatus = null,
-        public ?string $sortBy = 'revenue', // revenue, quantity, orders
-        public string $sortOrder = 'desc',
-        public int $limit = 10,
     ) {
+        // Dates are null by default (no filtering)
         $this->startDate = $this->parseDate($startDate);
         $this->endDate = $this->parseDate($endDate);
     }
@@ -59,25 +59,14 @@ readonly class ProductsFilterDTO
      */
     public static function fromArray(array $data): self
     {
-        $sortBy = $data['sort_by'] ?? 'revenue';
-        if (!in_array($sortBy, ['revenue', 'quantity', 'orders'], true)) {
-            $sortBy = 'revenue';
-        }
-
-        $sortOrder = strtolower($data['sort_order'] ?? 'desc');
-        if (!in_array($sortOrder, ['asc', 'desc'], true)) {
-            $sortOrder = 'desc';
-        }
-
         return new self(
-            startDate: $data['start_date'] ?? null,
-            endDate: $data['end_date'] ?? null,
+            startDate: $data['start_date'] ?? $data['startDate'] ?? null,
+            endDate: $data['end_date'] ?? $data['endDate'] ?? null,
             vendorId: isset($data['vendor_id']) ? (int) $data['vendor_id'] : null,
+            status: $data['status'] ?? null,
+            paymentStatus: $data['payment_status'] ?? $data['paymentStatus'] ?? null,
+            customerId: isset($data['customer_id']) ? (int) $data['customer_id'] : null,
             categoryId: isset($data['category_id']) ? (int) $data['category_id'] : null,
-            orderStatus: $data['order_status'] ?? null,
-            sortBy: $sortBy,
-            sortOrder: $sortOrder,
-            limit: isset($data['limit']) ? min((int) $data['limit'], 100) : 10,
         );
     }
 
@@ -92,11 +81,10 @@ readonly class ProductsFilterDTO
             'start_date' => $this->startDate?->toDateTimeString(),
             'end_date' => $this->endDate?->toDateTimeString(),
             'vendor_id' => $this->vendorId,
+            'status' => $this->status,
+            'payment_status' => $this->paymentStatus,
+            'customer_id' => $this->customerId,
             'category_id' => $this->categoryId,
-            'order_status' => $this->orderStatus,
-            'sort_by' => $this->sortBy,
-            'sort_order' => $this->sortOrder,
-            'limit' => $this->limit,
         ];
     }
 
@@ -108,8 +96,18 @@ readonly class ProductsFilterDTO
         return $this->startDate !== null
             || $this->endDate !== null
             || $this->vendorId !== null
-            || $this->categoryId !== null
-            || $this->orderStatus !== null;
+            || $this->status !== null
+            || $this->paymentStatus !== null
+            || $this->customerId !== null
+            || $this->categoryId !== null;
+    }
+
+    /**
+     * Check if date range filter is applied
+     */
+    public function hasDateFilter(): bool
+    {
+        return $this->startDate !== null || $this->endDate !== null;
     }
 
     /**
@@ -125,17 +123,5 @@ readonly class ProductsFilterDTO
         $end = $this->endDate?->format('Y-m-d') ?? 'الآن';
 
         return sprintf('%s - %s', $start, $end);
-    }
-
-    /**
-     * Get the SQL order by column
-     */
-    public function getOrderByColumn(): string
-    {
-        return match ($this->sortBy) {
-            'quantity' => 'quantity_sold',
-            'orders' => 'orders_count',
-            default => 'total_revenue',
-        };
     }
 }

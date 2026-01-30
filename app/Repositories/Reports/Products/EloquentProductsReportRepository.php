@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\Reports;
+namespace App\Repositories\Reports\Products;
 
-use App\DTOs\Reports\ProductsFilterDTO;
-use App\DTOs\Reports\ProductsSummaryDTO;
-use App\DTOs\Reports\TopProductDTO;
+use App\DTOs\Reports\Products\ProductsFilterDTO;
+use App\DTOs\Reports\Products\ProductsSummaryDTO;
+use App\DTOs\Reports\Products\TopProductDTO;
 use App\Models\Order;
 use App\ValueObjects\Money;
 use Illuminate\Database\Query\Builder;
@@ -264,7 +264,7 @@ class EloquentProductsReportRepository implements ProductsReportRepositoryInterf
         return $this->getBaseQuery($filter)
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
             ->leftJoin('vendors', 'orders.vendor_id', '=', 'vendors.id')
-            ->groupBy('order_items.product_id', 'products.name', 'categories.name', 'vendors.name')
+            ->groupBy('order_items.product_id', 'products.name',  'categories.name', 'vendors.name')
             ->selectRaw('
                 order_items.product_id,
                 products.name as product_name,

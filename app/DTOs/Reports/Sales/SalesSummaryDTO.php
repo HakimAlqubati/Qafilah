@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DTOs\Reports;
+namespace App\DTOs\Reports\Sales;
 
 use App\ValueObjects\Money;
 

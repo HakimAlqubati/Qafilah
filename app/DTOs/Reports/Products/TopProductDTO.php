@@ -2,25 +2,27 @@
 
 declare(strict_types=1);
 
-namespace App\DTOs\Reports;
+namespace App\DTOs\Reports\Products;
 
 use App\ValueObjects\Money;
 
 /**
- * Data Transfer Object for Vendor-specific Sales Data
+ * Data Transfer Object for Top Product Report
  * 
- * Immutable value object containing sales metrics for a specific vendor/merchant.
+ * Immutable value object containing product sales metrics.
  */
-readonly class VendorSalesDTO
+readonly class TopProductDTO
 {
     public function __construct(
-        public int $vendorId,
-        public string $vendorName,
+        public int $productId,
+        public string $productName,
+        public ?string $productSku,
+        public ?string $categoryName,
+        public ?string $vendorName,
+        public int $quantitySold,
         public float $totalRevenue,
+        public float $averagePrice,
         public int $ordersCount,
-        public float $averageOrderValue,
-        public int $productsCount,
-        public int $itemsSold,
         public float $revenuePercentage = 0.0,
         public int $rank = 0,
     ) {}
@@ -35,13 +37,15 @@ readonly class VendorSalesDTO
         $data = is_array($result) ? (object) $result : $result;
 
         return new self(
-            vendorId: (int) ($data->vendor_id ?? 0),
-            vendorName: (string) ($data->vendor_name ?? 'Unknown'),
+            productId: (int) ($data->product_id ?? 0),
+            productName: (string) ($data->product_name ?? 'Unknown'),
+            productSku: $data->product_sku ?? null,
+            categoryName: $data->category_name ?? null,
+            vendorName: $data->vendor_name ?? null,
+            quantitySold: (int) ($data->quantity_sold ?? 0),
             totalRevenue: (float) ($data->total_revenue ?? 0),
+            averagePrice: (float) ($data->average_price ?? 0),
             ordersCount: (int) ($data->orders_count ?? 0),
-            averageOrderValue: (float) ($data->average_order_value ?? 0),
-            productsCount: (int) ($data->products_count ?? 0),
-            itemsSold: (int) ($data->items_sold ?? 0),
             revenuePercentage: (float) ($data->revenue_percentage ?? 0),
             rank: (int) ($data->rank ?? 0),
         );
@@ -57,13 +61,15 @@ readonly class VendorSalesDTO
             : 0.0;
 
         return new self(
-            vendorId: $this->vendorId,
+            productId: $this->productId,
+            productName: $this->productName,
+            productSku: $this->productSku,
+            categoryName: $this->categoryName,
             vendorName: $this->vendorName,
+            quantitySold: $this->quantitySold,
             totalRevenue: $this->totalRevenue,
+            averagePrice: $this->averagePrice,
             ordersCount: $this->ordersCount,
-            averageOrderValue: $this->averageOrderValue,
-            productsCount: $this->productsCount,
-            itemsSold: $this->itemsSold,
             revenuePercentage: $percentage,
             rank: $rank,
         );
@@ -77,15 +83,17 @@ readonly class VendorSalesDTO
     public function toArray(): array
     {
         return [
-            'vendor_id' => $this->vendorId,
-            'vendor_name' => $this->vendorName,
-            'total_revenue' => (string) Money::make($this->totalRevenue),
-            'orders_count' => $this->ordersCount,
-            'average_order_value' => (string) Money::make($this->averageOrderValue),
-            'products_count' => $this->productsCount,
-            'items_sold' => $this->itemsSold,
-            'revenue_percentage' => $this->revenuePercentage . '%',
             'rank' => $this->rank,
+            'product_id' => $this->productId,
+            'product_name' => $this->productName,
+            'product_sku' => $this->productSku,
+            'category_name' => $this->categoryName,
+            'vendor_name' => $this->vendorName,
+            'quantity_sold' => $this->quantitySold,
+            'total_revenue' => (string) Money::make($this->totalRevenue),
+            'average_price' => (string) Money::make($this->averagePrice),
+            'orders_count' => $this->ordersCount,
+            'revenue_percentage' => $this->revenuePercentage . '%',
         ];
     }
 
@@ -97,15 +105,17 @@ readonly class VendorSalesDTO
     public function toRawArray(): array
     {
         return [
-            'vendor_id' => $this->vendorId,
-            'vendor_name' => $this->vendorName,
-            'total_revenue' => $this->totalRevenue,
-            'orders_count' => $this->ordersCount,
-            'average_order_value' => $this->averageOrderValue,
-            'products_count' => $this->productsCount,
-            'items_sold' => $this->itemsSold,
-            'revenue_percentage' => $this->revenuePercentage,
             'rank' => $this->rank,
+            'product_id' => $this->productId,
+            'product_name' => $this->productName,
+            'product_sku' => $this->productSku,
+            'category_name' => $this->categoryName,
+            'vendor_name' => $this->vendorName,
+            'quantity_sold' => $this->quantitySold,
+            'total_revenue' => $this->totalRevenue,
+            'average_price' => $this->averagePrice,
+            'orders_count' => $this->ordersCount,
+            'revenue_percentage' => $this->revenuePercentage,
         ];
     }
 }

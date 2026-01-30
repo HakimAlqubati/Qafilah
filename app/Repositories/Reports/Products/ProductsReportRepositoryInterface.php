@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\Reports;
+namespace App\Repositories\Reports\Products;
 
-use App\DTOs\Reports\ProductsFilterDTO;
-use App\DTOs\Reports\ProductsSummaryDTO;
-use App\DTOs\Reports\TopProductDTO;
+use App\DTOs\Reports\Products\ProductsFilterDTO;
+use App\DTOs\Reports\Products\ProductsSummaryDTO;
+use App\DTOs\Reports\Products\TopProductDTO;
 use Illuminate\Support\Collection;
 
 /**

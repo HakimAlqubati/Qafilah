@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Reports;
 
-use App\DTOs\Reports\SalesFilterDTO;
+use App\DTOs\Reports\Sales\SalesFilterDTO;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Api\Reports\SalesReportRequest;
-use App\Repositories\Reports\SalesRepositoryInterface;
+use App\Repositories\Reports\Sales\SalesRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 
 /**
