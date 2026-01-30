@@ -201,12 +201,12 @@ class EloquentSalesRepository implements SalesRepositoryInterface
             ->orderByDesc('total_revenue')
             ->limit($limit)
             ->get()
-            ->map(fn(object $row): array => [
-                'product_id' => (int) $row->product_id,
-                'product_name' => (string) $row->product_name,
-                'quantity_sold' => (int) $row->quantity_sold,
-                'total_revenue' => (string) Money::make((float) $row->total_revenue),
-                'average_price' => (string) Money::make((float) $row->average_price),
+            ->map(fn(object $row): object => (object) [
+                'productId' => (int) $row->product_id,
+                'productName' => (string) $row->product_name,
+                'quantitySold' => (int) $row->quantity_sold,
+                'totalRevenue' => (string) Money::make((float) $row->total_revenue),
+                'averagePrice' => (string) Money::make((float) $row->average_price),
             ]);
     }
 
