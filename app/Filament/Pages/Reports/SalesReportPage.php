@@ -13,7 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
- use Filament\Schemas\Schema;
+use Filament\Schemas\Schema;
 
 use Filament\Support\Icons\Heroicon;
 use Livewire\Attributes\Computed;
@@ -31,7 +31,7 @@ class SalesReportPage extends Page implements HasForms
     public function mount(): void
     {
         $this->form->fill([
-            'start_date' => now()->startOfMonth()->format('Y-m-d'),
+            'start_date' => now()->subMonths(3)->startOfMonth()->format('Y-m-d'),
             'end_date' => now()->endOfMonth()->format('Y-m-d'),
             'status' => Order::STATUS_COMPLETED,
         ]);
@@ -49,6 +49,7 @@ class SalesReportPage extends Page implements HasForms
 
     public function getTitle(): string
     {
+        return '';
         return __('lang.sales_report');
     }
 
@@ -59,13 +60,9 @@ class SalesReportPage extends Page implements HasForms
                 Section::make(__('lang.filters'))
                     ->schema([
                         DatePicker::make('start_date')
-                            ->label(__('lang.start_date'))
-                            ->default(now()->startOfMonth()),
-
+                            ->label(__('lang.start_date')),
                         DatePicker::make('end_date')
-                            ->label(__('lang.end_date'))
-                            ->default(now()->endOfMonth()),
-
+                            ->label(__('lang.end_date')),
                         Select::make('vendor_id')
                             ->label(__('lang.vendor'))
                             ->options(Vendor::pluck('name', 'id'))
