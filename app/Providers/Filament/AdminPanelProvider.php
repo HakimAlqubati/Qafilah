@@ -121,6 +121,10 @@ class AdminPanelProvider extends PanelProvider
                             ...PaymentGatewayResource::getNavigationItems(),
                             ...PaymentTransactionResource::getNavigationItems(),
                         ]),
+                    NavigationGroup::make(__('lang.reports'))
+                        ->items([
+                            ...\App\Filament\Pages\Reports\SalesReportPage::getNavigationItems(),
+                        ]),
                     NavigationGroup::make(__('lang.settings'))
                         ->items([
                             ...SettingResource::getNavigationItems(),

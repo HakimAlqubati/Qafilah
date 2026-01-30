@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProductShowController;
 use App\Http\Controllers\DocsReports\BranchProposalsController;
 use App\Http\Controllers\DocsReports\DefaultUnitReportController;
+use App\Http\Controllers\DocsReports\RequiredReportsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,6 +17,7 @@ Route::get('/products/{slug}', [ProductShowController::class, 'show'])->name('pr
 Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/default-unit-report', [DefaultUnitReportController::class, 'index'])->name('default-unit-report');
     Route::get('/branch-proposals', [BranchProposalsController::class, 'index'])->name('branch-proposals');
+    Route::get('/required-reports', [RequiredReportsController::class, 'index'])->name('required-reports');
 });
 
 // Language Switcher
