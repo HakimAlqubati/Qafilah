@@ -8,6 +8,7 @@ use App\DTOs\Reports\SalesFilterDTO;
 use App\DTOs\Reports\SalesSummaryDTO;
 use App\DTOs\Reports\VendorSalesDTO;
 use App\Models\Order;
+use App\ValueObjects\Money;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -206,8 +207,8 @@ class EloquentSalesRepository implements SalesRepositoryInterface
                 'product_id' => (int) $row->product_id,
                 'product_name' => (string) $row->product_name,
                 'quantity_sold' => (int) $row->quantity_sold,
-                'total_revenue' => (float) $row->total_revenue,
-                'average_price' => (float) $row->average_price,
+                'total_revenue' => (string) Money::make((float) $row->total_revenue),
+                'average_price' => (string) Money::make((float) $row->average_price),
             ]);
     }
 
@@ -222,20 +223,22 @@ class EloquentSalesRepository implements SalesRepositoryInterface
         $previous = $this->getSalesSummary($previousPeriod);
 
         return [
-            'current' => $current,
-            'previous' => $previous,
-            'revenue_change' => $this->calculatePercentageChange(
-                $previous->totalRevenue,
-                $current->totalRevenue
-            ),
-            'orders_change' => $this->calculatePercentageChange(
-                (float) $previous->ordersCount,
-                (float) $current->ordersCount
-            ),
-            'average_change' => $this->calculatePercentageChange(
-                $previous->averageOrderValue,
-                $current->averageOrderValue
-            ),
+            'current' => $current->toArray(),
+            'previous' => $previous->toArray(),
+            'changes' => [
+                'revenue_change' => $this->calculatePercentageChange(
+                    $previous->totalRevenue,
+                    $current->totalRevenue
+                ) . '%',
+                'orders_change' => $this->calculatePercentageChange(
+                    (float) $previous->ordersCount,
+                    (float) $current->ordersCount
+                ) . '%',
+                'average_change' => $this->calculatePercentageChange(
+                    $previous->averageOrderValue,
+                    $current->averageOrderValue
+                ) . '%',
+            ],
         ];
     }
 
@@ -278,8 +281,8 @@ class EloquentSalesRepository implements SalesRepositoryInterface
         return [
             'new_customers' => (int) ($newCustomersData?->count ?? 0),
             'returning_customers' => (int) ($returningCustomersData?->count ?? 0),
-            'new_customer_revenue' => (float) ($newCustomersData?->revenue ?? 0),
-            'returning_customer_revenue' => (float) ($returningCustomersData?->revenue ?? 0),
+            'new_customer_revenue' => (string) Money::make((float) ($newCustomersData?->revenue ?? 0)),
+            'returning_customer_revenue' => (string) Money::make((float) ($returningCustomersData?->revenue ?? 0)),
         ];
     }
 

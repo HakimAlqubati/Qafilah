@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTOs\Reports;
 
+use App\ValueObjects\Money;
+
 /**
  * Data Transfer Object for Vendor-specific Sales Data
  * 
@@ -68,11 +70,31 @@ readonly class VendorSalesDTO
     }
 
     /**
-     * Convert DTO to array representation
+     * Convert DTO to array representation with formatted money values
      * 
      * @return array<string, mixed>
      */
     public function toArray(): array
+    {
+        return [
+            'vendor_id' => $this->vendorId,
+            'vendor_name' => $this->vendorName,
+            'total_revenue' => (string) Money::make($this->totalRevenue),
+            'orders_count' => $this->ordersCount,
+            'average_order_value' => (string) Money::make($this->averageOrderValue),
+            'products_count' => $this->productsCount,
+            'items_sold' => $this->itemsSold,
+            'revenue_percentage' => $this->revenuePercentage . '%',
+            'rank' => $this->rank,
+        ];
+    }
+
+    /**
+     * Convert DTO to array with raw numeric values
+     * 
+     * @return array<string, mixed>
+     */
+    public function toRawArray(): array
     {
         return [
             'vendor_id' => $this->vendorId,

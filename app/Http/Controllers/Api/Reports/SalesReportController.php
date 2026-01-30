@@ -14,6 +14,7 @@ use Illuminate\Http\JsonResponse;
  * Sales Report API Controller
  * 
  * Handles all sales report related API endpoints.
+ * Controller only passes and returns data - no formatting logic here.
  */
 class SalesReportController extends ApiController
 {
@@ -23,9 +24,6 @@ class SalesReportController extends ApiController
 
     /**
      * Get sales summary report
-     * 
-     * @group Reports
-     * @authenticated
      */
     public function summary(SalesReportRequest $request): JsonResponse
     {
@@ -40,9 +38,6 @@ class SalesReportController extends ApiController
 
     /**
      * Get sales by vendor/merchant
-     * 
-     * @group Reports
-     * @authenticated
      */
     public function byVendor(SalesReportRequest $request): JsonResponse
     {
@@ -62,9 +57,6 @@ class SalesReportController extends ApiController
 
     /**
      * Get specific vendor sales summary
-     * 
-     * @group Reports
-     * @authenticated
      */
     public function vendorSummary(SalesReportRequest $request, int $vendorId): JsonResponse
     {
@@ -79,16 +71,12 @@ class SalesReportController extends ApiController
 
     /**
      * Get sales trends over time
-     * 
-     * @group Reports
-     * @authenticated
      */
     public function trends(SalesReportRequest $request): JsonResponse
     {
         $filter = SalesFilterDTO::fromArray($request->validated());
         $groupBy = $request->input('group_by', 'daily');
 
-        // Validate group_by parameter
         if (!in_array($groupBy, ['daily', 'weekly', 'monthly'], true)) {
             return $this->errorResponse(
                 message: __('lang.invalid_group_by_parameter'),
@@ -110,9 +98,6 @@ class SalesReportController extends ApiController
 
     /**
      * Get top selling products
-     * 
-     * @group Reports
-     * @authenticated
      */
     public function topProducts(SalesReportRequest $request): JsonResponse
     {
@@ -132,9 +117,6 @@ class SalesReportController extends ApiController
 
     /**
      * Compare two time periods
-     * 
-     * @group Reports
-     * @authenticated
      */
     public function compare(SalesReportRequest $request): JsonResponse
     {
@@ -157,24 +139,13 @@ class SalesReportController extends ApiController
         $comparison = $this->salesRepository->comparePeriods($currentFilter, $previousFilter);
 
         return $this->successResponse(
-            data: [
-                'current' => $comparison['current']->toArray(),
-                'previous' => $comparison['previous']->toArray(),
-                'changes' => [
-                    'revenue_change' => $comparison['revenue_change'],
-                    'orders_change' => $comparison['orders_change'],
-                    'average_change' => $comparison['average_change'],
-                ],
-            ],
+            data: $comparison,
             message: __('lang.period_comparison_generated')
         );
     }
 
     /**
      * Get customer acquisition metrics
-     * 
-     * @group Reports
-     * @authenticated
      */
     public function customerMetrics(SalesReportRequest $request): JsonResponse
     {
@@ -189,15 +160,11 @@ class SalesReportController extends ApiController
 
     /**
      * Get comprehensive dashboard data
-     * 
-     * @group Reports
-     * @authenticated
      */
     public function dashboard(SalesReportRequest $request): JsonResponse
     {
         $filter = SalesFilterDTO::fromArray($request->validated());
 
-        // Get all data in parallel-like manner (optimized queries)
         $summary = $this->salesRepository->getSalesSummary($filter);
         $topVendors = $this->salesRepository->getSalesByVendor($filter, 5);
         $topProducts = $this->salesRepository->getTopProducts($filter, 5);
