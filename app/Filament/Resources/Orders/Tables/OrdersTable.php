@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Orders\Tables;
 
 use App\Models\Order;
+use App\ValueObjects\Money;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -76,7 +77,7 @@ class OrdersTable
 
                 TextColumn::make('total')
                     ->label(__('lang.total'))
-                    ->money('YER')
+                    ->formatStateUsing(fn($state) => Money::make($state))
                     ->sortable()
                     ->weight('bold'),
 
