@@ -185,10 +185,8 @@ class EloquentSalesRepository implements SalesRepositoryInterface
         return DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
-            ->whereBetween('orders.placed_at', [
-                $filter->startDate->toDateTimeString(),
-                $filter->endDate->toDateTimeString(),
-            ])
+            ->when($filter->startDate, fn(Builder $q) => $q->where('orders.placed_at', '>=', $filter->startDate->toDateTimeString()))
+            ->when($filter->endDate, fn(Builder $q) => $q->where('orders.placed_at', '<=', $filter->endDate->toDateTimeString()))
             ->whereNotIn('orders.status', self::EXCLUDED_REVENUE_STATUSES)
             ->when($filter->vendorId, fn(Builder $q) => $q->where('orders.vendor_id', $filter->vendorId))
             ->when($filter->categoryId, fn(Builder $q) => $q->where('products.category_id', $filter->categoryId))
@@ -292,10 +290,8 @@ class EloquentSalesRepository implements SalesRepositoryInterface
     private function getBaseQuery(SalesFilterDTO $filter): \Illuminate\Database\Eloquent\Builder
     {
         return $this->orderModel->newQuery()
-            ->whereBetween('placed_at', [
-                $filter->startDate->toDateTimeString(),
-                $filter->endDate->toDateTimeString(),
-            ])
+            ->when($filter->startDate, fn($q) => $q->where('placed_at', '>=', $filter->startDate->toDateTimeString()))
+            ->when($filter->endDate, fn($q) => $q->where('placed_at', '<=', $filter->endDate->toDateTimeString()))
             ->when($filter->vendorId, fn($q) => $q->where('vendor_id', $filter->vendorId))
             ->when($filter->customerId, fn($q) => $q->where('customer_id', $filter->customerId))
             ->when($filter->status, fn($q) => $q->where('status', $filter->status))
@@ -309,10 +305,8 @@ class EloquentSalesRepository implements SalesRepositoryInterface
     {
         return DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
-            ->whereBetween('orders.placed_at', [
-                $filter->startDate->toDateTimeString(),
-                $filter->endDate->toDateTimeString(),
-            ])
+            ->when($filter->startDate, fn(Builder $q) => $q->where('orders.placed_at', '>=', $filter->startDate->toDateTimeString()))
+            ->when($filter->endDate, fn(Builder $q) => $q->where('orders.placed_at', '<=', $filter->endDate->toDateTimeString()))
             ->whereNotIn('orders.status', self::EXCLUDED_REVENUE_STATUSES)
             ->when($filter->vendorId, fn(Builder $q) => $q->where('orders.vendor_id', $filter->vendorId))
             ->when($filter->customerId, fn(Builder $q) => $q->where('orders.customer_id', $filter->customerId))

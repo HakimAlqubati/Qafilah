@@ -15,8 +15,8 @@ use DateTimeInterface;
  */
 readonly class SalesFilterDTO
 {
-    public CarbonImmutable $startDate;
-    public CarbonImmutable $endDate;
+    public ?CarbonImmutable $startDate;
+    public ?CarbonImmutable $endDate;
 
     public function __construct(
         DateTimeInterface|string|null $startDate = null,
@@ -27,8 +27,9 @@ readonly class SalesFilterDTO
         public ?int $customerId = null,
         public ?int $categoryId = null,
     ) {
-        $this->startDate = $this->parseDate($startDate) ?? CarbonImmutable::now()->startOfMonth();
-        $this->endDate = $this->parseDate($endDate) ?? CarbonImmutable::now()->endOfDay();
+        // Dates are null by default (no filtering)
+        $this->startDate = $this->parseDate($startDate);
+        $this->endDate = $this->parseDate($endDate);
     }
 
     /**
@@ -77,8 +78,8 @@ readonly class SalesFilterDTO
     public function toArray(): array
     {
         return [
-            'start_date' => $this->startDate->toDateTimeString(),
-            'end_date' => $this->endDate->toDateTimeString(),
+            'start_date' => $this->startDate?->toDateTimeString(),
+            'end_date' => $this->endDate?->toDateTimeString(),
             'vendor_id' => $this->vendorId,
             'status' => $this->status,
             'payment_status' => $this->paymentStatus,
@@ -92,7 +93,9 @@ readonly class SalesFilterDTO
      */
     public function hasFilters(): bool
     {
-        return $this->vendorId !== null
+        return $this->startDate !== null
+            || $this->endDate !== null
+            || $this->vendorId !== null
             || $this->status !== null
             || $this->paymentStatus !== null
             || $this->customerId !== null
@@ -100,14 +103,25 @@ readonly class SalesFilterDTO
     }
 
     /**
+     * Check if date range filter is applied
+     */
+    public function hasDateFilter(): bool
+    {
+        return $this->startDate !== null || $this->endDate !== null;
+    }
+
+    /**
      * Get the date range as formatted string
      */
-    public function getDateRangeLabel(): string
+    public function getDateRangeLabel(): ?string
     {
-        return sprintf(
-            '%s - %s',
-            $this->startDate->format('Y-m-d'),
-            $this->endDate->format('Y-m-d')
-        );
+        if ($this->startDate === null && $this->endDate === null) {
+            return null;
+        }
+
+        $start = $this->startDate?->format('Y-m-d') ?? 'البداية';
+        $end = $this->endDate?->format('Y-m-d') ?? 'الآن';
+
+        return sprintf('%s - %s', $start, $end);
     }
 }
