@@ -681,4 +681,15 @@ return [
     'previous_revenue' => 'Previous Revenue',
     'low_performing' => 'Low Performing',
     'vendor_performance' => 'Vendor Performance',
+
+    // Filament Reports
+    'reports' => 'Reports',
+    'sales_report' => 'Sales Report',
+    'report_under_construction' => 'This report is currently under construction.',
+    'filters' => 'Filters',
+    'total_items_sold' => 'Total Items Sold',
+    'top_products' => 'Top Products',
+    'top_vendors' => 'Top Vendors',
+    'revenue' => 'Revenue',
+    'no_data_available' => 'No data available',
 ];

@@ -290,12 +290,12 @@ class EloquentSalesRepository implements SalesRepositoryInterface
     private function getBaseQuery(SalesFilterDTO $filter): \Illuminate\Database\Eloquent\Builder
     {
         return $this->orderModel->newQuery()
-            ->when($filter->startDate, fn($q) => $q->where('placed_at', '>=', $filter->startDate->toDateTimeString()))
-            ->when($filter->endDate, fn($q) => $q->where('placed_at', '<=', $filter->endDate->toDateTimeString()))
-            ->when($filter->vendorId, fn($q) => $q->where('vendor_id', $filter->vendorId))
-            ->when($filter->customerId, fn($q) => $q->where('customer_id', $filter->customerId))
-            ->when($filter->status, fn($q) => $q->where('status', $filter->status))
-            ->when($filter->paymentStatus, fn($q) => $q->where('payment_status', $filter->paymentStatus));
+            ->when($filter->startDate, fn($q) => $q->where('orders.placed_at', '>=', $filter->startDate->toDateTimeString()))
+            ->when($filter->endDate, fn($q) => $q->where('orders.placed_at', '<=', $filter->endDate->toDateTimeString()))
+            ->when($filter->vendorId, fn($q) => $q->where('orders.vendor_id', $filter->vendorId))
+            ->when($filter->customerId, fn($q) => $q->where('orders.customer_id', $filter->customerId))
+            ->when($filter->status, fn($q) => $q->where('orders.status', $filter->status))
+            ->when($filter->paymentStatus, fn($q) => $q->where('orders.payment_status', $filter->paymentStatus));
     }
 
     /**

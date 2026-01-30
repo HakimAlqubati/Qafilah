@@ -682,4 +682,15 @@ return [
     'previous_revenue' => 'الإيراد السابق',
     'low_performing' => 'ضعيف الأداء',
     'vendor_performance' => 'أداء المورد',
+
+    // Filament Reports
+    'reports' => 'التقارير',
+    'sales_report' => 'تقرير المبيعات',
+    'report_under_construction' => 'هذا التقرير قيد الإنشاء حالياً.',
+    'filters' => 'الفلاتر',
+    'total_items_sold' => 'إجمالي العناصر المباعة',
+    'top_products' => 'أفضل المنتجات',
+    'top_vendors' => 'أفضل الموردين',
+    'revenue' => 'الإيرادات',
+    'no_data_available' => 'لا توجد بيانات متاحة',
 ];
