@@ -19,14 +19,21 @@ class ProductController extends  ApiController
     {
         $perPage = $request->integer('per_page', 10);
 
-        $products = Product::query()
-            ->with(['media'])
-            ->active()
-            ->paginate($perPage);
+        $productsIds = $request->input('products_id'); // expecting [1,2,5]
 
-        $products->getCollection()->transform(function ($product) {
-            return new \App\Http\Resources\ProductResource($product);
-        });
+        $query = Product::query()
+            ->with(['media'])
+            ->active();
+
+        if (is_array($productsIds) && count($productsIds)) {
+            $query->whereIn('id', $productsIds);
+            $ids = array_map('intval', $productsIds);
+            $query->orderByRaw('FIELD(id,' . implode(',', $ids) . ')');
+        }
+
+        $products = $query->paginate($perPage);
+
+        $products->getCollection()->transform(fn ($product) => new \App\Http\Resources\ProductResource($product));
 
         return $this->successResponse($products, "");
     }
@@ -92,7 +99,7 @@ class ProductController extends  ApiController
     {
         $sliders = Slider::where('is_active', true)
             ->orderBy('sort_order')
-            ->with(['product']) 
+            ->with(['product'])
             ->get();
 
         return $this->successResponse(
