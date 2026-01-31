@@ -85,9 +85,9 @@ class CheckoutRepository
                         return $existing->fresh()->load(['items', 'paymentTransactions']);
                     }
 
-                    throw ValidationException::withMessages([
-                        'cart' => 'This cart is already linked to a paid order.',
-                    ]);
+//                    throw ValidationException::withMessages([
+//                        'cart' => 'This cart is already linked to a paid order.',
+//                    ]);
                 }
 
                 $cart->update(['converted_order_id' => null]);
