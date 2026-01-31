@@ -7,7 +7,6 @@ use App\Models\AttributeValue;
 use App\Models\Category;
 use App\Models\Currency;
 use App\Models\Unit;
-use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
@@ -94,6 +93,6 @@ class BasicDataController extends ApiController
     }
     public function shippingStatus(Request $request): JsonResponse
     {
-        return $this->successResponse(Order::STATUSES, 'Shipping statuses');
+
     }
 }

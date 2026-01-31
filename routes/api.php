@@ -44,6 +44,7 @@ Route::prefix('v1/ecommerce')->group(function () {
     Route::post('/products/vendor-count', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'getVendorCount']);
     Route::post('/products/vendor-prices', [\App\Http\Controllers\Api\Ecommerce\VendorProductController::class, 'getVendorProductPrices']);
     Route::post('/products/details', [ProductController::class, 'productDetails']);
+    Route::post('/slider', [ProductController::class, 'slider']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/orders', [OrderController::class, 'index']);

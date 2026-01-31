@@ -82,15 +82,16 @@ class CartRepository
 
     public function show()
     {
-        $cart = Cart::query()->where('status', 'active');
+        $cart = Cart::query()
+            ->where('status', 'active')
+            ->with('items');
 
         if ($this->cartToken) {
             $cart->where('cart_token', $this->cartToken);
         } elseif ($this->buyerId) {
             $cart->where('buyer_id', $this->buyerId);
         }
-
-        return $cart;
+        return $cart->first();
     }
 
     public function addItem(): Cart

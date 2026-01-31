@@ -17,6 +17,7 @@ use App\Filament\Resources\PaymentGateways\PaymentGatewayResource;
 use App\Filament\Resources\PaymentTransactions\PaymentTransactionResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Settings\SettingResource;
+use App\Filament\Resources\Sliders\SliderResource;
 use App\Filament\Resources\Units\UnitResource;
 use App\Filament\Resources\Users\UserResource;
 use App\Filament\Resources\Vendors\VendorResource;
@@ -111,6 +112,7 @@ class AdminPanelProvider extends PanelProvider
                         ->items([
                             ...CategoryResource::getNavigationItems(),
                             ...ProductResource::getNavigationItems(),
+                            ...SliderResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make(__('lang.users_management'))
                         ->items([

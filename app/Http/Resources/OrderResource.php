@@ -30,11 +30,8 @@ class OrderResource extends JsonResource
             'notes' => $this->notes,
             'placed_at' => optional($this->placed_at)->toISOString(),
 
-            'addressess' => $this->shippingAddress ? new CustomerAddressResource($this->shippingAddress) : null,
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
-            'paymentTransactions' => $this->whenLoaded('paymentTransactions', function ($transactions) {
-                return $transactions->first() ? new PaymentTransactionResource($transactions->first()) : null;
-            }),
+            'paymentTransactions' => PaymentTransactionResource::collection($this->whenLoaded('paymentTransactions')),
         ];
     }
 }

@@ -7,6 +7,8 @@ use App\Http\Resources\ProductVendorSkuResource;
 use App\Models\Product;
 use App\Models\ProductVendorSku;
 use App\Models\ProductVendorSkuUnit;
+use App\Http\Resources\SliderResource;
+use App\Models\Slider;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\ApiController;
@@ -82,6 +84,20 @@ class ProductController extends  ApiController
         return $this->successResponse(
             new ProductResource($product),
             "Vendor product details retrieved successfully"
+        );
+    }
+
+
+    public function slider(Request $request)
+    {
+        $sliders = Slider::where('is_active', true)
+            ->orderBy('sort_order')
+            ->with(['product']) 
+            ->get();
+
+        return $this->successResponse(
+            SliderResource::collection($sliders),
+            "Sliders retrieved successfully"
         );
     }
 }

@@ -25,7 +25,7 @@ class CartController extends Controller
         $cart = $this->cartRepo
             ->context($buyerId, $cartToken, $sellerId)
             ->show();
-        if($cart){
+        if(!$cart){
             return $this->successResponse(null, "");
         }
 
