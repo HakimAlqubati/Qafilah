@@ -32,6 +32,10 @@ return [
     'category_icon_helper' => 'صورة مربعة للأيقونة (200×200 بكسل)',
     'category_details' => 'تفاصيل الفئة',
     'product' => 'منتج',
+    'sliders' => 'السلايدرات',
+    'slider' => 'سلايدر',
+    'title' => 'العنوان',
+    'body' => 'المحتوى',
 
     // Common Table Columns
     'id' => 'الرقم',
@@ -693,4 +697,8 @@ return [
     'top_vendors' => 'أفضل الموردين',
     'revenue' => 'الإيرادات',
     'no_data_available' => 'لا توجد بيانات متاحة',
+    'slider_' => [
+        'order' => 'الترتيب',
+        'order_helper' => 'اسحب لتحديد موقع السلايدر، الرقم الأصغر يظهر أولاً.',
+    ],
 ];

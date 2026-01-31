@@ -32,6 +32,10 @@ return [
     'category_icon_helper' => 'Square icon image (200×200 pixels)',
     'category_details' => 'Category Details',
     'product' => 'Product',
+    'sliders' => 'Sliders',
+    'slider' => 'Slider',
+    'title' => 'Title',
+    'body' => 'Body',
 
     // Common Table Columns
     'id' => 'ID',
@@ -692,4 +696,8 @@ return [
     'top_vendors' => 'Top Vendors',
     'revenue' => 'Revenue',
     'no_data_available' => 'No data available',
+    'slider_' => [
+        'order' => 'Order',
+        'order_helper' => 'Drag to set slider position; smaller numbers appear first.',
+    ],
 ];

@@ -18,9 +18,29 @@ class SliderResource extends Resource
 {
     protected static ?string $model = Slider::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleGroup;
 
     protected static ?string $recordTitleAttribute = 'Slider';
+
+    public static function getModelLabel(): string
+    {
+        return __('lang.slider');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __('lang.sliders');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('lang.sliders');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('lang.products');
+    }
 
     public static function form(Schema $schema): Schema
     {

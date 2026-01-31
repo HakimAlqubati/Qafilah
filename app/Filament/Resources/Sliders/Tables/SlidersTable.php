@@ -13,7 +13,24 @@ class SlidersTable
     {
         return $table
             ->columns([
-                //
+                \Filament\Tables\Columns\SpatieMediaLibraryImageColumn::make('image')
+                    ->label(__('lang.image'))
+                    ->collection('image'),
+                \Filament\Tables\Columns\TextColumn::make('name')
+                    ->label(__('lang.name'))
+                    ->searchable()
+                    ->sortable(),
+                \Filament\Tables\Columns\TextColumn::make('title')
+                    ->label(__('lang.title'))
+                    ->searchable()
+                    ->sortable(),
+                \Filament\Tables\Columns\IconColumn::make('is_active')
+                    ->label(__('lang.is_active'))
+                    ->boolean()
+                    ->sortable(),
+                \Filament\Tables\Columns\TextColumn::make('sort_order')
+                    ->label(__('lang.sort_order'))
+                    ->sortable(),
             ])
             ->filters([
                 //
