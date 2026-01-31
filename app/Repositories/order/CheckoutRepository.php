@@ -80,6 +80,7 @@ class CheckoutRepository
                             buyerId: $buyerId,
                             gateway: $gateway,
                             gatewayInstructions: $paymentGatewayInstructions,
+                            cart:$cart
                         );
 
                         return $existing->fresh()->load(['items', 'paymentTransactions']);
@@ -144,6 +145,7 @@ class CheckoutRepository
                 buyerId: $buyerId,
                 gateway: $gateway,
                 gatewayInstructions: $paymentGatewayInstructions,
+                  cart :$cart
             );
 
             return $order->fresh()->load(['items', 'paymentTransactions']);
@@ -155,6 +157,7 @@ class CheckoutRepository
         int $buyerId,
         PaymentGateway $gateway,
         ?string $gatewayInstructions,
+        Cart $cart
     ): PaymentTransaction {
          $txStatus = $gateway->isElectronic() ? 'pending' : 'pending';
 
@@ -190,13 +193,14 @@ class CheckoutRepository
                 ]);
         }
 
-         if ($txStatus === 'paid' && $order->payment_status !== 'paid') {
+         if ( $order->payment_status !== 'paid') {
             $order->forceFill([
-                'payment_status' => 'paid',
+//                'payment_status' => 'paid',
                 'status'         => 'confirmed',
                 'confirmed_at'   => now(),
             ])->save();
         }
+        $cart->update(['status' => 'abandoned']);
 
         return $tx;
     }
