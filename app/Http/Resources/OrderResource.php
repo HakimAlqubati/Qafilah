@@ -29,9 +29,10 @@ class OrderResource extends JsonResource
             'billing_address_id' => $this->billing_address_id,
             'notes' => $this->notes,
             'placed_at' => optional($this->placed_at)->toISOString(),
-
+            'addressess' => $this->shippingAddress ? new CustomerAddressResource($this->shippingAddress) : null,
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
-            'paymentTransactions' => PaymentTransactionResource::collection($this->whenLoaded('paymentTransactions')),
-        ];
+            'paymentTransactions' => $this->whenLoaded('paymentTransactions', function ($transactions) {
+                return $transactions->first() ? new PaymentTransactionResource($transactions->first()) : null;
+            }),        ];
     }
 }
