@@ -25,6 +25,9 @@ class CartController extends Controller
         $cart = $this->cartRepo
             ->context($buyerId, $cartToken, $sellerId)
             ->show();
+        if($cart){
+            return $this->successResponse(null, "");
+        }
 
         return new CartResource($cart);
     }

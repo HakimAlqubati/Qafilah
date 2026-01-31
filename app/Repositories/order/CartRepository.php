@@ -80,13 +80,17 @@ class CartRepository
         return $self;
     }
 
-    public function show(): Cart
+    public function show()
     {
-        $cart = $this->getOrCreateActiveCart();
+        $cart = Cart::query()->where('status', 'active');
 
-        $this->assertExpectedCart($cart);
+        if ($this->cartToken) {
+            $cart->where('cart_token', $this->cartToken);
+        } elseif ($this->buyerId) {
+            $cart->where('buyer_id', $this->buyerId);
+        }
 
-        return $cart->load('items');
+        return $cart;
     }
 
     public function addItem(): Cart
