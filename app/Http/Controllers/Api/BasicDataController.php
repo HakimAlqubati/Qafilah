@@ -7,6 +7,7 @@ use App\Models\AttributeValue;
 use App\Models\Category;
 use App\Models\Currency;
 use App\Models\Unit;
+use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,25 +16,27 @@ class BasicDataController extends ApiController
 {
     public function index(): JsonResponse
     {
-         $categories = Category::active()
-             ->orderBy('sort_order')
-            ->get();
-        $attributes = Attribute::active()
-            ->orderBy('sort_order')
-            ->get();
-        $attributeValues = AttributeValue::active()
-            ->orderBy('attribute_id')
-            ->orderBy('sort_order')
-            ->get();
+//         $categories = Category::active()
+//             ->orderBy('sort_order')
+//            ->get();
+//        $attributes = Attribute::active()
+//            ->orderBy('sort_order')
+//            ->get();
+//        $attributeValues = AttributeValue::active()
+//            ->orderBy('attribute_id')
+//            ->orderBy('sort_order')
+//            ->get();
+        $currency = Currency::active()->get();
         $units = Unit::active()
             ->orderBy('name')
             ->get();
 
         return $this->successResponse([
-            'categories' => $categories,
-            'attributes' => $attributes,
-            'attribute_values' => $attributeValues,
+//            'categories' => $categories,
+//            'attributes' => $attributes,
+            'currency' => $currency,
             'units' => $units,
+            'shipping_status' => Order::STATUSES,
          ], 'Basic ecommerce data');
     }
 
@@ -88,5 +91,9 @@ class BasicDataController extends ApiController
     {
         $query = Currency::active();
         return $this->syncByUpdatedAt($request, $query, 'currencies sync data');
+    }
+    public function shippingStatus(Request $request): JsonResponse
+    {
+        return $this->successResponse(Order::STATUSES, 'Shipping statuses');
     }
 }
