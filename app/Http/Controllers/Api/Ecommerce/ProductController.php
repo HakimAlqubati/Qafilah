@@ -19,16 +19,29 @@ class ProductController extends  ApiController
     {
         $perPage = $request->integer('per_page', 10);
 
-        $productsIds = $request->input('products_id'); // expecting [1,2,5]
+        $productsIds = $request->input('products_id');
+        $isFeatured = filter_var($request->input('is_featured'), FILTER_VALIDATE_BOOL);
+        $isLast     = filter_var($request->input('is_last'), FILTER_VALIDATE_BOOL);
 
         $query = Product::query()
             ->with(['media'])
             ->active();
 
         if (is_array($productsIds) && count($productsIds)) {
-            $query->whereIn('id', $productsIds);
-            $ids = array_map('intval', $productsIds);
-            $query->orderByRaw('FIELD(id,' . implode(',', $ids) . ')');
+            $ids = array_values(array_filter(array_map('intval', $productsIds)));
+            if (count($ids)) {
+                $query->whereIn('id', $ids);
+                $query->orderByRaw('FIELD(id,' . implode(',', $ids) . ')');
+            }
+        }
+        if ($isFeatured) {
+            $query->where('is_featured', 1);
+        }
+
+        // 3) is_last (latest 10)
+        if ($isLast) {
+            $perPage = 10; // force last 10
+            $query->latest('id'); // أو created_at لو عندك أدق
         }
 
         $products = $query->paginate($perPage);
@@ -37,6 +50,7 @@ class ProductController extends  ApiController
 
         return $this->successResponse($products, "");
     }
+
 
 
     public function vendorPrices($id, $vendorId)
