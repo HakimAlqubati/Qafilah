@@ -31,6 +31,7 @@ class VendorResource extends JsonResource
             'max_delivery_distance'  => $this->max_delivery_distance,
             'default_currency_id'    => $this->default_currency_id,
             'logo'    => $this->logo_url,
+            'branches' => VendorResource::collection($this->whenLoaded('branches')),
 
         ];
     }
