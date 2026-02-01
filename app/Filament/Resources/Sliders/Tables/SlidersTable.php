@@ -11,10 +11,11 @@ class SlidersTable
 {
     public static function configure(Table $table): Table
     {
-        return $table
+        return $table->striped()
             ->columns([
                 \Filament\Tables\Columns\SpatieMediaLibraryImageColumn::make('image')
                     ->label(__('lang.image'))
+                    ->circular()
                     ->collection('image'),
                 \Filament\Tables\Columns\TextColumn::make('name')
                     ->label(__('lang.name'))
@@ -26,11 +27,11 @@ class SlidersTable
                     ->sortable(),
                 \Filament\Tables\Columns\IconColumn::make('is_active')
                     ->label(__('lang.is_active'))
-                    ->boolean()
+                    ->boolean()->alignCenter()
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('sort_order')
-                    ->label(__('lang.sort_order'))
-                    ->sortable(),
+                    ->label(__('lang.slider_.order'))
+                    ->sortable()->alignCenter(),
             ])
             ->filters([
                 //
