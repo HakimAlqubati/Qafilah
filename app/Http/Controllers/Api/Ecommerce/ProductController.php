@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Ecommerce;
 
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductVendorSkuResource;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVendorSku;
 use App\Models\ProductVendorSkuUnit;
@@ -18,14 +19,43 @@ class ProductController extends  ApiController
     public function index(Request $request)
     {
         $perPage = $request->integer('per_page', 10);
+        $categoryId = (int) $request->get('category_id');
 
         $productsIds = $request->input('products_id');
         $isFeatured = filter_var($request->input('is_featured'), FILTER_VALIDATE_BOOL);
         $isLast     = filter_var($request->input('is_last'), FILTER_VALIDATE_BOOL);
+        $search = trim((string) ($request->get('search', '')));
+        $vendorId    = (int) $request->get('vendor_id');
+
+        $sortDirRaw = $request->input('sort_dir');
+        $sortDir    = strtolower(trim((string) $sortDirRaw));
+        $sortDir    = in_array($sortDir, ['asc', 'desc'], true) ? $sortDir : 'desc';
+
 
         $query = Product::query()
             ->with(['media'])
             ->active();
+        if ($categoryId > 0) {
+            $ids = Category::treeIdsCte($categoryId, true);
+            $query->whereIn('category_id', $ids);
+        }
+        if ($search !== '') {
+            $like = '%' . $search . '%';
+
+            $query->where(function ($q) use ($like) {
+                $q->where('name', 'like', $like)
+                ->orWhere('short_description', 'like', $like) ;
+            });
+        }
+        if ($vendorId > 0) {
+            $query->whereExists(function ($q) use ($vendorId) {
+                $q->selectRaw('1')
+                    ->from('product_vendor_skus as pvs')
+                    ->whereColumn('pvs.product_id', 'products.id')
+                    ->where('pvs.vendor_id', $vendorId)
+                    ->where('pvs.status', ProductVendorSku::$STATUSES['AVAILABLE']);
+            });
+        }
 
         if (is_array($productsIds) && count($productsIds)) {
             $ids = array_values(array_filter(array_map('intval', $productsIds)));
@@ -38,12 +68,11 @@ class ProductController extends  ApiController
             $query->where('is_featured', 1);
         }
 
-        // 3) is_last (latest 10)
         if ($isLast) {
-            $perPage = 10; // force last 10
-            $query->latest('id'); // أو created_at لو عندك أدق
+            $perPage = 10;
+            $query->latest('id');
         }
-
+        $query->orderBy('id', $sortDir);
         $products = $query->paginate($perPage);
 
         $products->getCollection()->transform(fn ($product) => new \App\Http\Resources\ProductResource($product));

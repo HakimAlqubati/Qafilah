@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api\Ecommerce;
 
 use App\Http\Controllers\Api\ApiController;
+use App\Models\ProductVendorSku;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use App\Http\Resources\VendorResource;
 
 class VendorController extends ApiController
 {
+
     public function index(Request $request)
     {
         $perPage = $request->integer('per_page', 10);
@@ -51,37 +53,67 @@ class VendorController extends ApiController
         + sin(radians(?)) * sin(radians(latitude))
     ))";
 
+        // ✅ include_products_count=true => add products_count
+        $includeProductsCount = $request->boolean('include_products_count');
+
         $vendors = Vendor::query()
+            ->select('vendors.*')
             ->where('status', 'active')
-            ->whereNull('parent_id'); // ✅ فقط التجار الرئيسيين
+            ->whereNull('parent_id');
 
-        // range filters على الرئيسي
+        // ranges on parent vendors
         $applyRange($vendors, 'delivery_rate_per_km', $request->delivery_rate_per_km_min, $request->delivery_rate_per_km_max);
-        $applyRange($vendors, 'min_delivery_charge', $request->min_delivery_charge_min, $request->min_delivery_charge_max);
+        $applyRange($vendors, 'min_delivery_charge',  $request->min_delivery_charge_min,  $request->min_delivery_charge_max);
 
-        // تحميل الأبناء بنفس الفلاتر (وبالمسافة إذا موجودة)
-        $vendors->with(['branches' => function ($q) use ($request, $applyRange, $hasCoords, $lat, $lng, $haversine, $sortBy, $sortDir) {
-            $q->where('status', 'active');
+        // ✅ only build and attach subquery when requested
+        if ($includeProductsCount) {
+            $vendors->addSelect([
+                'products_count' => ProductVendorSku::query()
+                    ->selectRaw('count(distinct product_id)')
+                    ->whereColumn('vendor_id', 'vendors.id')
+                    ->where('status', ProductVendorSku::$STATUSES['AVAILABLE']),
+            ]);
+        }
+
+        $vendors->with(['branches' => function ($q) use (
+            $request,
+            $applyRange,
+            $hasCoords,
+            $lat,
+            $lng,
+            $haversine,
+            $sortBy,
+            $sortDir,
+            $includeProductsCount
+        ) {
+            $q->select('vendors.*')
+                ->where('status', 'active');
 
             $applyRange($q, 'delivery_rate_per_km', $request->delivery_rate_per_km_min, $request->delivery_rate_per_km_max);
-            $applyRange($q, 'min_delivery_charge', $request->min_delivery_charge_min, $request->min_delivery_charge_max);
+            $applyRange($q, 'min_delivery_charge',  $request->min_delivery_charge_min,  $request->min_delivery_charge_max);
+
+            // ✅ only attach subquery for branches when requested
+            if ($includeProductsCount) {
+                $q->addSelect([
+                    'products_count' => ProductVendorSku::query()
+                        ->selectRaw('count(distinct product_id)')
+                        ->whereColumn('vendor_id', 'vendors.id')
+                        ->where('status', ProductVendorSku::$STATUSES['AVAILABLE']),
+                ]);
+            }
 
             if ($hasCoords) {
-                $q->addSelect('*')
-                    ->selectRaw("{$haversine} as distance", [$lat, $lng, $lat]);
-
-                $q->orderBy($sortBy === 'distance' ? 'distance' : $sortBy, $sortDir);
+                $q->selectRaw("{$haversine} as distance", [$lat, $lng, $lat])
+                    ->orderBy($sortBy === 'distance' ? 'distance' : $sortBy, $sortDir);
             } else {
                 $q->orderBy($sortBy === 'distance' ? 'created_at' : $sortBy, $sortDir);
             }
         }]);
 
-        // distance + sort على الرئيسي
+        // order vendors (parents)
         if ($hasCoords) {
-            $vendors->addSelect('*')
-                ->selectRaw("{$haversine} as distance", [$lat, $lng, $lat]);
-
-            $vendors->orderBy($sortBy === 'distance' ? 'distance' : $sortBy, $sortDir);
+            $vendors->selectRaw("{$haversine} as distance", [$lat, $lng, $lat])
+                ->orderBy($sortBy === 'distance' ? 'distance' : $sortBy, $sortDir);
         } else {
             $vendors->orderBy($sortBy === 'distance' ? 'created_at' : $sortBy, $sortDir);
         }
@@ -93,5 +125,6 @@ class VendorController extends ApiController
             "Vendors retrieved successfully"
         );
     }
+
 
 }
