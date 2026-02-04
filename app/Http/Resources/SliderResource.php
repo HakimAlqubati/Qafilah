@@ -19,7 +19,7 @@ class SliderResource extends JsonResource
             'name' => $this->name,
             'title' => $this->title,
             'body' => $this->body,
-            'image_url' => $this->getFirstMedia('image')?->getFullUrl() ?? null,
+            'image_url' => $this->getFirstMediaUrl('slider'),
             'sort_order' => $this->sort_order,
             'product_id' => $this->product_id,
             'is_active' => (bool)$this->is_active,
