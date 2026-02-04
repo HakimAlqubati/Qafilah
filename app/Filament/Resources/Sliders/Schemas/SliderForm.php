@@ -68,7 +68,9 @@ class SliderForm
                         ->columnSpanFull(),
                     SpatieMediaLibraryFileUpload::make('image')
                         ->label(__('lang.image'))
-                        ->collection('image')
+                        ->collection('slider')
+                        ->disk('public')
+                        ->directory('slider')
                         ->image()
                         ->columnSpanFull(),
 
