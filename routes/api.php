@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Address\CustomerAddressController;
 use App\Http\Controllers\Api\Ecommerce\OrderController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentGateway\PaymentGatewayController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,7 @@ Route::get('/user', function (Request $request) {
 
 
 Route::prefix('auth')->group(function () {
+    Route::post('register', [LoginController::class, 'register']);
     Route::post('login', [LoginController::class, 'login']);
     Route::post('logout', [LoginController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('me', [LoginController::class, 'me'])->middleware('auth:sanctum');
@@ -75,7 +77,10 @@ Route::prefix('v1/ecommerce')->group(function () {
     });
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/notifications/send', [\App\Http\Controllers\Api\NotificationController::class, 'send']);
-        Route::post('/notifications/update-token', [\App\Http\Controllers\Api\NotificationController::class, 'updateToken']);
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+        Route::post('/notifications/read', [NotificationController::class, 'markAsRead']);
+        Route::post('/notifications/send', [NotificationController::class, 'send']);
+        Route::post('/notifications/update-token', [NotificationController::class, 'updateToken']);
     });
 });

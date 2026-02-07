@@ -8,8 +8,45 @@ use App\Models\User;
 use App\Notifications\GeneralNotification;
 use Illuminate\Support\Facades\Log;
 
+use App\Http\Resources\NotificationResource;
+
 class NotificationController extends Controller
 {
+    /**
+     * Get all notifications for the authenticated user.
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+
+        $notifications = $user->notifications()->paginate(20);
+
+        return NotificationResource::collection($notifications);
+    }
+
+    /**
+     * Mark a notification as read.
+     */
+    public function markAsRead(Request $request)
+    {
+        $user = $request->user();
+        $notification = $user->notifications()->where('id', $request->id)->firstOrFail();
+        $notification->markAsRead();
+
+        return response()->json(['status' => true, 'message' => 'Notification marked as read.']);
+    }
+
+    /**
+     * Mark all notifications as read.
+     */
+    public function markAllAsRead(Request $request)
+    {
+        $user = $request->user();
+        $user->unreadNotifications->markAsRead();
+
+        return response()->json(['status' => true, 'message' => 'All notifications marked as read.']);
+    }
+
     /**
      * Send a notification to a specific user.
      */
@@ -54,7 +91,7 @@ class NotificationController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Update the authenticated user's FCM token.
      */
@@ -69,7 +106,7 @@ class NotificationController extends Controller
             $user->fcm_token = $request->fcm_token;
             $user->fcm_token_updated_at = now();
             $user->save();
-            
+
             return response()->json([
                 'status' => true,
                 'message' => 'Token updated successfully.'

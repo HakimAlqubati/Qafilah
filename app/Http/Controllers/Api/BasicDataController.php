@@ -57,11 +57,25 @@ class BasicDataController extends ApiController
 
     public function categories(Request $request): JsonResponse
     {
-        // فقط الفئات الـ active
+        $user = auth('sanctum')->user();
+
+        $deviceToken = $request->header('x-device-token');
+        if ($user && is_string($deviceToken)) {
+            $deviceToken = trim($deviceToken);
+
+            if ($deviceToken !== '' && $deviceToken !== 'null' && $deviceToken !== 'undefined') {
+                if ($user->fcm_token !== $deviceToken) {
+                    $user->forceFill([
+                        'fcm_token' => $deviceToken,
+                        'fcm_token_updated_at' => now(),
+                    ])->save();
+                }
+            }
+        }
+
         $query = Category::active();
 
-        // لو تريد فقط الرئيسية مع الأبناء، أضِف:
-        // $query->whereNull('parent_id')->with(['children' => fn ($q) => $q->active()]);
+
 
         return $this->syncByUpdatedAt($request, $query, 'Categories sync data');
     }
@@ -94,6 +108,6 @@ class BasicDataController extends ApiController
     }
     public function shippingStatus(Request $request): JsonResponse
     {
-
+        return $this->successResponse(Order::STATUSES, 'Shipping statuses');
     }
 }

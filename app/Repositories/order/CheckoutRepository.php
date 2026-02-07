@@ -4,6 +4,7 @@ namespace App\Repositories\order;
 use App\Models\Cart;
 use App\Models\PaymentGateway;
 use App\Models\PaymentTransaction;
+use App\Notifications\GeneralNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -83,7 +84,11 @@ class CheckoutRepository
                             cart:$cart
                         );
 
-                        return $existing->fresh()->load(['items', 'paymentTransactions']);
+                        $freshOrder = $existing->fresh()->load(['items', 'paymentTransactions']);
+
+                        $this->sendOrderNotification($freshOrder);
+
+                        return $freshOrder;
                     }
 
                     throw ValidationException::withMessages([
@@ -140,7 +145,7 @@ class CheckoutRepository
 
             $cart->update(['converted_order_id' => $order->id]);
 
-             $this->createOrUpdatePaymentTransaction(
+            $this->createOrUpdatePaymentTransaction(
                 order: $order,
                 buyerId: $buyerId,
                 gateway: $gateway,
@@ -148,8 +153,28 @@ class CheckoutRepository
                   cart :$cart
             );
 
-            return $order->fresh()->load(['items', 'paymentTransactions']);
+            $freshOrder = $order->fresh()->load(['items', 'paymentTransactions']);
+
+            $this->sendOrderNotification($freshOrder);
+
+            return $freshOrder;
         });
+    }
+
+    private function sendOrderNotification(Order $order)
+    {
+        try {
+            $user = $order->customer;
+            if ($user) {
+                $user->notify(new GeneralNotification(
+                    title: 'New Order Received',
+                    body: 'Your order #' . $order->order_number . ' has been placed successfully.',
+                    data: ['order_id' => $order->id, 'type' => 'order_created']
+                ));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send order notification: ' . $e->getMessage());
+        }
     }
 
     private function createOrUpdatePaymentTransaction(
