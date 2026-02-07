@@ -73,4 +73,9 @@ Route::prefix('v1/ecommerce')->group(function () {
         Route::delete('{id}', [CustomerAddressController::class, 'destroy']);
         Route::post('/default', [CustomerAddressController::class, 'setDefault']);
     });
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/notifications/send', [\App\Http\Controllers\Api\NotificationController::class, 'send']);
+        Route::post('/notifications/update-token', [\App\Http\Controllers\Api\NotificationController::class, 'updateToken']);
+    });
 });

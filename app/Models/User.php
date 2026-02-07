@@ -35,6 +35,7 @@ class User extends Authenticatable
         'status',
         'is_active',
         'vendor_id',
+        'fcm_token'
     ];
 
     /**
@@ -68,4 +69,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Vendor::class);
     }
+    /**
+     * Route notifications for the Firebase channel.
+     *
+     * @return string|array
+     */
+    public function routeNotificationForFirebase()
+    {
+        return $this->fcm_token;
+    }
 }
+
