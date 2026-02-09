@@ -23,6 +23,8 @@ use App\Filament\Resources\Users\UserResource;
 use App\Filament\Resources\Vendors\VendorResource;
 use App\Models\Vendor;
 use App\Http\Middleware\CustomAdminFilamentAuthenticate;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -117,6 +119,7 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make(__('lang.users_management'))
                         ->items([
                             ...UserResource::getNavigationItems(),
+                            ...RoleResource::getNavigationItems()
                         ]),
                     NavigationGroup::make(__('lang.payment_gateways'))
                         ->items([
@@ -133,6 +136,7 @@ class AdminPanelProvider extends PanelProvider
                         ]),
                 ]);
             })
+            ->plugin(FilamentShieldPlugin::make())
             ->sidebarCollapsibleOnDesktop()
             ->middleware([
                 EncryptCookies::class,
