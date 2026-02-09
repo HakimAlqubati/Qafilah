@@ -83,56 +83,55 @@ class AdminPanelProvider extends PanelProvider
                 ])->groups([
                     NavigationGroup::make(__('lang.vendor_management'))
                         ->items([
-                            ...VendorResource::getNavigationItems(),
+                            ...auth()->user()->can('ViewAny:Vendor') ? VendorResource::getNavigationItems() : [],
                         ]),
                     NavigationGroup::make(__('lang.customer_management'))
                         ->items([
-                            ...CustomerResource::getNavigationItems(),
+                            ...auth()->user()->can('ViewAny:Customer') ? CustomerResource::getNavigationItems() : [],
                         ]),
                     NavigationGroup::make(__('lang.sales'))
                         ->items([
-                            ...OrderResource::getNavigationItems(),
+                            ...auth()->user()->can('ViewAny:Order') ? OrderResource::getNavigationItems() : [],
                         ]),
                     NavigationGroup::make(__('lang.location_management'))
                         ->items([
-                            ...CountryResource::getNavigationItems(),
-                            ...CityResource::getNavigationItems(),
-                            ...DistrictResource::getNavigationItems(),
+                            ...auth()->user()->can('ViewAny:Country') ? CountryResource::getNavigationItems() : [],
+                            ...auth()->user()->can('ViewAny:City') ? CityResource::getNavigationItems() : [],
+                            ...auth()->user()->can('ViewAny:District') ? DistrictResource::getNavigationItems() : [],
                         ]),
                     NavigationGroup::make('Management')
                         ->label(__('lang.management'))
                         ->items([
-
-                            ...AttributeResource::getNavigationItems(),
-                            ...AttributeValueResource::getNavigationItems(),
+                            ...auth()->user()->can('ViewAny:Attribute') ? AttributeResource::getNavigationItems() : [],
+                            ...auth()->user()->can('ViewAny:AttributeValue') ? AttributeValueResource::getNavigationItems() : [],
                             // ...AttributeSetResource::getNavigationItems(),
-                            ...UnitResource::getNavigationItems(),
-                            ...CurrencyResource::getNavigationItems(),
+                            ...auth()->user()->can('ViewAny:Unit') ? UnitResource::getNavigationItems() : [],
+                            ...auth()->user()->can('ViewAny:Currency') ? CurrencyResource::getNavigationItems() : [],
 
                         ]),
                     NavigationGroup::make(__('lang.products'))
                         ->items([
-                            ...CategoryResource::getNavigationItems(),
-                            ...ProductResource::getNavigationItems(),
-                            ...SliderResource::getNavigationItems(),
+                            ...auth()->user()->can('ViewAny:Category') ? CategoryResource::getNavigationItems() : [],
+                            ...auth()->user()->can('ViewAny:Product') ? ProductResource::getNavigationItems() : [],
+                            ...auth()->user()->can('ViewAny:Slider') ? SliderResource::getNavigationItems() : [],
                         ]),
                     NavigationGroup::make(__('lang.users_management'))
                         ->items([
-                            ...UserResource::getNavigationItems(),
-                            ...RoleResource::getNavigationItems()
+                            ...auth()->user()->can('ViewAny:User') ? UserResource::getNavigationItems() : [],
+                            ...auth()->user()->can('ViewAny:Role') ? RoleResource::getNavigationItems() : [],
                         ]),
                     NavigationGroup::make(__('lang.payment_gateways'))
                         ->items([
-                            ...PaymentGatewayResource::getNavigationItems(),
-                            ...PaymentTransactionResource::getNavigationItems(),
+                            ...auth()->user()->can('ViewAny:PaymentGateway') ? PaymentGatewayResource::getNavigationItems() : [],
+                            ...auth()->user()->can('ViewAny:PaymentTransaction') ? PaymentTransactionResource::getNavigationItems() : [],
                         ]),
                     NavigationGroup::make(__('lang.reports'))
                         ->items([
-                            ...\App\Filament\Pages\Reports\SalesReportPage::getNavigationItems(),
+                            ...auth()->user()->can('ViewAny:SalesReport') ? \App\Filament\Pages\Reports\SalesReportPage::getNavigationItems() : [],
                         ]),
                     NavigationGroup::make(__('lang.settings'))
                         ->items([
-                            ...SettingResource::getNavigationItems(),
+                            ...auth()->user()->can('ViewAny:Setting') ? SettingResource::getNavigationItems() : [],
                         ]),
                 ]);
             })
