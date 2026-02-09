@@ -15,9 +15,10 @@
         }
     ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "aymanalhattami/yemeni-payment-gateways": "^1.1",
         "bezhansalleh/filament-language-switch": "^4.0",
+        "bezhansalleh/filament-shield": "^4.1",
         "filament/filament": "^4.1",
         "filament/spatie-laravel-media-library-plugin": "^4.1",
         "kreait/firebase-php": "7.19",
