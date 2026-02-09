@@ -2,10 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use Filament\Http\Middleware\Authenticate as BaseAuthenticate; // استيراد الكلاس الأصلي
+use Filament\Http\Middleware\Authenticate as BaseAuthenticate;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\UserTypes;
 
 // نرث من BaseAuthenticate بدلاً من Middleware العادي
 class CustomFilamentAuthenticate extends BaseAuthenticate
@@ -27,8 +28,10 @@ class CustomFilamentAuthenticate extends BaseAuthenticate
 
         $panel = Filament::getCurrentOrDefaultPanel();
 
-        if (!$user->vendor_id) {
-            abort(403, 'You are not a vendor');
+        // التحقق من أن المستخدم هو تاجر (merchant)
+        $userType = $user->getRawOriginal('user_type');
+        if ($userType !== UserTypes::MERCHANT->value) {
+            abort(403, 'Access denied. Merchants only.');
         }
         // --- هنا يمكنك وضع التعديلات الخاصة بك ---
 

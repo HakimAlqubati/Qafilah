@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Vendors\Tables;
 
+use App\Enums\UserTypes;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -178,11 +179,13 @@ class VendorsTable
                                 ]),
                         ])
                         ->action(function (Vendor $record, array $data): void {
+                            // dd(UserTypes::MERCHANT->value);
                             User::create([
                                 'name' => $data['name'],
                                 'email' => $data['email'],
                                 'password' => Hash::make($data['password']),
                                 'vendor_id' => $record->id,
+                                'user_type' => UserTypes::MERCHANT->value,
                             ]);
 
                             Notification::make()

@@ -6,6 +6,7 @@ use Filament\Http\Middleware\Authenticate as BaseAuthenticate;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\UserTypes;
 
 class CustomAdminFilamentAuthenticate extends BaseAuthenticate
 {
@@ -25,8 +26,9 @@ class CustomAdminFilamentAuthenticate extends BaseAuthenticate
 
         $panel = Filament::getCurrentOrDefaultPanel();
 
-        // التحقق من أن المستخدم هو Admin (ليس لديه vendor_id)
-        if ($user->vendor_id) {
+        // التحقق من أن المستخدم هو Admin
+        $userType = $user->getRawOriginal('user_type');
+        if ($userType !== UserTypes::ADMIN->value) {
             abort(403, 'Access denied. Admins only.');
         }
 
