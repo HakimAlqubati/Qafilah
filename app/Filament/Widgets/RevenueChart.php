@@ -2,11 +2,13 @@
 
 namespace App\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 
 class RevenueChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected ?string $heading = 'Revenue per Month';
     protected static ?int $sort = 3;
     public function getHeading(): string | Htmlable | null

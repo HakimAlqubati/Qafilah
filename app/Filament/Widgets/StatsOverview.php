@@ -5,13 +5,15 @@ namespace App\Filament\Widgets;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Vendor;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatsOverview extends BaseWidget
 {
+    use HasWidgetShield;
     // يمكنك تعديل فترة التحديث التلقائي هنا
- 
+
     protected function getStats(): array
     {
         return [

@@ -2,11 +2,13 @@
 
 namespace App\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 
 class CustomersChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected ?string $heading = 'New Customers';
 
     protected static ?int $sort = 4;
