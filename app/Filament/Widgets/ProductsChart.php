@@ -2,12 +2,14 @@
 
 namespace App\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use App\Models\Category;
 use Illuminate\Contracts\Support\Htmlable;
 
 class ProductsChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected ?string $heading = 'Product Distribution';
 
     protected static ?int $sort = 5;

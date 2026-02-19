@@ -23,6 +23,7 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [LoginController::class, 'login']);
     Route::post('logout', [LoginController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('me', [LoginController::class, 'me'])->middleware('auth:sanctum');
+    Route::post('change-password', [LoginController::class, 'changePassword'])->middleware('auth:sanctum');
 });
 Route::prefix('v1')->group(function () {
     // Reports API Routes

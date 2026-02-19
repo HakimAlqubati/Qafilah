@@ -6,10 +6,12 @@ use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Cart;
+use App\Models\User;
 use App\Repositories\Auth\AuthRepositoryInterface;
 use App\Repositories\order\CartRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends ApiController
 {
@@ -78,14 +80,14 @@ class LoginController extends ApiController
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'phone'    => 'nullable|string|max:20',
+            'password' => 'required|string|min:4|confirmed',
+            'phone'    => 'nullable|max:12',
         ]);
 
-        $user = \App\Models\User::create([
+        $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'password' => Hash::make($request->password),
             'phone'    => $request->phone,
         ]);
 
@@ -109,5 +111,24 @@ class LoginController extends ApiController
             new UserResource($request->user()),
             'User data.'
         );
+    }
+
+    public function changePassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'old_password' => 'required',
+            'password' => 'required|string|min:4|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (! Hash::check($request->old_password, $user->password)) {
+            return $this->errorResponse('كلمة السر القديمة غير صحيحة', 400);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return $this->successResponse(null, 'تم تغيير كلمة السر');
     }
 }

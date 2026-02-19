@@ -12,6 +12,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 
@@ -21,6 +22,7 @@ use Livewire\Attributes\Computed;
 class SalesReportPage extends Page implements HasForms
 {
     use InteractsWithForms;
+    use HasPageShield;
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::ChartBar;
 

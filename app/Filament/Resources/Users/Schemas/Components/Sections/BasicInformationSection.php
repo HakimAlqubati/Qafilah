@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Users\Schemas\Components\Sections;
 
+use App\Enums\UserTypes;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -37,7 +39,7 @@ class BasicInformationSection
                         ->columnSpan(1),
                 ]),
 
-                Grid::make(2)->schema([
+                Grid::make(3)->schema([
                     // Email Field
                     TextInput::make('email')
                         ->label(__('lang.email'))
@@ -57,6 +59,14 @@ class BasicInformationSection
                         ])
                         ->maxLength(255)
                         ->prefixIcon('heroicon-m-phone'),
+
+                    // User Type Field
+                    Select::make('user_type')
+                        ->label(__('lang.user_type'))
+                        ->options(UserTypes::class)
+                        ->required()
+                        ->native(false)
+                        ->prefixIcon('heroicon-m-user-group'),
                 ]),
             ])
             ->columns(1);

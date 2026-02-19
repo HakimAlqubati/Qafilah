@@ -86,4 +86,6 @@ class VendorResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+
+    
 }

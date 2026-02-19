@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 use Spatie\Permission\Traits\HasRoles;
+use App\Enums\UserTypes;
 
 class User extends Authenticatable
 {
@@ -20,6 +21,23 @@ class User extends Authenticatable
     public const STATUS_ACTIVE = 'active';
     public const STATUS_INACTIVE = 'inactive';
     public const STATUS_SUSPENDED = 'suspended';
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(function (User $user) {
+            $userType = $user->getAttributes()['user_type'] ?? null;
+            if ($userType && !in_array($userType, UserTypes::values())) {
+                throw new \InvalidArgumentException(
+                    'Invalid user_type. Allowed values: ' . implode(', ', UserTypes::values())
+                );
+            }
+        });
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -35,7 +53,8 @@ class User extends Authenticatable
         'status',
         'is_active',
         'vendor_id',
-        'fcm_token'
+        'fcm_token',
+        'user_type'
     ];
 
     /**
@@ -60,6 +79,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'last_login_at' => 'datetime',
+            'user_type' => UserTypes::class,
         ];
     }
     /**
@@ -79,4 +99,3 @@ class User extends Authenticatable
         return $this->fcm_token;
     }
 }
-
