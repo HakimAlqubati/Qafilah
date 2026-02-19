@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api\Ecommerce;
 
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Resources\ProductResource;
+use App\Http\Resources\ProductVendorSkuResource;
+use App\Models\Product;
 use App\Models\ProductVendorSku;
 use App\Models\ProductVendorSkuUnit;
 use App\Models\Unit;
@@ -14,14 +17,25 @@ class VendorProductController extends ApiController
     {
         $perPage = $request->integer('per_page', 10);
 
-        $products = \App\Models\Product::whereHas('offers', function ($query) use ($vendorId) {
+        $products = Product::whereHas('offers', function ($query) use ($vendorId) {
             $query->where('vendor_id', $vendorId);
         })
             ->active()
             ->paginate($perPage);
 
-        $products->getCollection()->transform(function ($product) {
-            return new \App\Http\Resources\ProductResource($product);
+        $products->getCollection()->transform(function ($product) use ($vendorId) {
+            $resource = new  ProductResource($product);
+            $data = $resource->toArray(request());
+
+            $skus = \App\Models\ProductVendorSku::where('vendor_id', $vendorId)
+                ->where('product_id', $product->id)
+                ->available()
+                ->with(['productVendorSkuUnits.unit'])
+                ->get();
+
+            $data['product_vendor_skus'] = ProductVendorSkuResource::collection($skus);
+
+            return $data;
         });
 
         return $this->successResponse($products, "");
