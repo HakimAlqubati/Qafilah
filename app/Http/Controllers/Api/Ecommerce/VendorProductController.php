@@ -97,8 +97,12 @@ class VendorProductController extends ApiController
             })
             ->with([
                 'vendor',
-                'productVendorSkuUnits' => function ($q) {
-                    $q->active()->orderBy('sort_order')->with('unit')->limit(1);
+                'productVendorSkuUnits' => function ($q) use ($unitId) {
+                    $q->active()
+                        ->when($unitId, fn ($qq) => $qq->where('unit_id', $unitId))
+                        ->orderBy('sort_order')
+                        ->with('unit')
+                        ->limit(1);
                 },
             ])
             ->paginate(10);
