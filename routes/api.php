@@ -38,6 +38,7 @@ Route::prefix('v1/ecommerce')->group(function () {
         Route::post('units',            [BasicDataController::class, 'units']);
         Route::post('currencies',            [BasicDataController::class, 'currencies']);
         Route::post('shipping_status',            [BasicDataController::class, 'shippingStatus']);
+        Route::post('locations',            [BasicDataController::class, 'locations']);
     });
     Route::post('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}/vendor/{vendor_id}/prices', [ProductController::class, 'vendorPrices']);
@@ -79,6 +80,8 @@ Route::prefix('v1/ecommerce')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::get('/notifications/unread', [NotificationController::class, 'unread']);
+        Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
         Route::post('/notifications/read', [NotificationController::class, 'markAsRead']);
         Route::post('/notifications/send', [NotificationController::class, 'send']);
