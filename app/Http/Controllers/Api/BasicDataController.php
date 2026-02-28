@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\Category;
+use App\Models\City;
+use App\Models\Country;
 use App\Models\Currency;
 use App\Models\Order;
 use App\Models\Unit;
@@ -109,5 +111,13 @@ class BasicDataController extends ApiController
     public function shippingStatus(Request $request): JsonResponse
     {
         return $this->successResponse(Order::STATUSES, 'Shipping statuses');
+    }
+
+    public function locations(Request $request): JsonResponse
+    {
+        return $this->successResponse([
+            'countries' => Country::active()->get(),
+            'cities' => City::active()->get(),
+        ], 'Locations sync data');
     }
 }
