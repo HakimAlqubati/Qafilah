@@ -113,8 +113,9 @@ class BasicDataController extends ApiController
         return $this->successResponse(Order::STATUSES, 'Shipping statuses');
     }
 
-    public function locations(Request $request): JsonResponse
+    public function locations(): JsonResponse
     {
+
         return $this->successResponse([
             'countries' => Country::active()->get(),
             'cities' => City::active()->get(),

@@ -28,4 +28,8 @@ class Country extends Model
     {
         return $this->hasManyThrough(District::class, City::class);
     }
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
 }

@@ -27,4 +27,9 @@ class City extends Model
     {
         return $this->hasMany(District::class);
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
 }
