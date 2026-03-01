@@ -60,7 +60,7 @@ class LoginController extends ApiController
         $token = $user->createToken('api_token')->plainTextToken;
 
         return $this->successResponse([
-            'user'       => new UserResource($user),
+            'user'       => new UserResource($user->load('vendor')),
             'token'      => $token,
             'token_type' => 'Bearer',
         ], 'Logged in successfully.');
@@ -99,7 +99,7 @@ class LoginController extends ApiController
         $token = $user->createToken('api_token')->plainTextToken;
 
         return $this->successResponse([
-            'user'       => new UserResource($user),
+            'user'       => new UserResource($user->load('vendor')),
             'token'      => $token,
             'token_type' => 'Bearer',
         ], 'User registered successfully.');
@@ -108,7 +108,7 @@ class LoginController extends ApiController
     public function me(Request $request): JsonResponse
     {
         return $this->successResponse(
-            new UserResource($request->user()),
+            new UserResource($request->user()->load('vendor')),
             'User data.'
         );
     }
