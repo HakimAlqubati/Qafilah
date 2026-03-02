@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Address\CustomerAddressController;
 use App\Http\Controllers\Api\Ecommerce\OrderController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentGateway\PaymentGatewayController;
+use App\Http\Controllers\Api\SettingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\LoginController;
@@ -87,4 +88,8 @@ Route::prefix('v1/ecommerce')->group(function () {
         Route::post('/notifications/send', [NotificationController::class, 'send']);
         Route::post('/notifications/update-token', [NotificationController::class, 'updateToken']);
     });
+
+    Route::get('about_us', [SettingController::class, 'getAboutUs']);
+    Route::get('about_service', [SettingController::class, 'getAboutService']);
+    Route::get('policy', [SettingController::class, 'getPolicy']);
 });
