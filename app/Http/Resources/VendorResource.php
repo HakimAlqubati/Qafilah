@@ -26,6 +26,7 @@ class VendorResource extends JsonResource
             'description'            => $this->description,
             'latitude'               => $this->latitude,
             'longitude'              => $this->longitude,
+            'delivery_time_value'   => $this->delivery_time_value,
             'delivery_rate_per_km'   => $this->delivery_rate_per_km,
             'min_delivery_charge'    => $this->min_delivery_charge,
             'max_delivery_distance'  => $this->max_delivery_distance,
