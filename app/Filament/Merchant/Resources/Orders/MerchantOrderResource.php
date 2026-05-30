@@ -38,8 +38,27 @@ class MerchantOrderResource extends OrderResource
     {
         return [
             'index' => ListMerchantOrders::route('/'),
-            'view'  => ViewMerchantOrder::route('/{record}'),
+            'view' => ViewMerchantOrder::route('/{record}'),
         ];
+    }
+
+    protected static ?int $pendingOrdersCount = null;
+
+    /**
+     * الحصول على عدد الطلبات المعلقة الخاصة بالتاجر بشكل مخزن مؤقتاً لتجنب تكرار الاستعلامات
+     */
+    protected static function getPendingOrdersCount(): int
+    {
+        if (static::$pendingOrdersCount === null) {
+            $vendorId = Auth::user()?->vendor_id;
+            static::$pendingOrdersCount = $vendorId
+                ? (int) static::getModel()::where('vendor_id', $vendorId)
+                    ->where('status', \App\Models\Order::STATUS_PENDING)
+                    ->count()
+                : 0;
+        }
+
+        return static::$pendingOrdersCount;
     }
 
     /**
@@ -47,12 +66,25 @@ class MerchantOrderResource extends OrderResource
      */
     public static function getNavigationBadge(): ?string
     {
-        $vendorId = Auth::user()?->vendor_id;
-        $count = static::getModel()::where('vendor_id', $vendorId)
-            ->where('status', \App\Models\Order::STATUS_PENDING)
-            ->count();
+        $count = static::getPendingOrdersCount();
 
-        return $count > 0 ? (string) $count : null;
+        return $count;
+    }
+
+    /**
+     * لون الـ Badge للطلبات المعلقة (warning/برتقالي للتنبيه)
+     */
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getPendingOrdersCount() > 0 ? 'warning' : null;
+    }
+
+    /**
+     * تلميح (Tooltip) للـ Badge
+     */
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return __('lang.pending_orders');
     }
 
     // -------------------------------------------------------
