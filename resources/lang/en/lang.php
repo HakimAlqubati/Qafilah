@@ -197,6 +197,12 @@ return [
     'settings_media' => 'Settings & Media',
     'email_address' => 'Email Address',
     'vendor_logo' => 'Vendor Logo',
+    // Legal Policies Tab
+    'legal_policies' => 'Legal Policies',
+    'terms_and_conditions' => 'Terms & Conditions',
+    'privacy_policy' => 'Privacy Policy',
+    'store_policy' => 'Store Policy',
+    'return_policy' => 'Return & Refund Policy',
     'attribute_set_name' => 'Attribute Set Name',
     'attributes_in_set' => 'Attributes in this Set',
     'attribute_value_details' => 'Attribute Value Details',

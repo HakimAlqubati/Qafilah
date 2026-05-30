@@ -197,6 +197,12 @@ return [
     'settings_media' => 'الإعدادات والوسائط',
     'email_address' => 'البريد الإلكتروني',
     'vendor_logo' => 'شعار التاجر',
+    // السياسات القانونية
+    'legal_policies' => 'السياسات القانونية',
+    'terms_and_conditions' => 'الأحكام والشروط',
+    'privacy_policy' => 'سياسة الخصوصية',
+    'store_policy' => 'سياسة المتجر',
+    'return_policy' => 'سياسة الاسترجاع والعائدات',
     'attribute_set_name' => 'اسم مجموعة الخصائص',
     'attributes_in_set' => 'الخصائص في هذه المجموعة',
     'attribute_value_details' => 'تفاصيل قيمة الخاصية',

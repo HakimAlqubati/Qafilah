@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Vendors\Schemas;
 
 use App\Filament\Resources\Vendors\Schemas\Components\Tabs\BasicInfoTab;
+use App\Filament\Resources\Vendors\Schemas\Components\Tabs\LegalPoliciesTab;
 use App\Filament\Resources\Vendors\Schemas\Components\Tabs\LocationDeliveryTab;
 use App\Filament\Resources\Vendors\Schemas\Components\Tabs\SettingsMediaTab;
 use Filament\Schemas\Components\Tabs;
@@ -27,6 +28,9 @@ class VendorForm
 
                         // Tab 3: Settings & Media
                         SettingsMediaTab::make(),
+
+                        // Tab 4: Legal Policies — يظهر في الأدمن والتاجر معاً
+                        LegalPoliciesTab::make(),
                     ])
                     ->columnSpanFull(),
             ]);

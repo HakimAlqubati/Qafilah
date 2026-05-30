@@ -47,6 +47,11 @@ class Vendor extends Model
         'country_id',
         'city_id',
         'district_id',
+        // السياسات القانونية
+        'terms_and_conditions',
+        'privacy_policy',
+        'store_policy',
+        'return_policy',
     ];
 
     protected $casts = [
