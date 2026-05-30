@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Merchant\Resources\Orders\MerchantOrderResource;
 use App\Filament\Merchant\Resources\ProductVendorSkus\ProductVendorSkuResource;
 use App\Filament\Merchant\Resources\Vendors\MerchantVendorResource;
 use App\Http\Middleware\CustomFilamentAuthenticate;
@@ -79,6 +80,7 @@ class MerchantPanelProvider extends PanelProvider
                         ]))
                         ->isActiveWhen(fn(): bool => request()->routeIs('filament.merchant.resources.vendors.merchant-vendors.edit')),
 
+                    ...MerchantOrderResource::getNavigationItems(),
                     ...ProductVendorSkuResource::getNavigationItems(),
                 ]);
             })
