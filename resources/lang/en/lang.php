@@ -706,4 +706,5 @@ return [
         'order' => 'Order',
         'order_helper' => 'Drag to set slider position; smaller numbers appear first.',
     ],
+    'user_type' => 'User Type',
 ];
