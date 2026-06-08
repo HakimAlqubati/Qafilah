@@ -7,6 +7,7 @@ use App\Http\Controllers\DocsReports\RequiredReportsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    dd(auth()->user()?->vendor,auth()?->user()?->roles);
     return view('landing');
 });
 
