@@ -26,6 +26,7 @@ class Vendor extends Model
     // Fillable fields (essential for mass assignment)
     protected $fillable = [
         'name',
+        'store_name',
         'slug',
         'contact_person',
         'email',

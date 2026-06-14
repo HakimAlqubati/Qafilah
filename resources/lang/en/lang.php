@@ -59,6 +59,7 @@ return [
 
     // Vendor Table Columns
     'vendor_name' => 'Vendor Name',
+    'store_name' => 'Store Name',
     'products_count' => 'Products',
     'delivery_rate' => 'Delivery Rate',
     'creation_date' => 'Creation Date',

@@ -59,6 +59,7 @@ return [
 
     // Vendor Table Columns
     'vendor_name' => 'اسم التاجر',
+    'store_name' => 'اسم المتجر',
     'products_count' => 'المنتجات',
     'delivery_rate' => 'سعر التوصيل',
     'creation_date' => 'تاريخ الإنشاء',

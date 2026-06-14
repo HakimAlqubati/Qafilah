@@ -53,6 +53,11 @@ class BasicInfoTab
                             ->helperText(__('lang.auto_generated')),
                     ]),
 
+                TextInput::make('store_name')
+                    ->label(__('lang.store_name'))
+                    ->required()
+                    ->maxLength(255),
+
                 Grid::make(2)
                     ->schema([
                         // 2. Contact Information
