@@ -722,4 +722,5 @@ return [
     'needs_processing' => 'تحتاج إلى معالجة',
     'successfully_delivered' => 'تم توصيلها بنجاح',
     'from_completed_orders' => 'من الطلبات المكتملة',
+    'orders_by_status' => 'الطلبات حسب الحالة',
 ];

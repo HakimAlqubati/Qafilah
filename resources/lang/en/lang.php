@@ -721,4 +721,5 @@ return [
     'needs_processing' => 'Needs processing',
     'successfully_delivered' => 'Successfully delivered',
     'from_completed_orders' => 'From completed orders',
+    'orders_by_status' => 'Orders by Status',
 ];

@@ -47,8 +47,6 @@ class MerchantPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Merchant/Widgets'), for: 'App\Filament\Merchant\Widgets')
             ->widgets([
                 // AccountWidget::class,
-                \App\Filament\Merchant\Widgets\MerchantProductsChart::class, // يدوي
-
             ])
             ->middleware([
                 EncryptCookies::class,
