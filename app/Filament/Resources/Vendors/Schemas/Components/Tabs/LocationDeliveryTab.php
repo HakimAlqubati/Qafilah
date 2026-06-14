@@ -10,6 +10,8 @@ use App\Models\Setting;
 use App\Models\Vendor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Radio;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -122,6 +124,47 @@ class LocationDeliveryTab
                                     ->default(Vendor::DELIVERY_TIME_UNIT_HOURS)
                                     ->native(false),
                             ]),
+                    ])
+                    ->hidden()
+                    ,
+
+                // ═══════════════════════════════════════════════════════════
+                // 🚚 سياسة الشحن
+                // ═══════════════════════════════════════════════════════════
+                Section::make(__('lang.shipping_policy'))
+                    ->icon('heroicon-o-truck')
+                    ->relationship('shippingPolicy')
+                    ->collapsible()
+                    ->schema([
+                        Radio::make('is_free')
+                            ->label(__('lang.shipping_type'))
+                            ->boolean(__('lang.free'), __('lang.paid'))
+                            ->inline()
+                            ->default(0)
+                            ->live(),
+
+                        Radio::make('charge_type')
+                            ->label(__('lang.charge_type'))
+                            ->options([
+                                'fixed' => __('lang.fixed'),
+                                'variable' => __('lang.variable'),
+                            ])
+                            ->live()
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_free')),
+
+                        TextInput::make('fixed_amount')
+                            ->label(__('lang.fixed_amount'))
+                            ->numeric()
+                            ->prefix(fn() => Currency::default()->first()?->symbol ?? 'SAR')
+                            ->required(fn (Get $get): bool => $get('charge_type') === 'fixed')
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_free') && $get('charge_type') === 'fixed'),
+
+                        TextInput::make('per_km_rate')
+                            ->label(__('lang.per_km_rate'))
+                            ->numeric()
+                            ->suffix('KM')
+                            ->required(fn (Get $get): bool => $get('charge_type') === 'variable')
+                            ->visible(fn (Get $get): bool => ! (bool) $get('is_free') && $get('charge_type') === 'variable'),
                     ]),
 
                 // ═══════════════════════════════════════════════════════════
