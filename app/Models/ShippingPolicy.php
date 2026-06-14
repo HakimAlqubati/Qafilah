@@ -17,6 +17,8 @@ class ShippingPolicy extends Model
         'charge_type',
         'fixed_amount',
         'per_km_rate',
+        'estimated_delivery_value',
+        'estimated_delivery_unit',
     ];
 
     protected $casts = [
@@ -24,6 +26,7 @@ class ShippingPolicy extends Model
         'min_order_amount' => 'decimal:2',
         'fixed_amount' => 'decimal:2',
         'per_km_rate' => 'decimal:2',
+        'estimated_delivery_value' => 'integer',
     ];
 
     /**

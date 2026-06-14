@@ -170,6 +170,20 @@ class LocationDeliveryTab
                             ->label(__('lang.min_order_amount'))
                             ->numeric()
                             ->prefix(fn() => Currency::default()->first()?->symbol ?? 'SAR'),
+
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('estimated_delivery_value')
+                                    ->label(__('lang.delivery_time'))
+                                    ->integer()
+                                    ->required(),
+
+                                Select::make('estimated_delivery_unit')
+                                    ->label(__('lang.delivery_time_unit'))
+                                    ->options(Vendor::getDeliveryTimeUnitOptions())
+                                    ->native(false)
+                                    ->required(),
+                            ]),
                     ]),
 
                 // ═══════════════════════════════════════════════════════════
