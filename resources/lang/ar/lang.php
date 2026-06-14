@@ -718,4 +718,8 @@ return [
         'order_helper' => 'اسحب لتحديد موقع السلايدر، الرقم الأصغر يظهر أولاً.',
     ],
     'user_type' => 'نوع المستخدم',
+    'all_time_orders' => 'إجمالي الطلبات على الإطلاق',
+    'needs_processing' => 'تحتاج إلى معالجة',
+    'successfully_delivered' => 'تم توصيلها بنجاح',
+    'from_completed_orders' => 'من الطلبات المكتملة',
 ];

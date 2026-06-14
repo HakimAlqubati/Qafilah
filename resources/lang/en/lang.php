@@ -717,4 +717,8 @@ return [
         'order_helper' => 'Drag to set slider position; smaller numbers appear first.',
     ],
     'user_type' => 'User Type',
+    'all_time_orders' => 'All time orders',
+    'needs_processing' => 'Needs processing',
+    'successfully_delivered' => 'Successfully delivered',
+    'from_completed_orders' => 'From completed orders',
 ];

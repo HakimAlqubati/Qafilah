@@ -60,13 +60,25 @@ class MerchantOrderResource extends OrderResource
 
         return static::$pendingOrdersCount;
     }
+    protected static function getOrdersCount(): int
+    {
+        if (static::$pendingOrdersCount === null) {
+            $vendorId = Auth::user()?->vendor_id;
+            static::$pendingOrdersCount = $vendorId
+                ? (int) static::getModel()::where('vendor_id', $vendorId)
+                     ->count()
+                : 0;
+        }
+
+        return static::$pendingOrdersCount;
+    }
 
     /**
      * Badge يعرض عدد الطلبات المعلقة الخاصة بالتاجر
      */
     public static function getNavigationBadge(): ?string
     {
-        $count = static::getPendingOrdersCount();
+        $count = static::getOrdersCount();
 
         return $count;
     }
