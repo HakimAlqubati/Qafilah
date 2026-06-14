@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Vendors\Schemas\Components\Tabs;
 
 use App\Models\Vendor;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -52,7 +53,14 @@ class BasicInfoTab
                             ->dehydrated()
                             ->helperText(__('lang.auto_generated')),
                     ]),
-
+    // Logo Upload
+                FileUpload::make('logo_path')
+                    ->label(__('lang.vendor_logo'))
+                    ->disk('public')
+                    ->columnSpanFull()
+                    ->directory('vendors/logos')
+                    ->image()
+                    ->maxSize(500),
                 TextInput::make('store_name')
                     ->label(__('lang.store_name'))
                     ->required()

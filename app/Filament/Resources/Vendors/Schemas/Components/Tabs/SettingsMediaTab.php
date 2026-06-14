@@ -39,13 +39,7 @@ class SettingsMediaTab
                             ->maxLength(255),
                     ]),
 
-                // Logo Upload
-                FileUpload::make('logo_path')
-                    ->label(__('lang.vendor_logo'))
-                    ->disk('public')
-                    ->directory('vendors/logos')
-                    ->image()
-                    ->maxSize(500),
+            
             ]);
     }
 }
