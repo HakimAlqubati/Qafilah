@@ -84,15 +84,16 @@ class MerchantPanelProvider extends PanelProvider
                     ...ProductVendorSkuResource::getNavigationItems(),
                 ]);
             })
-            ->topNavigation()
+            // ->topNavigation()
+            ->sidebarCollapsibleOnDesktop()
             ->globalSearchKeyBindings([])
             ->renderHook(
-                PanelsRenderHook::TOPBAR_START,
+                PanelsRenderHook::TOPBAR_LOGO_AFTER,
                 fn(): string =>
                 view('filament.partials.current-time')->render()
             )
             ->renderHook(
-                PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+                PanelsRenderHook::TOPBAR_LOGO_AFTER,
                 fn(): string =>
                 view('filament.partials.welcome')->render()
             )
