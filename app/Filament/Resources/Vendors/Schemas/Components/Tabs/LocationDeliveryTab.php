@@ -165,6 +165,11 @@ class LocationDeliveryTab
                             ->suffix('KM')
                             ->required(fn (Get $get): bool => $get('charge_type') === 'variable')
                             ->visible(fn (Get $get): bool => ! (bool) $get('is_free') && $get('charge_type') === 'variable'),
+
+                        TextInput::make('min_order_amount')
+                            ->label(__('lang.min_order_amount'))
+                            ->numeric()
+                            ->prefix(fn() => Currency::default()->first()?->symbol ?? 'SAR'),
                     ]),
 
                 // ═══════════════════════════════════════════════════════════

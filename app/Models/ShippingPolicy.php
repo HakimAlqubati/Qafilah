@@ -13,6 +13,7 @@ class ShippingPolicy extends Model
     protected $fillable = [
         'vendor_id',
         'is_free',
+        'min_order_amount',
         'charge_type',
         'fixed_amount',
         'per_km_rate',
@@ -20,6 +21,7 @@ class ShippingPolicy extends Model
 
     protected $casts = [
         'is_free' => 'boolean',
+        'min_order_amount' => 'decimal:2',
         'fixed_amount' => 'decimal:2',
         'per_km_rate' => 'decimal:2',
     ];
