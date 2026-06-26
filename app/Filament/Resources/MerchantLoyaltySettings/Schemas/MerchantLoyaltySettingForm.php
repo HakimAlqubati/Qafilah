@@ -72,7 +72,9 @@ class MerchantLoyaltySettingForm
                             ->required()
                             ->prefix('$')
                             ->helperText(__('lang.the_monetary_discount_applied_per_block_of_redeemed_points')),
-                    ])->columns(3),
+                    ])->columns(3)
+                    ->columnSpanFull()
+                    ,
             ]);
     }
 }
