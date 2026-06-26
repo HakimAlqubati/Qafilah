@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Filament\Resources\CustomerLoyaltyWallets;
+
+use App\Filament\Resources\CustomerLoyaltyWallets\Pages\CreateCustomerLoyaltyWallet;
+use App\Filament\Resources\CustomerLoyaltyWallets\Pages\EditCustomerLoyaltyWallet;
+use App\Filament\Resources\CustomerLoyaltyWallets\Pages\ListCustomerLoyaltyWallets;
+use App\Filament\Resources\CustomerLoyaltyWallets\Schemas\CustomerLoyaltyWalletForm;
+use App\Filament\Resources\CustomerLoyaltyWallets\Tables\CustomerLoyaltyWalletsTable;
+use App\Models\CustomerLoyaltyWallet;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+
+class CustomerLoyaltyWalletResource extends Resource
+{
+    protected static ?string $model = CustomerLoyaltyWallet::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static ?string $recordTitleAttribute = 'merchant';
+
+    public static function getModelLabel(): string
+    {
+        return __('lang.customer_loyalty_wallet');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('lang.customer_loyalty_wallets');
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return CustomerLoyaltyWalletForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return CustomerLoyaltyWalletsTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListCustomerLoyaltyWallets::route('/'),
+            'create' => CreateCustomerLoyaltyWallet::route('/create'),
+            'edit' => EditCustomerLoyaltyWallet::route('/{record}/edit'),
+        ];
+    }
+}

@@ -88,6 +88,7 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make(__('lang.customer_management'))
                         ->items([
                             ...auth()->user()->can('ViewAny:Customer') ? CustomerResource::getNavigationItems() : [],
+                            ...auth()->user()->can('ViewAny:CustomerLoyaltyWallet') ? \App\Filament\Resources\CustomerLoyaltyWallets\CustomerLoyaltyWalletResource::getNavigationItems() : [],
                         ]),
                     NavigationGroup::make(__('lang.sales'))
                         ->items([

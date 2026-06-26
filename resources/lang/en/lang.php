@@ -747,4 +747,10 @@ return [
     'min_points_to_redeem' => 'Min. Points to Redeem',
     'only_active' => 'Only Active',
     'only_inactive' => 'Only Inactive',
+
+    // Customer Loyalty Wallets
+    'customer_loyalty_wallets' => 'Customer Loyalty Wallets',
+    'customer_loyalty_wallet' => 'Customer Loyalty Wallet',
+    'balance' => 'Balance',
+    'wallet_balance' => 'Wallet Balance',
 ];

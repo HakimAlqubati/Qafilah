@@ -748,4 +748,10 @@ return [
     'min_points_to_redeem' => 'الحد الأدنى للنقاط للاستبدال',
     'only_active' => 'النشط فقط',
     'only_inactive' => 'غير النشط فقط',
+
+    // Customer Loyalty Wallets
+    'customer_loyalty_wallets' => 'محافظ ولاء العملاء',
+    'customer_loyalty_wallet' => 'محفظة ولاء العميل',
+    'balance' => 'الرصيد',
+    'wallet_balance' => 'رصيد المحفظة',
 ];
