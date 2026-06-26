@@ -5,6 +5,7 @@ namespace App\Filament\Resources\CustomerLoyaltyWallets\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 
 class CustomerLoyaltyWalletForm
 {
@@ -12,7 +13,8 @@ class CustomerLoyaltyWalletForm
     {
         return $schema
             ->schema([
-                Select::make('customer_id')
+          Grid::make(3)->columnSpanFull()->schema([
+                  Select::make('customer_id')
                     ->label(__('lang.customer'))
                     ->relationship('customer', 'name')
                     ->searchable()
@@ -21,7 +23,7 @@ class CustomerLoyaltyWalletForm
                 
                 Select::make('merchant_id')
                     ->label(__('lang.vendor'))
-                    ->relationship('merchant', 'store_name')
+                    ->relationship('merchant', 'name')
                     ->searchable()
                     ->preload()
                     ->required(),
@@ -31,6 +33,7 @@ class CustomerLoyaltyWalletForm
                     ->numeric()
                     ->default(0)
                     ->required(),
+          ])
             ]);
     }
 }

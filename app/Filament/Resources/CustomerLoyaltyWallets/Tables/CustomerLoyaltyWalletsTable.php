@@ -19,14 +19,14 @@ class CustomerLoyaltyWalletsTable
                     ->searchable()
                     ->sortable(),
                 
-                TextColumn::make('merchant.store_name')
+                TextColumn::make('merchant.name')
                     ->label(__('lang.vendor'))
                     ->searchable()
                     ->sortable(),
                 
                 TextColumn::make('balance')
                     ->label(__('lang.wallet_balance'))
-                    ->numeric()
+                    // ->numeric()
                     ->sortable(),
 
                 TextColumn::make('created_at')

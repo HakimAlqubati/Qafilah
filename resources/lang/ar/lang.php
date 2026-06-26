@@ -754,4 +754,7 @@ return [
     'customer_loyalty_wallet' => 'محفظة ولاء العميل',
     'balance' => 'الرصيد',
     'wallet_balance' => 'رصيد المحفظة',
+
+    // Loyalty Management
+    'loyalty_management' => 'إدارة الولاء',
 ];

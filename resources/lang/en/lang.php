@@ -753,4 +753,7 @@ return [
     'customer_loyalty_wallet' => 'Customer Loyalty Wallet',
     'balance' => 'Balance',
     'wallet_balance' => 'Wallet Balance',
+    
+    // Loyalty Management
+    'loyalty_management' => 'Loyalty Management',
 ];

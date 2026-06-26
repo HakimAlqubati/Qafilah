@@ -88,6 +88,10 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make(__('lang.customer_management'))
                         ->items([
                             ...auth()->user()->can('ViewAny:Customer') ? CustomerResource::getNavigationItems() : [],
+                        ]),
+                    NavigationGroup::make(__('lang.loyalty_management'))
+                        ->items([
+                            ...auth()->user()->can('ViewAny:MerchantLoyaltySetting') ? \App\Filament\Resources\MerchantLoyaltySettings\MerchantLoyaltySettingResource::getNavigationItems() : [],
                             ...auth()->user()->can('ViewAny:CustomerLoyaltyWallet') ? \App\Filament\Resources\CustomerLoyaltyWallets\CustomerLoyaltyWalletResource::getNavigationItems() : [],
                         ]),
                     NavigationGroup::make(__('lang.sales'))
@@ -133,7 +137,6 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make(__('lang.settings'))
                         ->items([
                             ...auth()->user()->can('ViewAny:Setting') ? SettingResource::getNavigationItems() : [],
-                            ...auth()->user()->can('ViewAny:MerchantLoyaltySetting') ? \App\Filament\Resources\MerchantLoyaltySettings\MerchantLoyaltySettingResource::getNavigationItems() : [],
                         ]),
                 ]);
             })
