@@ -6,6 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Class LoyaltyTransaction
+ *
+ * Database Fields:
+ * @property int $id
+ * @property int $wallet_id
+ * @property int|null $order_id
+ * @property string $type
+ * @property int $points
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class LoyaltyTransaction extends Model
 {
     use HasFactory;

@@ -6,6 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Class MerchantLoyaltySetting
+ *
+ * Database Fields:
+ * @property int $id
+ * @property int $merchant_id
+ * @property bool $is_active
+ * @property float $earning_spend_amount
+ * @property int $earning_reward_points
+ * @property int $redemption_points_block
+ * @property float $redemption_discount_value
+ * @property int $min_points_to_redeem
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class MerchantLoyaltySetting extends Model
 {
     use HasFactory;
