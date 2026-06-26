@@ -14,64 +14,64 @@ class MerchantLoyaltySettingForm
     {
         return $schema
             ->schema([
-                Section::make('General Settings')
-                    ->description('Manage active status and merchant assignment.')
+                Section::make(__('lang.general_settings'))
+                    ->description(__('lang.manage_active_status_and_merchant_assignment'))
                     ->schema([
                         Select::make('merchant_id')
                             ->relationship('merchant', 'name')
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->label('Merchant')
+                            ->label(__('lang.vendor'))
                             ->columnSpanFull(),
 
                         Toggle::make('is_active')
-                            ->label('Active')
+                            ->label(__('lang.active'))
                             ->default(true)
                             ->required(),
                     ])->columns(2),
 
-                Section::make('Earning Rules')
-                    ->description('Define how customers earn points based on their spend.')
+                Section::make(__('lang.earning_rules'))
+                    ->description(__('lang.define_how_customers_earn_points_based_on_their_spend'))
                     ->schema([
                         TextInput::make('earning_spend_amount')
-                            ->label('Spend Amount Required')
+                            ->label(__('lang.spend_amount_required'))
                             ->numeric()
                             ->required()
                             ->prefix('$')
-                            ->helperText('The amount a customer needs to spend to earn the reward points.'),
+                            ->helperText(__('lang.the_amount_a_customer_needs_to_spend_to_earn_the_reward_points')),
 
                         TextInput::make('earning_reward_points')
-                            ->label('Reward Points Earned')
+                            ->label(__('lang.reward_points_earned'))
                             ->numeric()
                             ->integer()
                             ->required()
-                            ->helperText('Points earned for every multiple of the spend amount.'),
+                            ->helperText(__('lang.points_earned_for_every_multiple_of_the_spend_amount')),
                     ])->columns(2),
 
-                Section::make('Redemption Rules')
-                    ->description('Define how customers can redeem their points.')
+                Section::make(__('lang.redemption_rules'))
+                    ->description(__('lang.define_how_customers_can_redeem_their_points'))
                     ->schema([
                         TextInput::make('min_points_to_redeem')
-                            ->label('Minimum Points to Redeem')
+                            ->label(__('lang.minimum_points_to_redeem'))
                             ->numeric()
                             ->integer()
                             ->required()
-                            ->helperText('The minimum points balance required before redemption is allowed.'),
+                            ->helperText(__('lang.the_minimum_points_balance_required_before_redemption_is_allowed')),
 
                         TextInput::make('redemption_points_block')
-                            ->label('Redemption Points Block')
+                            ->label(__('lang.redemption_points_block'))
                             ->numeric()
                             ->integer()
                             ->required()
-                            ->helperText('Points must be redeemed in multiples of this block size (e.g., 100).'),
+                            ->helperText(__('lang.points_must_be_redeemed_in_multiples_of_this_block_size')),
 
                         TextInput::make('redemption_discount_value')
-                            ->label('Discount Value per Block')
+                            ->label(__('lang.discount_value_per_block'))
                             ->numeric()
                             ->required()
                             ->prefix('$')
-                            ->helperText('The monetary discount applied per block of redeemed points.'),
+                            ->helperText(__('lang.the_monetary_discount_applied_per_block_of_redeemed_points')),
                     ])->columns(3),
             ]);
     }

@@ -22,6 +22,16 @@ class MerchantLoyaltySettingResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'merchant';
 
+    public static function getModelLabel(): string
+    {
+        return __('lang.merchant_loyalty_setting');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('lang.merchant_loyalty_settings');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return MerchantLoyaltySettingForm::configure($schema);

@@ -132,6 +132,7 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make(__('lang.settings'))
                         ->items([
                             ...auth()->user()->can('ViewAny:Setting') ? SettingResource::getNavigationItems() : [],
+                            ...auth()->user()->can('ViewAny:MerchantLoyaltySetting') ? \App\Filament\Resources\MerchantLoyaltySettings\MerchantLoyaltySettingResource::getNavigationItems() : [],
                         ]),
                 ]);
             })

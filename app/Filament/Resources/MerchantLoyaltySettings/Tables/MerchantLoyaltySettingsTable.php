@@ -17,46 +17,46 @@ class MerchantLoyaltySettingsTable
         return $table
             ->columns([
                 TextColumn::make('merchant.name')
-                    ->label('Merchant')
+                    ->label(__('lang.vendor'))
                     ->sortable()
                     ->searchable(),
 
                 IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(__('lang.active'))
                     ->boolean()
                     ->sortable(),
 
                 TextColumn::make('earning_spend_amount')
-                    ->label('Spend Amount Required')
+                    ->label(__('lang.spend_amount_required'))
                     ->money()
                     ->sortable(),
 
                 TextColumn::make('earning_reward_points')
-                    ->label('Reward Points')
+                    ->label(__('lang.reward_points'))
                     ->numeric()
                     ->sortable(),
 
                 TextColumn::make('redemption_points_block')
-                    ->label('Redemption Block')
+                    ->label(__('lang.redemption_block'))
                     ->numeric()
                     ->sortable(),
 
                 TextColumn::make('redemption_discount_value')
-                    ->label('Discount Value')
+                    ->label(__('lang.discount_value'))
                     ->money()
                     ->sortable(),
 
                 TextColumn::make('min_points_to_redeem')
-                    ->label('Min. Points to Redeem')
+                    ->label(__('lang.min_points_to_redeem'))
                     ->numeric()
                     ->sortable(),
             ])
             ->filters([
                 TernaryFilter::make('is_active')
-                    ->label('Active Status')
+                    ->label(__('lang.active_status'))
                     ->boolean()
-                    ->trueLabel('Only Active')
-                    ->falseLabel('Only Inactive')
+                    ->trueLabel(__('lang.only_active'))
+                    ->falseLabel(__('lang.only_inactive'))
                     ->native(false),
             ])
             ->actions([
