@@ -20,7 +20,7 @@ class MerchantLoyaltySettingResource extends Resource
 {
     protected static ?string $model = MerchantLoyaltySetting::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGift;
 
     protected static ?string $recordTitleAttribute = 'merchant.name';
 

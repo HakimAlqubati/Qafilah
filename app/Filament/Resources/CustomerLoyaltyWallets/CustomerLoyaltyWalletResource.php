@@ -18,7 +18,7 @@ class CustomerLoyaltyWalletResource extends Resource
 {
     protected static ?string $model = CustomerLoyaltyWallet::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWallet;
 
     protected static ?string $recordTitleAttribute = 'merchant.name';
 

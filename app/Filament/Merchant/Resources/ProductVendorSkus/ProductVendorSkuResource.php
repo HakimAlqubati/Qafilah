@@ -22,7 +22,7 @@ class ProductVendorSkuResource extends Resource
 {
     protected static ?string $model = ProductVendorSku::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
     protected static ?string $recordTitleAttribute = 'vendor_id';
 
