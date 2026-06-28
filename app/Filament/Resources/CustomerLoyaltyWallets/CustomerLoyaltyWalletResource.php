@@ -57,4 +57,9 @@ class CustomerLoyaltyWalletResource extends Resource
             'edit' => EditCustomerLoyaltyWallet::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getEloquentQuery()->count();
+    }
 }
