@@ -24,12 +24,17 @@ class CustomFilamentAuthenticate extends BaseAuthenticate
         $this->auth->shouldUse(Filament::getAuthGuard());
 
         /** @var Model $user */
-        $user = $guard->user();
+        $user = $guard->user()->load('vendor');
 
         $panel = Filament::getCurrentOrDefaultPanel();
 
         // التحقق من أن المستخدم هو تاجر (merchant)
         $userType = $user->getRawOriginal('user_type');
+        if($userType === UserTypes::MERCHANT->value){
+            if(!$user->vendor){
+                abort(403, 'Access denied. You have no merchant account.');
+            }
+        }
         if ($userType !== UserTypes::MERCHANT->value) {
             abort(403, 'Access denied. Merchants only.');
         }

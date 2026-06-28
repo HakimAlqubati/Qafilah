@@ -102,4 +102,9 @@ class ProductVendorSkuResource extends Resource
                     ->groupBy('product_id');
             });
     }
+
+    public static function canViewAny(): bool
+    {
+        return true;
+    }
 }
