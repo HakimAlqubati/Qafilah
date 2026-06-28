@@ -6,6 +6,7 @@ use App\Filament\Merchant\Resources\Orders\MerchantOrderResource;
 use App\Filament\Merchant\Resources\ProductVendorSkus\ProductVendorSkuResource;
 use App\Filament\Merchant\Resources\Vendors\MerchantVendorResource;
 use App\Filament\Merchant\Resources\MerchantLoyaltySettings\MerchantLoyaltySettingResource;
+use App\Filament\Merchant\Resources\CustomerLoyaltyWallets\CustomerLoyaltyWalletResource;
 use App\Http\Middleware\CustomFilamentAuthenticate;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -82,6 +83,7 @@ class MerchantPanelProvider extends PanelProvider
                     ...MerchantOrderResource::getNavigationItems(),
                     ...ProductVendorSkuResource::getNavigationItems(),
                     ...MerchantLoyaltySettingResource::getNavigationItems(),
+                    ...CustomerLoyaltyWalletResource::getNavigationItems(),
                 ]);
             })
             // ->topNavigation()
