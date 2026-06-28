@@ -13,6 +13,7 @@ class CustomerLoyaltyWalletsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) => $query->withSum(['loyaltyTransactions as used_points' => fn ($q) => $q->where('type', 'redeemed')], 'points'))
             ->columns([
                 TextColumn::make('customer.name')
                     ->label(__('lang.customer'))
@@ -22,6 +23,12 @@ class CustomerLoyaltyWalletsTable
                 TextColumn::make('merchant.name')
                     ->label(__('lang.vendor'))
                     ->searchable()
+                    ->sortable()
+                    ->hidden(fn () => filament()->getCurrentPanel()->getId() === 'merchant'),
+                
+                TextColumn::make('used_points')
+                    ->label(__('lang.used_points'))
+                    ->state(fn ($record) => abs($record->used_points ?? 0))
                     ->sortable(),
                 
                 TextColumn::make('balance')

@@ -757,4 +757,5 @@ return [
 
     // Loyalty Management
     'loyalty_management' => 'إدارة الولاء',
+    'used_points' => 'النقاط المستعملة',
 ];

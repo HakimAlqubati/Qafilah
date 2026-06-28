@@ -756,4 +756,5 @@ return [
     
     // Loyalty Management
     'loyalty_management' => 'Loyalty Management',
+    'used_points' => 'Used Points',
 ];

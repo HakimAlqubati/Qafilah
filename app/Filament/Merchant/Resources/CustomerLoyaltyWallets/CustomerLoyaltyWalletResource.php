@@ -6,7 +6,7 @@ use App\Filament\Merchant\Resources\CustomerLoyaltyWallets\Pages\CreateCustomerL
 use App\Filament\Merchant\Resources\CustomerLoyaltyWallets\Pages\EditCustomerLoyaltyWallet;
 use App\Filament\Merchant\Resources\CustomerLoyaltyWallets\Pages\ListCustomerLoyaltyWallets;
 use App\Filament\Merchant\Resources\CustomerLoyaltyWallets\Schemas\CustomerLoyaltyWalletForm;
-use App\Filament\Merchant\Resources\CustomerLoyaltyWallets\Tables\CustomerLoyaltyWalletsTable;
+use App\Filament\Resources\CustomerLoyaltyWallets\Tables\CustomerLoyaltyWalletsTable;
 use App\Models\CustomerLoyaltyWallet;
 use BackedEnum;
 use Filament\Resources\Resource;
