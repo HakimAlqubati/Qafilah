@@ -2,6 +2,7 @@
 
 namespace App\Filament\Merchant\Resources\CustomerLoyaltyWallets;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Filament\Merchant\Resources\CustomerLoyaltyWallets\Pages\CreateCustomerLoyaltyWallet;
 use App\Filament\Merchant\Resources\CustomerLoyaltyWallets\Pages\EditCustomerLoyaltyWallet;
 use App\Filament\Merchant\Resources\CustomerLoyaltyWallets\Pages\ListCustomerLoyaltyWallets;
@@ -48,7 +49,7 @@ class CustomerLoyaltyWalletResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {
+    { 
         return CustomerLoyaltyWalletsTable::configure($table);
     }
 
@@ -68,6 +69,11 @@ class CustomerLoyaltyWalletResource extends Resource
         ];
     }
 
+       public static function canEdit(Model $record): bool
+    {
+        return true;
+        return static::getEditAuthorizationResponse($record)->allowed();
+    }
     public static function canViewAny(): bool
     {
         return true;

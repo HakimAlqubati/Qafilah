@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class MerchantLoyaltySettingResource extends Resource
@@ -71,6 +72,12 @@ class MerchantLoyaltySettingResource extends Resource
     public static function canViewAny(): bool
     {
         return true;
+    }
+
+        public static function canEdit(Model $record): bool
+    {
+        return true;
+        return static::getEditAuthorizationResponse($record)->allowed();
     }
 
     public static function getNavigationBadge(): ?string
