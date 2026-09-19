@@ -2,6 +2,8 @@
 
 namespace App\Filament\Merchant\Resources\MerchantLoyaltySettings\Tables;
 
+use App\Models\Currency;
+use App\Models\MerchantLoyaltySetting;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -23,7 +25,8 @@ class MerchantLoyaltySettingsTable
 
                 TextColumn::make('earning_spend_amount')
                     ->label(__('lang.spend_amount_required'))
-                    ->money()
+                    ->numeric(decimalPlaces: 2)
+                    ->prefix(fn (MerchantLoyaltySetting $record): string => Currency::getMerchantCurrencySymbol($record->merchant_id ?? auth()->user()?->vendor_id) . ' ')
                     ->sortable(),
 
                 TextColumn::make('earning_reward_points')
@@ -38,7 +41,8 @@ class MerchantLoyaltySettingsTable
 
                 TextColumn::make('redemption_discount_value')
                     ->label(__('lang.discount_value'))
-                    ->money()
+                    ->numeric(decimalPlaces: 2)
+                    ->prefix(fn (MerchantLoyaltySetting $record): string => Currency::getMerchantCurrencySymbol($record->merchant_id ?? auth()->user()?->vendor_id) . ' ')
                     ->sortable(),
             ])
             ->filters([

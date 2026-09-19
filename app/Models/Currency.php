@@ -54,4 +54,40 @@ class Currency extends Model
     {
         return $query->where('is_active', true);
     }
+
+    /**
+     * Get the default currency instance.
+     */
+    public static function getDefault(): ?self
+    {
+        return static::default()->first();
+    }
+
+    /**
+     * Get the default currency symbol or code.
+     */
+    public static function getDefaultSymbol(string $fallback = '$'): string
+    {
+        $default = static::getDefault();
+
+        return $default?->symbol ?? $default?->code ?? $fallback;
+    }
+
+    /**
+     * Get the currency symbol for a merchant, or fallback to the system default currency.
+     */
+    public static function getMerchantCurrencySymbol(?int $merchantId = null, string $fallback = '$'): string
+    {
+        if ($merchantId) {
+            $vendor = Vendor::with('defaultCurrency')->find($merchantId);
+            if ($vendor?->defaultCurrency?->symbol) {
+                return $vendor->defaultCurrency->symbol;
+            }
+            if ($vendor?->defaultCurrency?->code) {
+                return $vendor->defaultCurrency->code;
+            }
+        }
+
+        return static::getDefaultSymbol($fallback);
+    }
 }
