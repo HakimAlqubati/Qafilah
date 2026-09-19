@@ -45,7 +45,7 @@ class CustomerLoyaltyWalletResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            \App\Filament\Resources\CustomerLoyaltyWallets\RelationManagers\LoyaltyTransactionsRelationManager::class,
         ];
     }
 

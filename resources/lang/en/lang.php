@@ -755,5 +755,17 @@ return [
     
     // Loyalty Management
     'loyalty_management' => 'Loyalty Management',
+    'loyalty_transactions' => 'Loyalty Transactions',
+    'loyalty_transaction' => 'Loyalty Transaction',
     'used_points' => 'Used Points',
+    'points' => 'Points',
+    'transaction_type' => 'Transaction Type',
+    'type_earned' => 'Points Earned',
+    'type_redeemed' => 'Points Redeemed',
+    'type_earned_reversed' => 'Points Revoked (Returned)',
+    'type_redeemed_restored' => 'Points Restored (Cancelled)',
+    'points_earned_from_order' => 'Points earned from order :order',
+    'points_redeemed_for_order' => 'Points redeemed for order :order',
+    'points_redeemed_restored_for_order' => 'Points restored due to cancellation of order :order',
+    'points_earned_reversed_for_order' => 'Points revoked due to return of order :order',
 ];

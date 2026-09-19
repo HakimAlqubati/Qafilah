@@ -18,6 +18,7 @@ class CheckoutController extends Controller
             'payment_gateway_id'          => ['required', 'integer'],
             'payment_gateway_instructions'=> ['nullable', 'string'],
             'notes'                       => ['nullable', 'string'],
+            'redeem_points'               => ['nullable', 'integer', 'min:0'],
         ]);
 
         $order = $this->checkoutRepo->checkout(
@@ -28,6 +29,7 @@ class CheckoutController extends Controller
             paymentGatewayInstructions: $data['payment_gateway_instructions'] ?? null,
             billingAddressId: isset($data['billing_address_id']) ? (int) $data['billing_address_id'] : null,
             notes: $data['notes'] ?? null,
+            redeemPoints: (int) ($data['redeem_points'] ?? 0),
         );
 
         return new OrderResource($order);

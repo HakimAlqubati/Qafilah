@@ -15,12 +15,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $order_id
  * @property string $type
  * @property int $points
+ * @property string|null $description
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class LoyaltyTransaction extends Model
 {
     use HasFactory;
+
+    public const TYPE_EARNED = 'earned';
+    public const TYPE_REDEEMED = 'redeemed';
+    public const TYPE_EARNED_REVERSED = 'earned_reversed';
+    public const TYPE_REDEEMED_RESTORED = 'redeemed_restored';
+
+    public const TYPES = [
+        self::TYPE_EARNED => 'اكتساب نقاط',
+        self::TYPE_REDEEMED => 'استبدال نقاط',
+        self::TYPE_EARNED_REVERSED => 'سحب نقاط مكتسبة (مرتجع)',
+        self::TYPE_REDEEMED_RESTORED => 'استعادة نقاط مستبدلة (إلغاء)',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -32,6 +45,7 @@ class LoyaltyTransaction extends Model
         'order_id',
         'type',
         'points',
+        'description',
     ];
 
     /**

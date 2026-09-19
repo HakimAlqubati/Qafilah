@@ -364,7 +364,31 @@ class Order extends Model
                 $order->placed_at = now();
             }
         });
+
+        static::created(function ($order) {
+            if ($order->status === self::STATUS_COMPLETED) {
+                app(\App\Services\LoyaltyService::class)->awardPointsForOrder($order);
+            }
+        });
+
+        static::updated(function ($order) {
+            if ($order->wasChanged('status')) {
+                $loyaltyService = app(\App\Services\LoyaltyService::class);
+
+                if ($order->status === self::STATUS_COMPLETED) {
+                    $loyaltyService->awardPointsForOrder($order);
+                } elseif (in_array($order->status, [self::STATUS_CANCELLED, self::STATUS_RETURNED])) {
+                    $loyaltyService->handleOrderRefundOrCancellation($order);
+                }
+            }
+        });
     }
+
+    public function loyaltyTransactions(): HasMany
+    {
+        return $this->hasMany(LoyaltyTransaction::class);
+    }
+
     public function paymentTransactions()
     {
         return   $this->morphMany(PaymentTransaction::class, 'payable');

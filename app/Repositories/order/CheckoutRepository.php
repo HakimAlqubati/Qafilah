@@ -21,6 +21,7 @@ class CheckoutRepository
         ?string $paymentGatewayInstructions = null,
         ?int $billingAddressId = null,
         ?string $notes = null,
+        int $redeemPoints = 0,
     ): Order {
         if ($cartId <= 0)  throw ValidationException::withMessages(['cart_id' => 'cart_id is required.']);
         if ($buyerId <= 0) throw ValidationException::withMessages(['buyer_id' => 'buyer_id is required.']);
@@ -35,6 +36,7 @@ class CheckoutRepository
             $notes,
             $paymentGatewayId,
             $paymentGatewayInstructions,
+            $redeemPoints,
         ) {
             $cart = Cart::query()
                 ->whereKey($cartId)
@@ -119,6 +121,16 @@ class CheckoutRepository
 
             $order->order_number = 'ORD-' . $order->id . '-' . now()->format('Ymd');
             $order->save();
+
+            // تطبيق خصم نقاط الولاء إن تم طلب استبدال النقاط
+            if ($redeemPoints > 0) {
+                $loyaltyDiscount = app(\App\Services\LoyaltyService::class)->redeemPointsForOrder($order, $redeemPoints);
+                if ($loyaltyDiscount > 0) {
+                    $order->discount_amount += $loyaltyDiscount;
+                    $order->total = max(0, (float) $order->total - $loyaltyDiscount);
+                    $order->save();
+                }
+            }
 
             foreach ($cart->items as $ci) {
                 OrderItem::create([

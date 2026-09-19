@@ -756,5 +756,17 @@ return [
 
     // Loyalty Management
     'loyalty_management' => 'إدارة الولاء',
+    'loyalty_transactions' => 'حركات نقاط الولاء',
+    'loyalty_transaction' => 'حركة نقطة ولاء',
     'used_points' => 'النقاط المستعملة',
+    'points' => 'النقاط',
+    'transaction_type' => 'نوع الحركة',
+    'type_earned' => 'اكتساب نقاط',
+    'type_redeemed' => 'استبدال نقاط',
+    'type_earned_reversed' => 'سحب نقاط مكتسبة (مرتجع)',
+    'type_redeemed_restored' => 'استعادة نقاط مستبدلة (إلغاء)',
+    'points_earned_from_order' => 'اكتساب نقاط من الطلب :order',
+    'points_redeemed_for_order' => 'خصم نقاط مستبدلة في الطلب :order',
+    'points_redeemed_restored_for_order' => 'استعادة نقاط مستبدلة بسبب إلغاء الطلب :order',
+    'points_earned_reversed_for_order' => 'سحب نقاط مكتسبة بسبب إرجاع الطلب :order',
 ];
