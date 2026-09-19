@@ -54,20 +54,13 @@ class MerchantLoyaltySettingForm
                             ->required()
                             ->helperText(__('lang.the_minimum_points_balance_required_before_redemption_is_allowed')),
 
-                        TextInput::make('redemption_points_block')
-                            ->label(__('lang.redemption_points_block'))
-                            ->numeric()
-                            ->integer()
-                            ->required()
-                            ->helperText(__('lang.points_must_be_redeemed_in_multiples_of_this_block_size')),
-
                         TextInput::make('redemption_discount_value')
-                            ->label(__('lang.discount_value_per_block'))
+                            ->label(__('lang.discount_value_per_point'))
                             ->numeric()
                             ->required()
                             ->prefix('$')
-                            ->helperText(__('lang.the_monetary_discount_applied_per_block_of_redeemed_points')),
-                    ])->columns(3)
+                            ->helperText(__('lang.the_monetary_discount_applied_per_point_of_redeemed_points')),
+                    ])->columns(2)
                     ->columnSpanFull()
                     ,
             ]);

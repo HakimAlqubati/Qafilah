@@ -31,19 +31,14 @@ class MerchantLoyaltySettingsTable
                     ->numeric()
                     ->sortable(),
 
-                TextColumn::make('redemption_points_block')
-                    ->label(__('lang.redemption_block'))
+                TextColumn::make('min_points_to_redeem')
+                    ->label(__('lang.min_points_to_redeem'))
                     ->numeric()
                     ->sortable(),
 
                 TextColumn::make('redemption_discount_value')
                     ->label(__('lang.discount_value'))
                     ->money()
-                    ->sortable(),
-
-                TextColumn::make('min_points_to_redeem')
-                    ->label(__('lang.min_points_to_redeem'))
-                    ->numeric()
                     ->sortable(),
             ])
             ->filters([
