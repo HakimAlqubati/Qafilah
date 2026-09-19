@@ -750,6 +750,8 @@ return [
     'customer_loyalty_wallet' => 'Customer Loyalty Wallet',
     'balance' => 'Balance',
     'wallet_balance' => 'Wallet Balance',
+    'monetary_value' => 'Monetary Value',
+    'points_monetary_value' => 'Points Monetary Value',
     
     // Loyalty Management
     'loyalty_management' => 'Loyalty Management',

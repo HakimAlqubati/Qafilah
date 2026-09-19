@@ -751,6 +751,8 @@ return [
     'customer_loyalty_wallet' => 'محفظة ولاء العميل',
     'balance' => 'الرصيد',
     'wallet_balance' => 'رصيد المحفظة',
+    'monetary_value' => 'القيمة المالية',
+    'points_monetary_value' => 'القيمة المالية للنقاط',
 
     // Loyalty Management
     'loyalty_management' => 'إدارة الولاء',

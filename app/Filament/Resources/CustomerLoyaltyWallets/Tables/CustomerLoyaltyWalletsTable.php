@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\CustomerLoyaltyWallets\Tables;
 
+use App\Models\Currency;
+use App\Models\CustomerLoyaltyWallet;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,7 +15,10 @@ class CustomerLoyaltyWalletsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) => $query->withSum(['loyaltyTransactions as used_points' => fn ($q) => $q->where('type', 'redeemed')], 'points'))
+            ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) => $query
+                ->with(['loyaltySetting', 'merchant.defaultCurrency'])
+                ->withSum(['loyaltyTransactions as used_points' => fn ($q) => $q->where('type', 'redeemed')], 'points')
+            )
             ->columns([
                 TextColumn::make('customer.name')
                     ->label(__('lang.customer'))
@@ -35,6 +40,12 @@ class CustomerLoyaltyWalletsTable
                     ->label(__('lang.wallet_balance'))
                     // ->numeric()
                     ->sortable(),
+
+                TextColumn::make('monetary_value')
+                    ->label(__('lang.monetary_value'))
+                    ->numeric(decimalPlaces: 2)
+                    ->prefix(fn (CustomerLoyaltyWallet $record): string => Currency::getMerchantCurrencySymbol($record->merchant_id) . ' ')
+                    ->sortable(false),
 
                 TextColumn::make('created_at')
                     ->label(__('lang.created_at'))

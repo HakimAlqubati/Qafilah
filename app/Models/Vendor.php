@@ -102,6 +102,14 @@ class Vendor extends Model
     }
 
     /**
+     * Get the loyalty setting for the vendor.
+     */
+    public function loyaltySetting(): HasOne
+    {
+        return $this->hasOne(MerchantLoyaltySetting::class, 'merchant_id');
+    }
+
+    /**
      * Get the User who referred this vendor (for commission tracking).
      */
     public function referrer(): BelongsTo
