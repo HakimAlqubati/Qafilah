@@ -63,6 +63,7 @@ class MerchantLoyaltySettingForm
                             ->label(__('lang.discount_value_per_point'))
                             ->numeric()
                             ->required()
+                            ->step('0.01')
                             ->prefix('$')
                             ->helperText(__('lang.the_monetary_discount_applied_per_point_of_redeemed_points')),
                     ])->columns(2)
